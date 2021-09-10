@@ -20,15 +20,13 @@ Click the New Seating Zone button to add a new seating zone. You will need to ch
 
 You may edit or delete an existing seating zone, but you cannot change the short name of a seating zone or delete it altogether if that short name is used in any existing seat maps. Typically you would only edit or delete a seating zone if you made a mistake when initially creating it.
 
-## Create a seat map using a spreadsheet
+## Create a seat map from scratch using a spreadsheet
 
 Use your favorite spreadsheet application, such as Google Sheets or Microsoft Excel, to create a seat map from scratch. The format is simple:
 
 * Each spreadsheet row is a row of seats.  It's conventional, although not required, to orient the seat map so the stage is at the top.
-* Each cell provides the seating zone, seat label, and optional accessibility flag for one seat. The cell "reg:A22", for example, indicates a seat  labelled "A22" and belonging to the seating zone whose short name is "reg".  The cell "prem:B101+", meanwhile, indicates that seat B101 is in the seating zone whose short name is "prem" and the seat is accessible (indicated by the plus sign).  Patrons will see the seat labels when they make reservations.  Seat labels can contain uppercase letters and numbers. (Lowercase letters in the spreadsheet cells will simply be converted to uppercase.) Accessible seats will be visually distinguished on the seat map, and the patron will see a reminder that they are booking an accessible seat.
-* Leave cells blank to indicate no seat in that cell.  This allows
-  representing irregular seat layouts where the seats don't necessarily
-  create a perfect rectangular grid.
+* Each cell provides the seating zone, seat label, and optional accessibility flag for one seat. The cell value "reg:A22", for example, indicates a seat  labelled "A22" and belonging to the seating zone whose short name is "reg".  The cell value "prem:B101+", meanwhile, indicates that seat B101 is in the seating zone whose short name is "prem" and the seat is accessible (indicated by the plus sign).  Patrons will see the seat labels when they make reservations.  Seat labels can contain uppercase letters and numbers. (Lowercase letters in the spreadsheet cells will simply be converted to uppercase.) Accessible seats will be visually distinguished on the seat map, and the patron will see a reminder that they are booking an accessible seat.
+* Leave cells blank to indicate no seat in that location.  This allows representing aisles and irregular seat layouts where the seats don't necessarily create a perfect rectangular grid.
 
 For some example seat maps, see [this public Google folder](https://drive.google.com/drive/u/0/folders/1apFWPFlGIXhNV8XHHGUQiJjOybyOqa0q).
 
@@ -46,29 +44,16 @@ Each seat in the seat map must have a valid seating zone short name and a unique
 
 ## Optional but highly recommended: Seat map background image
 
-When the patron is choosing seats, the seat map will be overlaid on top
-of an optional background image, which can label the aisles, show
-where the stage is, or include other decorative or informative
-background elements.  Each seat map has its own background image,
-though you can certainly use the same image for all seat maps.
+When a patron is choosing seats, the seat map will be overlaid on top of an optional background image which can label the aisles, show where the stage is, or include other decorative or informative background elements.  Each seat map has its own background image, though you can certainly use the same image for all seat maps.
 
 The seat map can be created in any drawing program and saved as PNG
 (preferable), SVG, GIF (if necessary, though PNG is a more portable
 format), or JPG (not recommended).  
-Essentially, the image's aspect ratio must match that of the seat map as determined
-by counting rows and columns.  For example, if your seat map has 20
-rows (counting the topmost and bottommost spreadsheet rows that have any number of
-seats) and the longest row has 10 seats (counting the leftmost and
-rightmost spreadsheet columns that have labels in any row), your seat
-map's aspect ratio is 20/10 or 2.0.  So the background image should be
-exactly twice as wide as it is high.  The actual number of pixels
-doesn't matter, as Audience1st will scale it to fit behind the seat map.
-Here is an
-[example](https://drive.google.com/open?id=1sX6Hl3Y9dqBwJEyzA8UzPMESyO3fg9toX_DLMX25jsk)
+The image's aspect ratio (height compared to width) must match that of the seat map as determined by counting rows and columns.  For example, if your seat map has 20 rows (counting the topmost and bottommost spreadsheet rows that have any number of seats) and the longest row has 10 seats (counting the leftmost and rightmost spreadsheet columns that have labels in any row), your seat map's aspect ratio is 20/10 or 2.0.  So the background image should be exactly twice as wide as it is high.  The actual number of pixels doesn't matter, as Audience1st will scale it to fit behind the seat map. Here is an [example](https://drive.google.com/open?id=1sX6Hl3Y9dqBwJEyzA8UzPMESyO3fg9toX_DLMX25jsk)
 of a seat map background image with instructions on how to adapt it
 for your own use.
 
-## Editing, previewing, and duplicating seat maps 
+## Editing, previewing, and duplicating seat maps
 
 On the Add/Edit Seatmaps page, you can edit the name or background image of an existing seat map by clicking the Edit button next to the particular seat map. If the seat map has not yet been used in any performances, you'll also be able to delete the seat map altogether. You can also see what the seat map will look like by clicking the Preview button.
 
@@ -76,23 +61,22 @@ If you want to duplicate an existing seat map so that you can make some minor ch
 
 ## Restricting tickets to specific seating zones
 
-By default, any valid voucher for a performance can be used to reserve any available seat in the house. If your seat map has multiple seating zones, you probably do not want seat reservations to work this way. Use the "Restrict to seating zone" field on voucher types to limit vouchers of this type to one zone only. 
+By default, any valid voucher for a performance can be used to reserve any available seat in the house. If your seat map has multiple seating zones, you probably do not want seat reservations to work this way. Use the "Restrict to seating zone" field on voucher types to limit vouchers of this type to one zone only.
 
 Suppose your theater has Premium and Regular seating zones. You might create a single ticket voucher type called "Premium adult" that allows the buyer to reserve any seat in the house. On this voucher type you would leave the "Restrict to seating zone" field set to its default value of "No restriction". You  might also create a single ticket voucher type called "Regular adult" that has a lower price but only allows the buyer to reserve seats in the "Regular" seating zone. On this voucher type you would set the "Restrict to seating zone" field to "Regular".
 
-Seating zone restrictions can be placed on single tickets, comps, and items in a subscription or bundle. This allows you sell single tickets at different price points as seen in the example above, as well as offer comps that are only good for certain seats and also offer differently priced subscriptions based on what seats can be reserved by the subscriber.
+Seating zone restrictions can be placed on single tickets, comps, and items in a subscription or bundle. This allows you, for example, to sell single tickets at different price points as seen in the example above, as well as offer comps that are only good for certain seats and also offer differently priced subscriptions based on what seats can be reserved by the subscriber.
 
-When a patron reserves a seat using a voucher that has a seating zone restriction, the seat map will show all seats in other zones as unavailable. Theater staff can override zone restrictions and upgrade a patron as needed.
+When a patron reserves a seat using a voucher that has a seating zone restriction, the seat map will show all seats in other zones as unavailable. Theater staff can override zone restrictions and reserve any seat in the house for a patron regardless of the ticket type. This allows staff to upgrade a patron's seats--either as a complimentary gesture or by charging an upgrade fee in the form of a nonticket voucher.
 
 ## Reserved seating during sales flows
 
-When a performance is RS, every flow that involves allocating
-seats introduces an additional seat-selection step.  These flows are:
+When a performance uses reserved seating, every flow that involves allocating seats introduces an additional seat-selection step.  These flows are:
 
 1. The general patron-facing sales flow.  Once the patron has selected
    ticket types and quantities, they must select the correct number of
    seats before continuing to checkout.
-2. A subscriber making reservations against their subscriber vouchers.
+2. A patron making reservations against their subscriber vouchers or open comps.
 3. A box office agent adding comps, if the comp is to be reserved
    immediately for a particular performance.
 4. A box office agent selling tickets to walk-up customers
@@ -101,3 +85,5 @@ seats introduces an additional seat-selection step.  These flows are:
    vendor such as Goldstar or TodayTix.
 
 During seat selection, hovering over any seat shows its seating zone and label, and clicking on a seat selects or un-selects it.  If the patron selects an accessible seat, a pop-up appears asking them to ensure they really need the accommodation.  You can change the wording of this pop-up on the \[Options screen\]({% post_url 2017-11-04-sitewide-options %}).
+
+Note that if all seats in a seat map belong to the same seating zone, then the seating zone's name will not appear when hovering over seats during seat selection. The whole concept of seating zones will be completely invisible to patrons buying tickets or reserving seats for a performance where all seats belong to the same zone.
