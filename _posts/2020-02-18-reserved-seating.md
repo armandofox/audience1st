@@ -59,6 +59,8 @@ On the Add/Edit Seatmaps page, you can edit the name or background image of an e
 
 If you want to duplicate an existing seat map so that you can make some minor changes (perhaps you will remove a few seats for one production and put them back in later) you can click the Download CSV button next to the existing seat map. You can then load this CSV file into your spreadsheet software, edit as desired, save a new CSV file, and upload this file into Audience1st as a new seat map.
 
+Note that Audience1st does not provide a way to edit the seat layout of an existing seat map; only the name of the seat map and its background image can be changed after initially creating the seat map. If you discover an error in your seat map, then duplicate the seat map as described above and fix the error in the new copy. If the seat map has already been used for one or more performances, then edit the performances to use the new revised seat map. Once no performances are using the erroneous seat map, you can delete it.
+
 ## Restricting tickets to specific seating zones
 
 By default, any valid voucher for a performance can be used to reserve any available seat in the house. If your seat map has multiple seating zones, you probably do not want seat reservations to work this way. Use the "Restrict to seating zone" field on voucher types to limit vouchers of this type to one zone only.
