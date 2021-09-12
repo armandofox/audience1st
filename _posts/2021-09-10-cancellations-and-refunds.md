@@ -2,7 +2,7 @@
 category: AdvanceSalesAndReservations
 title: Order Cancellations and Refunds
 order: "15"
-
+layout: page
 ---
 Audience1st users with the Box Office role or higher can cancel a patron's ticket purchase and issue a refund. Audience1st calls this "cancelling an order." Note that cancelling an order is very different from cancelling a reservation. Cancelling an order refunds the original purchase price to the patron, while cancelling a reservation simply releases the seats (or general admission entry) and leaves the voucher open in the patron's account so they can re-reserve for a different date or different seats.
 
