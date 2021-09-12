@@ -31,5 +31,12 @@ fields:
   type: text
   hidden: false
   default: ''
+- name: layout
+  type: text
+  config:
+    required: false
+  label: Layout
+  hidden: true
+  default: page
 pages:
 - _posts/2021-09-10-cancellations-and-refunds.md
