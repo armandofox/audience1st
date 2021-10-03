@@ -15,7 +15,7 @@ A1.store = {
       return;
     }
     $('#zone').val(theZone);
-    $('.itemQty').each(function() {
+    $('.ticket').each(function() {
       if ($(this).data('zone') != theZone) {
         $(this).prop('disabled', true);
       }
