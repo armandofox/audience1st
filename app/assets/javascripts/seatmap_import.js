@@ -20,9 +20,16 @@ A1.ticketSalesImport = {
     chooseSeats.prop('disabled', true);
     choose.addClass('d-none'); 
     confirm.removeClass('d-none');
-    confirm.click(A1.ticketSalesImport.confirmSeats);
-
+    confirm.click(function() {
+      // change 'Confirm' button back to 'Choose', and enable in case want to edit
+      confirm.addClass('d-none'); choose.removeClass('d-none');
+      // hide seat map
+      $('#seating-charts-wrapper').slideUp().addClass('d-none');
+      // re-enable previously-disabled controls
+      chooseSeats.prop('disabled', false);
+    });
     A1.seatmap.max = Number(container.find('.num-seats').val());
+    A1.seatmap.confirmSeatsButton = confirm;
     A1.seatmap.resetAfterCancel = function() {
       $('.tbody-import').append($('#seatmap-table-row'));
       selectedSeats.val('');
@@ -42,9 +49,6 @@ A1.ticketSalesImport = {
       A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
       A1.seatmap.setupMap();
     });
-  }
-  ,confirmSeats: function() {
-    alert("Woohoo!");
   }
   ,setup: function() {
     if ($('body#ticket_sales_imports_edit').length > 0) {
