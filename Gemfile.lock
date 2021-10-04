@@ -212,7 +212,7 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     parallel (1.12.1)
-    pg (0.21.0)
+    pg (0.20.0)
     poltergeist (1.18.1)
       capybara (>= 2.1, < 4)
       cliver (~> 0.3.1)
@@ -425,7 +425,7 @@ DEPENDENCIES
   minitest
   newrelic_rpm
   nokogiri
-  pg (~> 0.21)
+  pg (= 0.20)
   poltergeist
   protected_attributes
   pry

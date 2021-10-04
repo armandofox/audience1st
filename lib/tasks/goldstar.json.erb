@@ -1,0 +1,61 @@
+<% order_id = 100001 %>
+<% showdate = Showdate.find_by! :thedate => Time.parse(y['showdate']) %>
+{
+   "venue" : {
+      "venue_id" : 1173,
+      "name" : "<%= Option.venue %>",
+      "address" : {
+         "street_address" : "<%= Option.venue_address %>",
+         "country_name" : "United States",
+         "locality" : "Alameda",
+         "region" : "CA",
+         "extended_address" : "",
+         "postal_code" : "94501"
+      }
+   },
+   "on_date" : "<%= showdate.thedate.strftime('%F') %>",
+   "time_note" : "<%= showdate.thedate.strftime('%I:%M%P') %>",
+   "show_id" : 99999,
+   "inventories" : [
+      {
+         "inventory_id" : 2347994,
+         "time_note" : null,
+         "quantity" : 100,
+         <% num_orders = y['orders'].keys.length %>
+         <% y['orders'].each_with_index do |(vtype_name, orders), i| %>
+         <% v = Vouchertype.find_by! :name => vtype_name  %>
+         "offers" : [
+            {
+               "name" : "<%= v.name %>",
+               "offer_id" : <%= v.id %>,
+               "full_price" : "<%= sprintf('%.2f', 2 * v.price) %>",
+               "our_price" :  "<%= sprintf('%.2f', v.price) %>"
+            }<%= ',' unless i == num_orders-1 %>
+         ],
+         "purchases" : [
+            <% num_purchases = orders.length %>
+            <% orders.each_with_index do |order,i| %>
+            <% if order =~ /(\S+)\s+(\S+),\s*(\d+)/ then (first,last,qty = $1,$2,$3) else abort("Invalid line: #{order}") end %>
+            {
+               "created_at" : "<%= 1.day.ago.strftime('%FT%T%:z') %>",
+               "red_velvet" : false,
+               "purchase_id" : <%= order_id += 1 %>,
+               "note" : null,
+               "claims" : [
+                  {
+                     "quantity" : <%= qty %>,
+                     "offer_id" : <%= v.id %>
+                  }
+               ],
+               "first_name" : "<%= first %>",
+               "last_name" :  "<%= last %>"
+            }<%= ',' unless i == num_purchases - 1 %>
+            <% end %>
+         ]
+         <% end %>
+      }
+   ],
+   "event" : {
+      "title" : "<%= showdate.show.name %>"
+   }
+}

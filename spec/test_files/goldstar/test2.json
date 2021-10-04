@@ -1,0 +1,71 @@
+{
+   "venue" : {
+      "venue_id" : 1173,
+      "name" : "Altarena Playhouse",
+      "address" : {
+         "street_address" : "1409 High Street",
+         "country_name" : "United States",
+         "locality" : "Alameda",
+         "region" : "CA",
+         "extended_address" : "",
+         "postal_code" : "94501"
+      }
+   },
+   "on_date" : "2020-03-01",
+   "time_note" : "8:00pm ",
+   "show_id" : 1618858,
+   "inventories" : [
+      {
+         "inventory_id" : 2347994,
+         "time_note" : null,
+         "quantity" : 3,
+         "offers" : [
+            {
+               "full_price" : "30.0",
+               "offer_id" : 2633910,
+               "name" : "General Admission",
+               "our_price" : "15.0"
+            },
+           {
+             "full_price": "30.0",
+             "offer_id" : 2633911,
+             "name" : "Comp",
+             "our_price" : "0.0"
+           }
+         ],
+         "purchases" : [
+            {
+               "created_at" : "2020-01-09T19:38:15.000-08:00",
+               "red_velvet" : false,
+               "purchase_id" : 11916767,
+               "note" : null,
+               "claims" : [
+                  {
+                     "quantity" : 2,
+                     "offer_id" : 2633910
+                  }
+               ],
+               "first_name" : "Lynn",
+               "last_name" : "Chewning"
+            },
+            {
+               "note" : null,
+               "first_name" : "Annabel",
+               "last_name" : "Granding",
+               "claims" : [
+                  {
+                     "offer_id" : 2633911,
+                     "quantity" : 1
+                  }
+               ],
+               "created_at" : "2020-01-08T12:48:47.000-08:00",
+               "red_velvet" : true,
+               "purchase_id" : 11911841
+            }
+         ]
+      }
+   ],
+   "event" : {
+      "title" : "Hand to God"
+   }
+}
