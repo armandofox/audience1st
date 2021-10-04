@@ -7,6 +7,14 @@ A1.ticketSalesImport = {
     var chooseSeats = $('.select-seats');
     var confirm = container.find('.confirm-seats');
 
+    function resetPage() {
+      $('#seating-charts-wrapper').slideUp().addClass('d-none');
+      $('.tbody-import').append($('#seatmap-table-row'));
+      chooseSeats.prop('disabled', false);
+      confirm.addClass('d-none');
+      choose.removeClass('d-none');
+    };
+    
     evt.preventDefault();
     // move the hidden table row to just below our own, and reveal it
     $('#seatmap-table-row').insertAfter(container);
@@ -19,27 +27,18 @@ A1.ticketSalesImport = {
     // before can choose seats for another order
     chooseSeats.prop('disabled', true);
     choose.addClass('d-none'); 
-    confirm.removeClass('d-none');
-    confirm.click(function() {
-      // change 'Confirm' button back to 'Choose', and enable in case want to edit
-      confirm.addClass('d-none'); choose.removeClass('d-none');
-      // hide seat map
-      $('#seating-charts-wrapper').slideUp().addClass('d-none');
-      // re-enable previously-disabled controls
-      chooseSeats.prop('disabled', false);
+    confirm.removeClass('d-none').click(function() {
+      resetPage();
     });
     A1.seatmap.max = Number(container.find('.num-seats').val());
-    A1.seatmap.confirmSeatsButton = confirm;
     A1.seatmap.resetAfterCancel = function() {
-      $('.tbody-import').append($('#seatmap-table-row'));
+      resetPage();
       selectedSeats.val('');
-      chooseSeats.prop('disabled', false);
-      confirm.addClass('d-none');
-      $(this).removeClass('d-none');
     };
     A1.seatmap.onSelect = function() {
       selectedSeats.val(A1.seatmap.selectedSeatsAsString);
       chooseSeats.prop('disabled', true);
+      confirm.prop('disabled', true);
     };
     A1.seatmap.allSeatsSelected = function() {
       confirm.prop('disabled', false);
