@@ -1,0 +1,8 @@
+showdate: Thu, 2 Oct 2021, 8pm
+orders:
+  "Goldstar-General":
+    - Bob Albrecht, 2
+    - Cynthia Newcustomer, 1
+  "Goldstar-Comp":
+    - Donna Existing, 1
+
