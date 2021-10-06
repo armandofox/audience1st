@@ -30,7 +30,10 @@
               = hidden_field_tag 'num_seats', s[:num_seats], :id => nil, :class => 'num-seats'
               = button_tag 'Choose...', :type => 'button', :id => nil, :class => 'btn btn-sm btn-outline-primary  select-seats'
               = button_tag 'Confirm', :type => 'button', :id => nil, :disabled => true, :class => 'btn btn-sm btn-success d-none confirm-seats'
-              = display_seats_field
+              - if @order.vouchers.any? { |v| !v.seat.blank? }
+                = display_seats_field(seats: Voucher.seats_for(@order.vouchers))
+              - else
+                = display_seats_field
               = hidden_field_tag 'voucher_ids', @order.vouchers.map(&:id).join(','), :id => nil, :class => 'voucher-ids'
             - else
               = display_seats_field(seats: Voucher.seats_for(@order.vouchers))

@@ -26,9 +26,7 @@ class Voucher < Item
   end
 
   def existing_seat
-    errors.add(:seat, 'does not exist for this performance') unless
-      showdate.can_accommodate?(seat)
-      ! showdate.has_reserved_seating?  || seat.blank?  || showdate.seatmap.includes_seat?(seat)
+    errors.add(:seat, 'does not exist for this performance') unless showdate.can_accommodate?(seat)
   end
 
   public
@@ -326,9 +324,6 @@ class Voucher < Item
       nil
     end
   end
-
-
-
 
   def self.change_showdate_multiple(vouchers, showdate, logged_in_customer)
     Voucher.transaction do

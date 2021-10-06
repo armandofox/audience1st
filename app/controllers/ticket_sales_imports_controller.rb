@@ -90,7 +90,12 @@ class TicketSalesImportsController < ApplicationController
   def assign_seats
     # XHR call with params['seats'] = JSON array of selected seats, params['vouchers'] =
     #  comma-separated IDs of vouchers
-    Rails.logger.info "Params: #{params}"
+    vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
+    seats = params[:seats].split(/\s*,\s*/)
+    vouchers.each_with_index do |v,i|
+      render(:status => :unprocessable_entity, :json => {:error => v.errors.full_messages.join(', ')}) and return unless
+        v.update_attributes(:seat => seats[i])
+    end
     render :nothing => true
   end
 

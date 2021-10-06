@@ -21,9 +21,6 @@ A1.ticketSalesImport = {
     $('#seatmap-table-row').insertAfter(container);
     $('#seating-charts-wrapper').removeClass('d-none').slideDown();
      
-    // clear the previous seat selection
-    selectedSeats.val('');
-
     // once seat selection begins, must choose all seats for this order, OR cancel,
     // before can choose seats for another order
     chooseSeats.prop('disabled', true);
@@ -37,8 +34,7 @@ A1.ticketSalesImport = {
             seats: A1.seatmap.selectedSeatsAsString,
             vouchers: voucherIds.val()
           },
-          success: function() { alert("Seats saved"); },
-          error: function(jqXHR, textStatus, errorString) { alert(textStatus + ': ' + errorString); }
+          error: function(jqXHR, textStatus, errorString) { alert(textStatus + ': ' + jqXHR.responseText); }
         });
         resetPage();
       });
