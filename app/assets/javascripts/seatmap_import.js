@@ -4,6 +4,7 @@ A1.ticketSalesImport = {
     var container = choose.closest('.import-row');
     var showdateID = container.find('.showdate-id').val();
     var selectedSeats = container.find('.seat-display');
+    var voucherIds = container.find('.voucher-ids');
     var chooseSeats = $('.select-seats');
     var confirm = container.find('.confirm-seats');
 
@@ -27,9 +28,20 @@ A1.ticketSalesImport = {
     // before can choose seats for another order
     chooseSeats.prop('disabled', true);
     choose.addClass('d-none'); 
-    confirm.removeClass('d-none').click(function() {
-      resetPage();
-    });
+    confirm.removeClass('d-none').click(
+      function() {
+        $.ajax({
+          method: 'POST',
+          url: '/ajax/import_assign_seats', 
+          data: {
+            seats: A1.seatmap.selectedSeatsAsString,
+            vouchers: voucherIds.val()
+          },
+          success: function() { alert("Seats saved"); },
+          error: function(jqXHR, textStatus, errorString) { alert(textStatus + ': ' + errorString); }
+        });
+        resetPage();
+      });
     A1.seatmap.max = Number(container.find('.num-seats').val());
     A1.seatmap.resetAfterCancel = function() {
       resetPage();

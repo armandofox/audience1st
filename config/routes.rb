@@ -52,19 +52,21 @@ Rails.application.routes.draw do
 
     # RSS
 
-    get '/ics/showdates.ics' => 'info#showdates'
-    get '/rss/showdates.rss' => 'info#ticket_rss', :defaults => { :format => 'rss' }
-    get '/rss/availability.rss' => 'info#availability', :defaults => { :format => 'rss' }
+    get '/ics/showdates.ics'          => 'info#showdates'
+    get '/rss/showdates.rss'          => 'info#ticket_rss', :defaults => { :format => 'rss' }
+    get '/rss/availability.rss'       => 'info#availability', :defaults => { :format => 'rss' }
 
     # AJAX responders
-    get '/ajax/update_shows' => 'vouchers#update_shows', :as => 'update_shows'
+    get '/ajax/update_shows'          => 'vouchers#update_shows', :as => 'update_shows'
     get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer', :as => 'customer_autocomplete'
-    get '/ajax/customer_lookup' => 'customers#lookup', :as => 'customer_lookup'
+    get '/ajax/customer_lookup'       => 'customers#lookup', :as => 'customer_lookup'
 
-    post '/ajax/mark_fulfilled' => 'reports#mark_fulfilled', :as => 'mark_fulfilled'
-    get '/ajax/create_sublist' => 'reports#create_sublist', :as => 'create_sublist'
+    post '/ajax/mark_fulfilled'       => 'reports#mark_fulfilled', :as => 'mark_fulfilled'
+    get '/ajax/create_sublist'        => 'reports#create_sublist', :as => 'create_sublist'
 
-    get '/ajax/seatmap/:id'         => 'seatmaps#seatmap'
+    get '/ajax/seatmap/:id'           => 'seatmaps#seatmap'
+
+    post '/ajax/import_assign_seats'  => 'ticket_sales_imports#assign_seats', :as => 'import_assign_seats'
 
     # shows
     resources :shows, :except => [:show] do

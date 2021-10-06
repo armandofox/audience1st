@@ -1,6 +1,6 @@
 class TicketSalesImportsController < ApplicationController
 
-  before_filter :is_boxoffice_filter
+  before_filter :is_boxoffice_filter, :except => 'import_assign_seats'
 
   # View all imports, also provides a form to create a new import by uploading a file.
   # The view provides a dropdown populated from TicketSalesImporter::IMPORTERS, which
@@ -85,6 +85,13 @@ class TicketSalesImportsController < ApplicationController
     flash[:notice] = I18n.translate('import.import_cancelled', :filename => i.filename)
     i.destroy
     redirect_to ticket_sales_imports_path
+  end
+
+  def assign_seats
+    # XHR call with params['seats'] = JSON array of selected seats, params['vouchers'] =
+    #  comma-separated IDs of vouchers
+    Rails.logger.info "Params: #{params}"
+    render :nothing => true
   end
 
   private

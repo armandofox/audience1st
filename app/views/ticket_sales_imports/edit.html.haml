@@ -31,6 +31,7 @@
               = button_tag 'Choose...', :type => 'button', :id => nil, :class => 'btn btn-sm btn-outline-primary  select-seats'
               = button_tag 'Confirm', :type => 'button', :id => nil, :disabled => true, :class => 'btn btn-sm btn-success d-none confirm-seats'
               = display_seats_field
+              = hidden_field_tag 'voucher_ids', @order.vouchers.map(&:id).join(','), :id => nil, :class => 'voucher-ids'
             - else
               = display_seats_field(seats: Voucher.seats_for(@order.vouchers))
           %td #{ord.import_last_name}, #{ord.import_first_name}
