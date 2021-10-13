@@ -48,6 +48,18 @@ describe Seatmap do
         expect(s.errors.full_messages).to eq(["Seating chart contains duplicate seats: A1, B1"])
       end
     end
+    describe 'is invalid' do
+      specify 'because no zone labels' do
+        s = build(:seatmap, :csv => "A1,A2\r\n")
+        expect(s).not_to be_valid
+        expect(s.errors.full_messages).to include_match_for(/Invalid seat label/)
+      end
+      specify 'because bad chars in seat label' do
+        s = build(:seatmap, :csv => "res:A-1,res:B2")
+        expect(s).not_to be_valid
+        expect(s.errors.full_messages).to include_match_for(/Invalid seat label/)
+      end
+    end
     describe 'with zones' do
       before(:each) do
         (1..3).each { |n|  create(:seating_zone, :name => "Zone#{n}", :short_name => "z#{n}") }

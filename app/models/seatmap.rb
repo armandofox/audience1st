@@ -12,7 +12,7 @@ class Seatmap < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :csv, :presence => true
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
-  validate :valid_csv
+  validate :valid_csv, :if => :new_record?
 
   private
 
