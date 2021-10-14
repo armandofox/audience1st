@@ -1,6 +1,11 @@
-<% order_id = 100001 %>
+<% require 'securerandom' %>
+<% def r() ; 100000 + SecureRandom.random_number(899999) ; end %>
+<% order_id = r() %>
 <% showdate = Showdate.find_by! :thedate => Time.parse(y['showdate']) %>
 {
+   "event" : {
+      "title" : "<%= showdate.show.name %>"
+   },
    "venue" : {
       "venue_id" : 1173,
       "name" : "<%= Option.venue %>",
@@ -15,47 +20,49 @@
    },
    "on_date" : "<%= showdate.thedate.strftime('%F') %>",
    "time_note" : "<%= showdate.thedate.strftime('%I:%M%P') %>",
-   "show_id" : 99999,
+   "show_id" : <%= r() %>,
    "inventories" : [
       {
-         "inventory_id" : 2347994,
+         "inventory_id" : <%= r() %>,
          "time_note" : null,
          "quantity" : 100,
-         <% num_orders = y['orders'].keys.length %>
-         <% y['orders'].each_with_index do |(vtype_name, orders), i| %>
-         <% v = Vouchertype.find_by! :name => vtype_name  %>
          "offers" : [
-            {
-               "name" : "<%= v.name %>",
-               "offer_id" : <%= v.id %>,
-               "full_price" : "<%= sprintf('%.2f', 2 * v.price) %>",
-               "our_price" :  "<%= sprintf('%.2f', v.price) %>"
-            }<%= ',' unless i == num_orders-1 %>
+<% num_orders = y['orders'].keys.length 
+   y['orders'].each_with_index do |(vtype_name, orders), j| 
+   v = Vouchertype.find_by! :name => vtype_name  %>
+           {
+             "name" : "<%= v.name %>",
+             "offer_id" : <%= v.id %>,
+             "full_price" : "<%= sprintf('%.2f', 2 * v.price) %>",
+             "our_price" :  "<%= sprintf('%.2f', v.price) %>"
+           }<%= ',' unless j == num_orders-1 %>
+<% end %>
+
          ],
          "purchases" : [
-            <% num_purchases = orders.length %>
-            <% orders.each_with_index do |order,i| %>
-            <% if order =~ /(\S+)\s+(\S+),\s*(\d+)/ then (first,last,qty = $1,$2,$3) else abort("Invalid line: #{order}") end %>
-            {
-               "created_at" : "<%= 1.day.ago.strftime('%FT%T%:z') %>",
-               "red_velvet" : false,
-               "purchase_id" : <%= order_id += 1 %>,
-               "note" : null,
-               "claims" : [
-                  {
-                     "quantity" : <%= qty %>,
-                     "offer_id" : <%= v.id %>
-                  }
-               ],
-               "first_name" : "<%= first %>",
-               "last_name" :  "<%= last %>"
-            }<%= ',' unless i == num_purchases - 1 %>
-            <% end %>
+<% y['orders'].each_with_index do |(vtype_name, orders), i| %>
+<% num_purchases = orders.length %>
+<% v = Vouchertype.find_by! :name => vtype_name  %>
+<% orders.each_with_index do |order,i| %>
+<% if order =~ /(\S+)\s+(\S+),\s*(\d+)/ then (first,last,qty = $1,$2,$3) else abort("Invalid line: #{order}") end %>
+              {
+                 "first_name" : "<%= first %>",
+                 "last_name" :  "<%= last %>",
+                 "created_at" : "<%= 1.day.ago.strftime('%FT%T%:z') %>",
+                 "note" : null,
+                 "claims" : [
+                    {
+                       "quantity" : <%= qty %>,
+                       "offer_id" : <%= v.id %>
+
+                    }
+                 ],
+                 "red_velvet" : false,
+                 "purchase_id" : <%= order_id += 1 %>
+              },
+<% end %>
+<% end %>
          ]
-         <% end %>
       }
-   ],
-   "event" : {
-      "title" : "<%= showdate.show.name %>"
-   }
+   ]
 }

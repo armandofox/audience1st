@@ -1,13 +1,12 @@
 class TicketSalesImportsController < ApplicationController
 
-  before_filter :is_boxoffice_filter, :except => 'import_assign_seats'
+  before_filter :is_boxoffice_filter
 
   # View all imports, also provides a form to create a new import by uploading a file.
   # The view provides a dropdown populated from TicketSalesImporter::IMPORTERS, which
   # should be used to set the 'vendor' field of the import.
   def index
     @ticket_sales_imports = TicketSalesImport.completed.sorted
-    @in_progress_imports = TicketSalesImport.in_progress.sorted
     @vendors = TicketSalesImport::IMPORTERS
   end
 
@@ -29,7 +28,6 @@ class TicketSalesImportsController < ApplicationController
   def edit
     @import = TicketSalesImport.find params[:id]
     @import.parse
-    @importable = ! (@import.completed? || @import.importable_orders.all?(&:already_imported?))
     if !@import.errors.empty?
       @import.destroy
       return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
@@ -41,6 +39,11 @@ class TicketSalesImportsController < ApplicationController
   # Finalize the import according to dropdown menu selections
   def update
     import = TicketSalesImport.find params[:id]
+    # If another tab or window had already completed this import, stop.
+    if import.completed?
+      return redirect_to(ticket_sales_imports_path,
+                         :alert => t('import.already_imported', :date => import.updated_at.to_formatted_s(:foh)))
+    end
     order_hash = params[:o]
     # each hash key is the id of a saved (but not finalized) order
     # each hash value is {:action => a, :customer_id => c, :first => f, :last => l, :email => e}
@@ -93,10 +96,12 @@ class TicketSalesImportsController < ApplicationController
     vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
     seats = params[:seats].split(/\s*,\s*/)
     vouchers.each_with_index do |v,i|
-      render(:status => :unprocessable_entity, :json => {:error => v.errors.full_messages.join(', ')}) and return unless
-        v.update_attributes(:seat => seats[i])
+      if v.update_attributes(:seat => seats[i])
+        render :nothing => true
+      else
+        render :status => :unprocessable_entity, :plain => v.errors.full_messages.join(', ')
+      end
     end
-    render :nothing => true
   end
 
   private

@@ -20,7 +20,7 @@ eoDESC
     outfile = ENV['OUTFILE'] || 'goldstar.json'
     y = YAML.load_file(ENV['INFILE'] || 'import.yml')
     erb = IO.read(File.join(Rails.root, 'lib', 'tasks', 'goldstar.json.erb'))
-    json = ERB.new(erb).result(binding)
+    json = ERB.new(erb,0,'>').result(binding)
     File.open(outfile, "w") { |f|  f.puts json }
   end
 end

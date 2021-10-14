@@ -3,7 +3,7 @@ class TicketSalesImport < ActiveRecord::Base
   attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
-  has_many :orders, :dependent => :nullify
+  has_many :orders, :dependent => :destroy
 
   class ImportError < StandardError ;  end
 
@@ -43,7 +43,7 @@ class TicketSalesImport < ActiveRecord::Base
     TicketSalesImport.completed.each do |i|
       if self.raw_data.strip == i.raw_data.strip
         self.errors.add(:base, I18n.translate('import.already_imported',
-            :date => i.updated_at.to_formatted_s(:month_day_year)))
+            :date => i.updated_at.to_formatted_s(:foh)))
         return nil
       end
     end
@@ -60,7 +60,10 @@ class TicketSalesImport < ActiveRecord::Base
   def parse
     @importable_orders = @parser.parse
     @importable_orders.each do |imp|
-      imp.order.save! unless imp.already_imported?
+      unless imp.already_imported?
+        self.orders << imp.order
+        imp.order.save!
+      end
     end
   end
 
