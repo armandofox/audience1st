@@ -70,17 +70,18 @@ class TicketSalesImportsController < ApplicationController
         end
         import.completed = true
         import.save!
-        flash[:notice] = [
-          t('import.success.num_tickets', :count => import.tickets_sold),
-          t('import.success.total_customers', :count => import.existing_customers + import.new_customers),
-          t('import.success.existing_customers', :count => import.existing_customers),
-          t('import.success.new_customers_created', :count => import.new_customers)].
-          join(' ')
-      end
+      end                       # transaction block
+      flash[:notice] = [
+        t('import.success.num_tickets', :count => import.tickets_sold),
+        t('import.success.total_customers', :count => import.existing_customers + import.new_customers),
+        t('import.success.existing_customers', :count => import.existing_customers),
+        t('import.success.new_customers_created', :count => import.new_customers)].
+                         join(' ')
+      redirect_to ticket_sales_imports_path
     rescue StandardError => e
       flash[:alert] = t('import.import_failed', :message => e.message)
+      return redirect_to(edit_ticket_sales_import_path(import))
     end
-    redirect_to ticket_sales_imports_path
   end
 
   def destroy
