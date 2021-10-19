@@ -14,33 +14,21 @@
         %th{:scope => 'col'} Email on import
         %th{:scope => 'col', :width => '20%'} Import to customer
     %tbody.tbody-import
-      - @import.importable_orders.each do |ord|
-        - @order = ord.order
-        - oid = @order.id
-        %tr.import-row{:class => ('font-italic' if ord.already_imported?)}
-          %td= @order.external_key
-          %td= ord.transaction_date.strftime('%b %d, %-l:%M%p')
-          %td= ord.description.html_safe
+      - @import.imported_orders.each do |ord|
+        - p = ord.from_import
+        %tr.import-row
+          %td= ord.external_key
+          %td= p.transaction_date.strftime('%b %d, %-l:%M%p')
+          %td= p.description.html_safe
           %td.text-center
-            - if (s = @order.reserved_seating_params)
+            - if (s = order.reserved_seating_params)
               = hidden_field_tag 'showdate_id', s[:showdate_id], :id => nil, :class => 'showdate-id'
               = hidden_field_tag 'num_seats', s[:num_seats], :id => nil, :class => 'num-seats'
               = button_tag 'Choose...', :type => 'button', :id => nil, :class => 'btn btn-sm btn-outline-primary  select-seats'
               = button_tag 'Confirm', :type => 'button', :id => nil, :disabled => true, :class => 'btn btn-sm btn-success d-none confirm-seats'
-              - if @order.vouchers.any? { |v| !v.seat.blank? }
-                = display_seats_field(seats: Voucher.seats_for(@order.vouchers))
-              - else
-                = display_seats_field
-              = hidden_field_tag 'voucher_ids', @order.vouchers.map(&:id).join(','), :id => nil, :class => 'voucher-ids'
-            - else
-              = display_seats_field(seats: Voucher.seats_for(@order.vouchers))
-          %td #{ord.import_last_name}, #{ord.import_first_name}
-          %td= ord.import_email
-          = hidden_field_tag "o[#{oid}][transaction_date]", ord.transaction_date
-          = hidden_field_tag "o[#{oid}][first]", ord.import_first_name
-          = hidden_field_tag "o[#{oid}][last]", ord.import_last_name
-          = hidden_field_tag "o[#{oid}][email]", ord.import_email
-          = hidden_field_tag "o[#{oid}][action]", ord.action
+              = display_seats_field
+          %td #{p.last}, #{p.first}
+          %td= p.email
           %td.actions= import_choices(ord).html_safe
       %tr#seatmap-table-row
         %td{:colspan => 7}

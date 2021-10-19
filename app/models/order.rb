@@ -2,7 +2,6 @@ class Order < ActiveRecord::Base
   belongs_to :customer
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
-  belongs_to :ticket_sales_import # only for orders imported from external vendor (eg TodayTix)
   has_many :items, :autosave => true, :dependent => :destroy
   has_many :vouchers, :autosave => true,  :dependent => :destroy
   has_many :donations, :autosave => true, :dependent => :destroy
@@ -27,8 +26,6 @@ class Order < ActiveRecord::Base
   def self.foreign_keys_to_customer
     [:customer_id, :purchaser_id, :processed_by_id]
   end
-
-  validates_uniqueness_of :external_key, :allow_blank => true, conditions: -> { where.not(:sold_on => nil) }
 
   serialize :valid_vouchers, Hash
   serialize :donation_data, Hash

@@ -1,9 +1,8 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
-  has_many :orders, :dependent => :destroy
+  has_many :imported_orders, :dependent => :destroy
 
   class ImportError < StandardError ;  end
 
@@ -56,15 +55,9 @@ class TicketSalesImport < ActiveRecord::Base
 
   public
 
-  # Call the underlying parser to create a set of +importable_order+ objects for this import
-  def parse
-    @importable_orders = @parser.parse
-    @importable_orders.each do |imp|
-      unless imp.already_imported?
-        self.orders << imp.order
-        imp.order.save!
-      end
-    end
+  # Call the underlying parser to create a set of +imported_order+ objects for this import
+  def create_temporary_orders
+    self.imported_orders = @parser.parse
   end
 
   def finalize!
