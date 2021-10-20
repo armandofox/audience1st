@@ -26,7 +26,7 @@ module TicketSalesImportParser
       @csv = nil
     end
 
-    # parse the raw data and return an array of ImportableOrder instances
+    # parse the raw data and add ImportedOrder instances to Import object
     def parse
       importable_orders = []
       csv_file_parsable? unless @csv # make sure we have parsed it even if #valid? wasn't 

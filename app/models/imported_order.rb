@@ -30,6 +30,9 @@ class ImportedOrder < Order
   validates_presence_of :external_key
   validates_uniqueness_of :external_key, :allow_blank => true, conditions: -> { where.not(:sold_on => nil) }
 
+  serialize :from_import
+  after_initialize :initialize_import_info
+
   MAY_CREATE_NEW_CUSTOMER =   "MAY_CREATE_NEW_CUSTOMER"
   MUST_USE_EXISTING_CUSTOMER = "MUST_USE_EXISTING_CUSTOMER"
 
@@ -50,17 +53,15 @@ class ImportedOrder < Order
       self
     end
   end
+
+  private
   
-  def initialize
-    super
-    self.from_import = ImportInfo.new(
-      :transaction_date => Time.current, # when vendor processed txn; becomes sold_on when finalized
-      :customer_ids = [],       # collection of candidate Customers to import to, may be empty
-      :action => MAY_CREATE_NEW_CUSTOMER
-    }
-    self
+  def initialize_import_info
+    self.from_import ||= ImportInfo.new
   end
 
+  public
+  
   def self.find_valid_voucher_for(thedate,vendor,price)
     showdate = Showdate.where(:thedate => thedate).first
     price = price.to_f
@@ -81,22 +82,17 @@ class ImportedOrder < Order
 
 
   # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher
+  # DELETEME
   def add_tickets(vv, num)
     if vv.showdate.has_reserved_seating?
       # put in "placeholder" seat numbers
       # BUG::This will screw up seatmap display!!
-      order.add_tickets_without_capacity_checks(vv, num, Array.new(num) { Voucher::PLACEHOLDER })
+      self.add_tickets_without_capacity_checks(vv, num, Array.new(num) { Voucher::PLACEHOLDER })
     else
-      order.add_tickets_without_capacity_checks(vv, num)
+      self.add_tickets_without_capacity_checks(vv, num)
     end
-    raise MissingDataError.new("Cannot add tickets to order: #{order.errors.full_messages.join(', ')}") unless order.errors.empty?
-    @valid_vouchers[vv] += num
-  end
-
-  def valid_vouchers
-    raise MissingDataError.new("Attempt to call #valid_vouchers on empty/previous import") if
-      (@valid_vouchers.empty? || @action == ALREADY_IMPORTED)
-    @valid_vouchers
+    raise MissingDataError.new("Cannot add tickets to order: #{order.errors.full_messages.join(', ')}") unless errors.empty?
+    self.valid_vouchers[vv] += num
   end
 
 end

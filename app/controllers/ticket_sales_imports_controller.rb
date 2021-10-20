@@ -66,7 +66,7 @@ class TicketSalesImportsController < ApplicationController
             order.finalize_with_new_customer!(customer, current_user, sold_on)
             import.new_customers += 1
           end
-          import.tickets_sold += order.ticket_count unless o[:action] == ImportableOrder::ALREADY_IMPORTED
+          import.tickets_sold += order.ticket_count
         end
         import.completed = true
         import.save!

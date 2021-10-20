@@ -27,45 +27,48 @@ module TicketSalesImportParser
       unless valid?
         return @import.errors.add(:base, 'Import is invalid')
       end
-      importable_orders = []
       # A Goldstar will-call is always for exactly 1 performance
       # A will-call includes 1 or more inventories, each of which includes 1 or more offers
       #   and 0 or more purchases for each offer type.
       # An offer is a named ticket type and price.
       # We don't care here about separating inventories, as long as we can match the ticket
       # price within each offer.
-      @j['inventories'].map { |i| i['purchases'] }.flatten.each do |purchase|
-        # relevant slots: created_at, purchase_id, first_name, last_name,
-        # claims (array of {quantity => x, offer_id => y})
-        purchase_id,first,last,date,claims = purchase.values_at('purchase_id','first_name','last_name','created_at','claims')
-        # Goldstar special case: a "purchase" can show up for which
-        # `claims` is an empty array. This is probably a bug on their part but we have to
-        # handle it.
-        if purchase['claims'].empty?
-          @import.warnings.add(:base, I18n.translate('import.goldstar.empty_claims_list',
-              :purchase_id => purchase_id, :name => "#{first} #{last}"))
-          next
-        end
-        order_description = []
-        import_params = ImportedOrder::ImportInfo.new(
-          :first => first, :last => last, :transaction_date => Time.zone.parse(date))
-        import_params.set_possible_customers
-        order = ImportedOrder.new(:from_import => import_params)
-        purchase['claims'].each do |claim|
-          num_seats,offer_id = claim.values_at('quantity', 'offer_id')
-          # does offer ID actually refer to an offer_id in this file?
-          unless @redemptions.has_key?(offer_id)
-            return @import.errors.add(:base, I18n.translate('import.goldstar.invalid_offer_id', :offer_id => offer_id, :name => "#{first} #{last}"))
+      begin
+        Order.transaction do      # create all temporary orders, or none
+          @j['inventories'].map { |i| i['purchases'] }.flatten.each do |purchase|
+            purchase_id,first,last,date,claims = purchase.values_at('purchase_id','first_name','last_name','created_at','claims')
+            # Goldstar bug: a `purchase` can show up with empty `claims` set; must handle gracefully
+            if purchase['claims'].empty?
+              @import.warnings.add(:base, I18n.translate('import.goldstar.empty_claims_list',
+                                                         :purchase_id => purchase_id, :name => "#{first} #{last}"))
+              next
+            end
+            # claims: array of {quantity => x, offer_id => y} for each offer_id (redemption)
+            description = []
+            import_params = ImportedOrder::ImportInfo.new(
+              :first => first, :last => last, :transaction_date => Time.zone.parse(date))
+            import_params.set_possible_customers
+            order = ImportedOrder.create(:external_key => purchase_id, :from_import => import_params)
+            purchase['claims'].each do |claim|
+              num_seats,offer_id = claim.values_at('quantity', 'offer_id')
+              # does offer ID actually refer to an offer_id in this file?
+              unless @redemptions.has_key?(offer_id)
+                return @import.errors.add(:base, I18n.translate('import.goldstar.invalid_offer_id', :offer_id => offer_id, :name => "#{first} #{last}"))
+              end
+              redemption = @redemptions[offer_id]
+              description << "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
+              order.add_tickets_without_capacity_checks(redemption, num_seats)
+            end
+            order.from_import.description = description.join('<br/>').html_safe
+            order.save!
+            @import.imported_orders += order
           end
-          redemption = @redemptions[offer_id]
-          description << "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
-          order.add_tickets(redemption, num_seats)
         end
-        order.from_import.description = description.join('<br/>').html_safe
-        @import.imported_orders += order
+      rescue RuntimeError => e
+        @import.errors.add(:base, "Unexpected import error: #{e.message}")
       end
     end
-
+    
     private
 
     def valid_offers?
@@ -73,9 +76,9 @@ module TicketSalesImportParser
       begin
         @j['inventories'].map { |i| i['offers'] }.flatten.each do |offer|
           @redemptions[offer['offer_id']] =
-            ImportableOrder.find_valid_voucher_for(@showdate.thedate, 'Goldstar', offer['our_price'].to_f) 
+            ImportedOrder.find_valid_voucher_for(@showdate.thedate, 'Goldstar', offer['our_price'].to_f) 
         end
-      rescue ImportableOrder::MissingDataError => e
+      rescue ImportedOrder::MissingDataError => e
         @import.errors.add(:base, e.message)
         return nil
       end
