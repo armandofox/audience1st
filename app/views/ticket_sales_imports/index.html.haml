@@ -23,7 +23,7 @@
     %tbody
       - @ticket_sales_imports.each do |imp|
         %tr[imp]
-          %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
+          %td= link_to imp.updated_at.to_formatted_s(:compact), ticket_sales_import_path(imp)
           %td= imp.processed_by.first_name rescue ''
           %td= imp.vendor
           %td= imp.filename

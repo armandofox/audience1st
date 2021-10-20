@@ -27,7 +27,6 @@ class TicketSalesImport < ActiveRecord::Base
   private
 
   def set_parser
-    @importable_orders = []
     @warnings = ActiveModel::Errors.new(self)
     if IMPORTERS.include?(vendor)
       @parser = TicketSalesImportParser.const_get(vendor).send(:new, self)
@@ -55,17 +54,11 @@ class TicketSalesImport < ActiveRecord::Base
 
   public
 
-  def finalize!
-    @importable_orders.each do |imp|
-      imp.finalize!
-    end
-  end
-
   # Check whether the import will exceed either the house capacity or a per-ticket-type capacity control
   def check_sales_limits
     showdates = Hash.new { 0 }
     num_of_type = Hash.new { 0 }
-    @importable_orders.reject(&:already_imported?).each do |i|
+    imported_orders.reject(&:completed?).each do |i|
       i.valid_vouchers.each_pair do |vv,num|
         # add tickets that will be imported for each showdate
         showdates[vv.showdate] += num

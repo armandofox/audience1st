@@ -1,0 +1,31 @@
+= set_active_tab '#t_ticket_sales_imports_index'
+
+%h1 Imported From #{@import.vendor} on #{@import.updated_at.to_formatted_s(:foh)}
+
+%table.table
+  %thead
+    %tr.text-center
+      %th{:scope => 'col'} Vendor's order#
+      %th{:scope => 'col'} Txn date
+      %th{:scope => 'col'} Tickets
+      %th{:scope => 'col'} Seats
+      %th{:scope => 'col'} Name on import
+      %th{:scope => 'col'} Email on import
+      %th{:scope => 'col', :width => '20%'} Imported to customer (&nbsp;* created by this import)
+  %tbody.tbody-import
+    - @import.imported_orders.each do |ord|
+      - p = ord.from_import
+      %tr.import-row
+        %td= ord.external_key
+        %td= ord.sold_on.to_formatted_s(:foh)
+        %td= link_to (p.description || "View imported order").html_safe, order_path(ord)
+        %td.text-center= display_seats_field(seats: Voucher.seats_for(ord.vouchers))
+        %td #{p.last}, #{p.first}
+        %td= p.email
+        %td.actions
+          = link_to_customer ord.customer
+          = '*' if ord.customer.ticket_sales_import_id == @import.id
+
+= link_to 'Back to List of Imports', ticket_sales_imports_path, :class => 'btn btn-primary'
+
+

@@ -21,7 +21,7 @@
           %td= p.transaction_date.strftime('%b %d, %-l:%M%p')
           %td= p.description.html_safe
           %td.text-center
-            = hidden_field_tag 'voucher_ids', ord.vouchers.map(&:id).join(','), :id => nil, :class => 'voucher-ids'
+            = hidden_field_tag 'voucher_ids', ord.vouchers.map(&:id).join(','), :id => nil, :name => nil, :class => 'voucher-ids'
             - if (s = ord.reserved_seating_params)
               = hidden_field_tag 'showdate_id', s[:showdate_id], :id => nil, :class => 'showdate-id'
               = hidden_field_tag 'num_seats', s[:num_seats], :id => nil, :class => 'num-seats'

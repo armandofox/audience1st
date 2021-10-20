@@ -55,6 +55,7 @@ class ImportedOrder < Order
   
   def initialize_import_info
     self.from_import ||= ImportInfo.new
+    self.purchasemethod = Purchasemethod.get_type_by_name 'ext'
   end
 
   public

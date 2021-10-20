@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     root :to => 'customers#show'
 
     resources :account_codes, :except => :show
-    resources :ticket_sales_imports, :except => [:new,:show]
+    resources :ticket_sales_imports, :except => [:new]
     resources :labels, :only => [:index, :create, :update, :destroy]
     resources :seatmaps, :except => [:new] 
 

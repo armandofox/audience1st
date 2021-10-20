@@ -28,8 +28,13 @@ class TicketSalesImportsController < ApplicationController
     end
   end
 
+  def show
+    @import = TicketSalesImport.find params[:id]
+  end
+  
   def edit
     @import = TicketSalesImport.find params[:id]
+    return redirect_to(ticket_sales_import_path(@import)) if @import.completed?
     if !@import.errors.empty?
       @import.destroy
       return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
@@ -49,18 +54,20 @@ class TicketSalesImportsController < ApplicationController
     # each hash key is the id of a saved (but not finalized) order
     # each hash value is {:action => a, :customer_id => c, :first => f, :last => l, :email => e}
     begin
+      customer_for = params[:customer_id] || {}
       Order.transaction do
         import.imported_orders.each do |order|
           order.processed_by = current_user
           io = order.from_import
           sold_on = io.transaction_date
-          byebug
-          if (cid = params[:o][order.id][:customer_id])
+          # if a non-nil customer ID is specified, assign to that customer; else create new
+          cid = customer_for[order.id.to_s].to_i
+          if (cid != 0)
             order.finalize_with_existing_customer_id!(cid, current_user, sold_on)
             import.existing_customers += 1
           else                  # create new customer
-            customer = Customer.new(:first_name => o[:first], :last_name => o[:last],
-              :email => o[:email], :ticket_sales_import => import)
+            customer = Customer.new(:first_name => io.first, :last_name => io.last,
+                                    :email => io.email, :ticket_sales_import => import)
             order.finalize_with_new_customer!(customer, current_user, sold_on)
             import.new_customers += 1
           end

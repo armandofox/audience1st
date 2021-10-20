@@ -165,7 +165,6 @@ class Order < ActiveRecord::Base
           v.seat = seats[i] unless seats.empty?
           v.reserve!(valid_voucher.showdate)
         rescue ActiveRecord::RecordInvalid, Voucher::ReservationError #  reservation couldn't be processed
-          byebug
           self.errors.add(:base, v.errors.full_messages.join(', '))
           v.destroy               # otherwise it'll end up with no order ID and can't be reaped
         end
