@@ -54,6 +54,7 @@ class TicketSalesImportsController < ApplicationController
           order.processed_by = current_user
           io = order.from_import
           sold_on = io.transaction_date
+          byebug
           if (cid = params[:o][order.id][:customer_id])
             order.finalize_with_existing_customer_id!(cid, current_user, sold_on)
             import.existing_customers += 1
@@ -93,12 +94,11 @@ class TicketSalesImportsController < ApplicationController
     vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
     seats = params[:seats].split(/\s*,\s*/)
     vouchers.each_with_index do |v,i|
-      if v.update_attributes(:seat => seats[i])
-        render :nothing => true
-      else
-        render :status => :unprocessable_entity, :plain => v.errors.full_messages.join(', ')
+      unless v.update_attributes(:seat => seats[i])
+        return render(:status => :unprocessable_entity, :plain => v.errors.full_messages.join(', '))
       end
     end
+    render :nothing => true
   end
 
   private
