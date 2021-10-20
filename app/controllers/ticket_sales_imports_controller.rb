@@ -42,12 +42,8 @@ class TicketSalesImportsController < ApplicationController
   def update
     import = TicketSalesImport.find params[:id]
     # If another tab or window had already completed this import, stop.
-    if import.completed?
-      return redirect_to(ticket_sales_imports_path,
-                         :alert => t('import.already_imported', :date => import.updated_at.to_formatted_s(:foh)))
-    end
-    # each hash key is the id of a saved (but not finalized) order
-    # each hash value is {:action => a, :customer_id => c, :first => f, :last => l, :email => e}
+    return redirect_to(ticket_sales_imports_path,
+                       :alert => t('import.already_imported', :date => import.updated_at.to_formatted_s(:foh)))  if import.completed?
     begin
       customer_for = params[:customer_id] || {}
       Order.transaction do

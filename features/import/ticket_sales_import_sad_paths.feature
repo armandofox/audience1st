@@ -29,25 +29,3 @@ Scenario: import would exceed per-ticket-type capacity
   When I press "Import Orders"
   Then I should see "8 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
 
-Scenario: partially-completed import should not show up in Previous Imports, and can be resumed
-
-  Given customer "Adria Ray" exists
-  When I upload the "TodayTix" will-call file "two_valid_orders.csv"
-  And I visit the edit contact info page for customer "Adria Ray"
-  And I visit the ticket sales import page
-  Then I should see "two_valid_orders.csv" within "#in_progress_imports"
-  When I follow "Finish..."
-  Then I should see "Proposed Import From TodayTix"
-  When I select the following options for each import:
-    | import_name | action              |
-    | Ray, Adrian | Create new customer |
-  When I press "Import Orders"
-  Then I should see "4 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
-  
-Scenario: partially-completed import can be deleted
-
-  When I upload the "TodayTix" will-call file "two_valid_orders.csv"
-  And I visit the ticket sales import page
-  When I press "Cancel Import"
-  Then I should see "Import of 'two_valid_orders.csv' cancelled"
-  And there should be no import with filename "two_valid_orders.csv"

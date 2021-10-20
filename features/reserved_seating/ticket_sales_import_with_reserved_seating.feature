@@ -18,7 +18,6 @@ Background: logged in as boxoffice ready to import for a reserved seating perfor
 Scenario: successful import while assigning seats
 
   When I upload the "Goldstar" will-call file "2010-01-12-HandToGod-reserved-seating.json"
-  Then show me the page
   
 Scenario: import when same brand-new customer appears multiple times in import list
 

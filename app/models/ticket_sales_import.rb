@@ -59,10 +59,10 @@ class TicketSalesImport < ActiveRecord::Base
     showdates = Hash.new { 0 }
     num_of_type = Hash.new { 0 }
     imported_orders.reject(&:completed?).each do |i|
-      i.valid_vouchers.each_pair do |vv,num|
+      i.vouchers.each do |voucher|
         # add tickets that will be imported for each showdate
-        showdates[vv.showdate] += num
-        num_of_type[vv] += num
+        showdates[voucher.showdate] += 1
+        num_of_type[ValidVoucher.find_by(:vouchertype => voucher.vouchertype, :showdate => voucher.showdate)] += 1
       end
     end
     showdates.each_pair do |showdate,num_to_import|

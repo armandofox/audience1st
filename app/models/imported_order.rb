@@ -74,18 +74,4 @@ class ImportedOrder < Order
     redemption
   end
 
-  # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher
-  # DELETEME
-  def add_tickets(vv, num)
-    if vv.showdate.has_reserved_seating?
-      # put in "placeholder" seat numbers
-      # BUG::This will screw up seatmap display!!
-      self.add_tickets_without_capacity_checks(vv, num, Array.new(num) { Voucher::PLACEHOLDER })
-    else
-      self.add_tickets_without_capacity_checks(vv, num)
-    end
-    raise MissingDataError.new("Cannot add tickets to order: #{order.errors.full_messages.join(', ')}") unless errors.empty?
-    self.valid_vouchers[vv] += num
-  end
-
 end
