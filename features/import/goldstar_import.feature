@@ -35,9 +35,10 @@ Scenario: successful import creates new customers; then attempt re-import of sam
 
   And I should see "5 tickets were imported for 3 total customers. None of the customers were already in your list. 3 new customers were created."
   But I should not see "This list contains an order for"
+
   When I visit the ticket sales import page for the most recent "Goldstar" import
-  Then the import for "Chewning, Lynn" should show "View imported order" 
-  And  I should not see "Import Orders"
+  Then the import for "Chewning, Lynn" should show "Lynn Chewning *"
+
   When I upload the "Goldstar" will-call file "2010-01-12-HandToGod.json"
   Then I should see "This list was already imported"
   And  I should be on the ticket sales import page

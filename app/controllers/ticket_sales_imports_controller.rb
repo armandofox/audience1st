@@ -16,16 +16,11 @@ class TicketSalesImportsController < ApplicationController
 
   def create
     return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
-    begin
-      @import = TicketSalesImport.new(ticketsalesimport_params)
-      @import.parser.parse
-      @import.save!
-      redirect_to edit_ticket_sales_import_path(@import), :alert => (@import.warnings.as_html if !@import.warnings.empty?)
-    rescue ActiveRecord::RecordInvalid
-      redirect_to ticket_sales_imports_path, :alert => @import.errors.as_html
-    rescue ImportedOrder::MissingDataError => e
-      redirect_to ticket_sales_imports_path, :alert => e.message
-    end
+    @import = TicketSalesImport.new(ticketsalesimport_params)
+    return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html) unless @import.valid?
+    @import.parser.parse or return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
+    @import.save or return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
+    redirect_to edit_ticket_sales_import_path(@import), :alert => (@import.warnings.as_html if !@import.warnings.empty?)
   end
 
   def show

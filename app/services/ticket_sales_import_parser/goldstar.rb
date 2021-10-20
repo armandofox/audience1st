@@ -53,7 +53,7 @@ module TicketSalesImportParser
               num_seats,offer_id = claim.values_at('quantity', 'offer_id')
               # does offer ID actually refer to an offer_id in this file?
               unless @redemptions.has_key?(offer_id)
-                return @import.errors.add(:base, I18n.translate('import.goldstar.invalid_offer_id', :offer_id => offer_id, :name => "#{first} #{last}"))
+                raise ImportedOrder::MissingDataError.new(I18n.translate('import.goldstar.invalid_offer_id', :offer_id => offer_id, :name => "#{first} #{last}"))
               end
               redemption = @redemptions[offer_id]
               description << "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
@@ -64,9 +64,14 @@ module TicketSalesImportParser
             @import.imported_orders << order
           end
         end
+      rescue ImportedOrder::MissingDataError => e
+        @import.errors.add(:base, "Import error: #{e.message}")
+        return nil
       rescue RuntimeError => e
         @import.errors.add(:base, "Unexpected import error: #{e.message}")
+        return nil
       end
+      true
     end
     
     private
