@@ -61,7 +61,7 @@ module TicketSalesImportParser
             end
             order.from_import.description = description.join('<br/>').html_safe
             order.save!
-            @import.imported_orders += order
+            @import.imported_orders << order
           end
         end
       rescue RuntimeError => e

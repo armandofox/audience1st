@@ -33,11 +33,8 @@ class ImportedOrder < Order
   serialize :from_import
   after_initialize :initialize_import_info
 
-  MAY_CREATE_NEW_CUSTOMER =   "MAY_CREATE_NEW_CUSTOMER"
-  MUST_USE_EXISTING_CUSTOMER = "MUST_USE_EXISTING_CUSTOMER"
-
   class ImportInfo
-    attr_accessor :transaction_date, :first, :last, :email, :customer_ids, :action, :description
+    attr_accessor :transaction_date, :first, :last, :email, :customer_ids, :action, :description, :must_use_existing_customer
     def initialize(args={})
       args.each_pair { |k,v| self.public_send("#{k}=", v) }
     end
@@ -45,10 +42,10 @@ class ImportedOrder < Order
       if (! email.blank?  && (c = Customer.find_by_email(email)))
         # unique match
         self.customer_ids = [c.id]
-        self.action = MUST_USE_EXISTING_CUSTOMER
+        self.must_use_existing_customer = true
       else
         self.customer_ids = Customer.possible_matches(first,last,email).map(&:id)
-        self.action = MAY_CREATE_NEW_CUSTOMER
+        self.must_use_existing_customer = false
       end
       self
     end
@@ -75,11 +72,6 @@ class ImportedOrder < Order
         :vouchertype => vouchertype.name,:performance => showdate.printable_name)) if redemption.nil?
     redemption
   end
-
-  def must_use_existing_customer?
-    from_import[:action] == MUST_USE_EXISTING_CUSTOMER
-  end
-
 
   # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher
   # DELETEME

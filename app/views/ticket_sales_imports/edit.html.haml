@@ -21,7 +21,7 @@
           %td= p.transaction_date.strftime('%b %d, %-l:%M%p')
           %td= p.description.html_safe
           %td.text-center
-            - if (s = order.reserved_seating_params)
+            - if (s = ord.reserved_seating_params)
               = hidden_field_tag 'showdate_id', s[:showdate_id], :id => nil, :class => 'showdate-id'
               = hidden_field_tag 'num_seats', s[:num_seats], :id => nil, :class => 'num-seats'
               = button_tag 'Choose...', :type => 'button', :id => nil, :class => 'btn btn-sm btn-outline-primary  select-seats'

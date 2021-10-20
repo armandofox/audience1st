@@ -18,7 +18,7 @@ class TicketSalesImportsController < ApplicationController
     return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
     begin
       @import = TicketSalesImport.new(ticketsalesimport_params)
-      @import.create_temporary_orders
+      @import.parser.parse
       @import.save!
       redirect_to edit_ticket_sales_import_path(@import), :alert => (@import.warnings.as_html if !@import.warnings.empty?)
     rescue ActiveRecord::RecordInvalid
@@ -48,9 +48,6 @@ class TicketSalesImportsController < ApplicationController
     end
     # each hash key is the id of a saved (but not finalized) order
     # each hash value is {:action => a, :customer_id => c, :first => f, :last => l, :email => e}
-    #  if action is ALREADY_IMPORTED, do nothing
-    #  if action is MAY_CREATE_NEW_CUSTOMER, create new customer & finalize order
-    #  if action is MUST_USE_EXISTING_CUSTOMER, attach given customer ID & finalize order
     begin
       Order.transaction do
         import.imported_orders.each do |order|

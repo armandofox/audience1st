@@ -55,11 +55,6 @@ class TicketSalesImport < ActiveRecord::Base
 
   public
 
-  # Call the underlying parser to create a set of +imported_order+ objects for this import
-  def create_temporary_orders
-    self.imported_orders = @parser.parse
-  end
-
   def finalize!
     @importable_orders.each do |imp|
       imp.finalize!

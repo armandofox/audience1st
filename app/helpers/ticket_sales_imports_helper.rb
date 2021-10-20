@@ -4,7 +4,7 @@ module TicketSalesImportsHelper
     oid = order.id
     io = order.from_import
     customers = Customer.find(io.customer_ids)
-    if order.must_use_existing_customer?
+    if io.must_use_existing_customer
       rollover_with_contact_info(customers.first)
     elsif customers.empty?   # MUST create new
       content_tag('span', "Will create new customer")
