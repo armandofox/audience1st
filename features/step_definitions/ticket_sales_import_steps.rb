@@ -6,6 +6,20 @@ end
 
 World(TicketSalesImportStepsHelper)
 
+When /I upload a "Goldstar" will-call file for (.*) with the following orders:/ do |vendor,date,t|
+  template_file = 
+  y = {'showdate' => date}
+  t.hashes.each do |ord|
+    (y[ord['type']] ||= []) << "#{ord['name']}, #{ord['qty']}"
+  end
+  erb = IO.read File.join(Rails.root, 'lib', 'tasks', 'goldstar.json.erb')
+  out = ERB.new(erb,0,'>').result(binding)
+  file = Tempfile.new(['import', '.json'])
+  file.puts out
+  steps %Q{When I upload the "Goldstar" will-call file "#{file.name}"}
+end
+  
+
 When /I upload the "(.*)" will-call file "(.*)"/ do |vendor,file|
   visit ticket_sales_imports_path
   select vendor, :from => 'vendor'

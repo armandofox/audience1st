@@ -37,7 +37,7 @@
         %td{:colspan => 7}
           = render :partial => 'components/seatmap'
 
-  = submit_tag 'Import Orders', :class => 'btn btn-success confirm-import'
+  = submit_tag 'Import Orders', :id => 'submit', :class => 'btn btn-success confirm-import'
 
 = form_for @import, :method => :delete, :class => 'form form-inline' do
   = submit_tag 'Cancel Import', :class => 'btn btn-danger my-2'
