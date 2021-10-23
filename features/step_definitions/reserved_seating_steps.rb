@@ -36,7 +36,7 @@ Then /I should (not )?see the seatmap/ do |no|
   end
 end
 
-When /I choose seats? (.*)(?: for import customer "(.*)")/ do |seat_list, name|
+When /I choose seats? (.*)(?: for import customer "(.*)")?/ do |seat_list, name|
   if name
     within(find_import_row_for name) { click_button "Choose Seats..." }
     steps %Q{Then I should see the seatmap}

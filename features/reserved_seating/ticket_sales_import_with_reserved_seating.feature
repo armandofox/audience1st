@@ -18,7 +18,6 @@ Feature: import third party ticket sales for a reserved seating performance
       | name                | qty | type               |
       | Bob Albrecht        |   2 | Goldstar - General |
       | Cynthia Newcustomer |   1 | Goldstar - Comp    |
-    Then show me the page
     
   Scenario Outline: successful import while assigning seats
 
