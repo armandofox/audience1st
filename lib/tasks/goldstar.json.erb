@@ -40,10 +40,10 @@
 
          ],
          "purchases" : [
-<% y['orders'].each_with_index do |(vtype_name, orders), i| %>
-<% num_purchases = orders.length %>
+<% count,total_orders = 0, y['orders'].values.map(&:length).sum %>
+<% y['orders'].each do |vtype_name, orders| %>
 <% v = Vouchertype.find_by! :name => vtype_name  %>
-<% orders.each_with_index do |order,i| %>
+<% orders.each do |order| %>
 <% if order =~ /(\S+)\s+(\S+),\s*(\d+)/ then (first,last,qty = $1,$2,$3) else abort("Invalid line: #{order}") end %>
               {
                  "first_name" : "<%= first %>",
@@ -59,7 +59,9 @@
                  ],
                  "red_velvet" : false,
                  "purchase_id" : <%= order_id += 1 %>
-              },
+
+              }<%= ',' unless (count += 1) == total_orders %>
+
 <% end %>
 <% end %>
          ]

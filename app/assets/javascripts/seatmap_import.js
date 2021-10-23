@@ -7,6 +7,16 @@ A1.ticketSalesImport = {
     var voucherIds = container.find('.voucher-ids');
     var chooseSeats = $('.select-seats');
     var confirm = container.find('.confirm-seats');
+    var submit = $('#submit');
+    
+    function seatsStillToAssign() {
+      $('.seat-display').each(function() {
+        if ($(this).val() == '') {
+          return(true);
+        }
+      });
+      return(false);
+    }
 
     function resetPage() {
       $('#seating-charts-wrapper').slideUp().addClass('d-none');
@@ -14,6 +24,8 @@ A1.ticketSalesImport = {
       chooseSeats.prop('disabled', false);
       confirm.addClass('d-none');
       choose.removeClass('d-none');
+      // only enable Submit button when all seats have been assigned
+      submit.prop('disabled', seatsStillToAssign());
     };
     
     evt.preventDefault();
@@ -58,9 +70,11 @@ A1.ticketSalesImport = {
     });
   }
   ,setup: function() {
-    if ($('body#ticket_sales_imports_edit').length > 0) {
+    if ($('body#ticket_sales_imports_edit').length > 0 // imports page
+        && ($('.select-seats').length > 0)) { // reserved seating for this import
       $('.select-seats').on('click', A1.ticketSalesImport.showMap);
-    };
+      $('#submit').prop('disabled', true); // until all seats selected
+    }
   }
 };
 

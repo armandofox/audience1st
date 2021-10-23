@@ -36,10 +36,19 @@ Then /I should (not )?see the seatmap/ do |no|
   end
 end
 
-When /I choose seats (.*)/ do |seat_list|
+When /I choose seats? (.*)(?: for import customer "(.*)")?/ do |seat_list, name|
+  if name
+    within(find_import_row_for name) { click_button "Choose Seats..." }
+    steps %Q{Then I should see the seatmap}
+  end
   seat_list.split(/\s*,\s*/).each do |seat|
     page.find("##{seat}").click
   end
+end
+
+When /I confirm seats? (.*) for import customer "(.*)"/ do |seat_list, name|
+  steps %Q{When I choose seats #{seat_list} for import customer "#{name}"}
+  within(find_import_row_for name) { click_button "Confirm" }
 end
 
 Then /I should see "(.*)" in the list of selected seats/ do |seat_list|
@@ -50,12 +59,18 @@ Then /I should see "(.*)" in the list of selected seats/ do |seat_list|
 end
 
 Then /seats (.*) should be (occupied|available) for the (.*) performance/ do |seats,avail,thedate|
-  @showdate = Showdate.find_by(:thedate => Time.zone.parse(thedate))
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
   @seats = seats.split(/\s*,\s*/)
   occupied = @showdate.occupied_seats & @seats
   if avail =~ /available/
     expect(occupied).to be_empty
   else
     expect(occupied).to eq(@seats)
+  end
+end
+
+Then /the (.*) performance should have the following seat assignments:/ do |showdate,list|
+  list.hashes.each do |v|
+    steps %Q{Then customer "#{v[name]}" should have seats #{v[seats]} for the #{showdate} performance}
   end
 end

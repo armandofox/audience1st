@@ -1,9 +1,8 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
-  has_many :orders, :dependent => :destroy
+  has_many :imported_orders, :dependent => :destroy
 
   class ImportError < StandardError ;  end
 
@@ -28,7 +27,6 @@ class TicketSalesImport < ActiveRecord::Base
   private
 
   def set_parser
-    @importable_orders = []
     @warnings = ActiveModel::Errors.new(self)
     if IMPORTERS.include?(vendor)
       @parser = TicketSalesImportParser.const_get(vendor).send(:new, self)
@@ -56,32 +54,15 @@ class TicketSalesImport < ActiveRecord::Base
 
   public
 
-  # Call the underlying parser to create a set of +importable_order+ objects for this import
-  def parse
-    @importable_orders = @parser.parse
-    @importable_orders.each do |imp|
-      unless imp.already_imported?
-        self.orders << imp.order
-        imp.order.save!
-      end
-    end
-  end
-
-  def finalize!
-    @importable_orders.each do |imp|
-      imp.finalize!
-    end
-  end
-
   # Check whether the import will exceed either the house capacity or a per-ticket-type capacity control
   def check_sales_limits
     showdates = Hash.new { 0 }
     num_of_type = Hash.new { 0 }
-    @importable_orders.reject(&:already_imported?).each do |i|
-      i.valid_vouchers.each_pair do |vv,num|
+    imported_orders.reject(&:completed?).each do |i|
+      i.vouchers.each do |voucher|
         # add tickets that will be imported for each showdate
-        showdates[vv.showdate] += num
-        num_of_type[vv] += num
+        showdates[voucher.showdate] += 1
+        num_of_type[ValidVoucher.find_by(:vouchertype => voucher.vouchertype, :showdate => voucher.showdate)] += 1
       end
     end
     showdates.each_pair do |showdate,num_to_import|

@@ -21,20 +21,24 @@ Scenario: successful import creates new customers; then attempt re-import of sam
     | Chewning, Lynn    | Will create new customer | 2 @ Hand to God - Tuesday, Jan 12, 8:00 PM - Goldstar - General                                                              |
     | Granding, Annabel | Will create new customer | 1 @ Hand to God - Tuesday, Jan 12, 8:00 PM - Goldstar - General                                                              |
     | Melendrez, Rosa   | Will create new customer | 1 @ Hand to God - Tuesday, Jan 12, 8:00 PM - Goldstar - Comp1 @ Hand to God - Tuesday, Jan 12, 8:00 PM - Goldstar - General  |
+
   When I press "Import Orders"
   Then the following "Goldstar - General" tickets should have been imported for "Hand to God":
     | patron           | qty | showdate                 |
     | Lynn Chewning    |   2 | January 12, 2010, 8:00pm |
     | Annabel Granding |   1 | January 12, 2010, 8:00pm |
     | Rosa Melendrez   |   1 | January 12, 2010, 8:00pm |
+
   And the following "Goldstar - Comp" tickets should have been imported for "Hand to God":
     | patron         | qty | showdate                 |
     | Rosa Melendrez |   1 | January 12, 2010, 8:00pm |
+
   And I should see "5 tickets were imported for 3 total customers. None of the customers were already in your list. 3 new customers were created."
   But I should not see "This list contains an order for"
+
   When I visit the ticket sales import page for the most recent "Goldstar" import
-  Then the import for "Chewning, Lynn" should show "View imported order" 
-  And  I should not see "Import Orders"
+  Then the import for "Chewning, Lynn" should show "Lynn Chewning *"
+
   When I upload the "Goldstar" will-call file "2010-01-12-HandToGod.json"
   Then I should see "This list was already imported"
   And  I should be on the ticket sales import page
@@ -60,14 +64,17 @@ Scenario: customer non-unique match, boxoffice agent decides whether to import a
     | Melendrez, Rosa   | Create new customer                                 |
   And I press "Import Orders"
   And I should see "5 tickets were imported for 3 total customers. One customer was already in your list. 2 new customers were created."
+
   And customer "Annabelle Granding" should have 1 "Goldstar - General" tickets for "Hand to God" on Jan 12, 2010, 8:00pm
   And customer "Annabel Granding" should not exist
   And customer "Rosa Melendrez" should have 1 "Goldstar - Comp" tickets for "Hand to God" on Jan 12, 2010, 8:00pm
   But customer "R Melendrez" should have 0 "Goldstar - Comp" tickets for "Hand to God" on Jan 12, 2010, 8:00pm
+
   When I visit the ticket sales import page for the most recent "Goldstar" import
-  Then the import for "Granding, Annabel" should show "View imported order"
-  But I should not see "Granding, Annabelle"
-  And I should not see "anng@example.com"
+  Then I should not see "Annabelle Granding *"
+  And the import for "Chewning, Lynn" should show "Lynn Chewning *"
+  And the import for "Melendrez, Rosa" should show "Rosa Melendrez *"
+
 
 Scenario: possibly wrong show
 

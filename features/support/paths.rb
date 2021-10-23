@@ -65,7 +65,7 @@ module NavigationHelpers
       end
 
     when /the ticket sales import page$/ then ticket_sales_imports_path
-    when /the ticket sales import page for the most recent "(.*)" import/ then edit_ticket_sales_import_path(TicketSalesImport.find_by(:vendor => $1))
+    when /the ticket sales import page for the most recent "(.*)" import/ then ticket_sales_import_path(TicketSalesImport.find_by(:vendor => $1))
     when /the show details page for "(.*)"/i then edit_show_path(@show = Show.find_by_name!($1))
     when /the new showdate page for "(.*)"/i then new_show_showdate_path(@show = Show.find_by_name!($1))
 

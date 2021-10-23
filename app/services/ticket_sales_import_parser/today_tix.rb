@@ -26,24 +26,21 @@ module TicketSalesImportParser
       @csv = nil
     end
 
-    # parse the raw data and return an array of ImportableOrder instances
+    # parse the raw data and add ImportedOrder instances to Import object
     def parse
-      importable_orders = []
       csv_file_parsable? unless @csv # make sure we have parsed it even if #valid? wasn't 
       begin
-        @csv.map(&:to_hash).each do |h|
-          i = ImportableOrder.new(first: h["Purchaser First Name"], last: h["Purchaser Last Name"],
-            email: h["Email"])
-          # find_or_set_external_key will set already_imported to true if order found
-          i.find_or_set_external_key h["Order #"]
-          populate_from_import(i,h) unless i.already_imported?
-          importable_orders << i
+        Order.transaction do
+          @csv.map(&:to_hash).each do |h|
+            order = ImportedOrder.create!(:external_key => h["Order #"])
+            populate_from_import(order, h)
+            @import.imported_orders << order
+          end
         end
-      rescue ImportableOrder::MissingDataError => e
+      rescue ImportedOrder::MissingDataError => e
         import.errors.add(:base, e.message)
-        []
+        return nil
       end
-      importable_orders
     end
 
     # sanity-check that the raw data appears to be a valid import file
@@ -53,14 +50,19 @@ module TicketSalesImportParser
 
     private                     # helper methods below here
 
-    def populate_from_import(i,h)
+    def populate_from_import(order,h)
       num_seats = h["# of Seats"].to_i
       price_per_seat = h["Total Price"].to_f / num_seats
-      redemption = ImportableOrder.find_valid_voucher_for(Time.zone.parse(h["Performance Date"]), 'TodayTix', price_per_seat)
-      i.add_tickets(redemption, num_seats)
-      i.transaction_date = Time.zone.parse h["Sale Date"]
-      i.set_possible_customers
-      i.description = "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
+      redemption = ImportedOrder.find_valid_voucher_for(Time.zone.parse(h["Performance Date"]), 'TodayTix', price_per_seat)
+      order.add_tickets_without_capacity_checks(redemption, num_seats)
+      import_info = ImportedOrder::ImportInfo.new(
+        :transaction_date => Time.zone.parse(h["Sale Date"]),
+        :description => "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}",
+        :first => h["Purchaser First Name"],
+        :last => h["Purchaser Last Name"],
+        :email => h["Email"])
+      import_info.set_possible_customers
+      order.from_import = import_info
       unless ShowNameMatcher.near_match?(redemption.showdate.name, h["show"])
         import.warnings.add(:base, I18n.translate('import.wrong_show',
             :import_show => h["show"], :actual_show => redemption.showdate.name,

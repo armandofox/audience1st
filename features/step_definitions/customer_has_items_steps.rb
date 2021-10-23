@@ -20,7 +20,7 @@ Given /customer "(\S+) (.*)" has seats? (.*) for the "(.*)" performance/ do |fir
   ScenarioHelpers::Orders.buy!(customer, create(:vouchertype), seats.length, seats)
 end
 
-Then /customer "(\S+) (.*)" should have seats? (.*) for the (.*) performance of "(.*)"/ do |first,last,seats,date,show|
+Then /customer "(\S+) (.*)" should have seats? (.*) for the (.*) performance(?: of "(.*)")/ do |first,last,seats,date,show|
   @customer = find_customer first,last
   @showdate = Showdate.find_by!(:thedate => Time.zone.parse(date))
   @vouchers = @customer.vouchers.finalized.where(:showdate => @showdate)

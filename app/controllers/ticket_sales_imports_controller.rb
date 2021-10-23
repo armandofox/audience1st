@@ -7,7 +7,8 @@ class TicketSalesImportsController < ApplicationController
   # should be used to set the 'vendor' field of the import.
   def index
     @ticket_sales_imports = TicketSalesImport.completed.sorted
-    @vendors = TicketSalesImport::IMPORTERS
+    @vendors = TicketSalesImport::IMPORTERS.sort
+    @default_vendor = params[:vendor]
   end
 
   # upload: grab uploaded data, create a new TicketSalesImport instance whose 'vendor'
@@ -17,17 +18,19 @@ class TicketSalesImportsController < ApplicationController
   def create
     return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
     @import = TicketSalesImport.new(ticketsalesimport_params)
-    if @import.valid?
-      @import.save!
-      redirect_to edit_ticket_sales_import_path(@import)
-    else
-      redirect_to ticket_sales_imports_path, :alert => @import.errors.as_html
-    end
+    return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html) unless @import.valid?
+    @import.parser.parse or return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html)
+    @import.save or return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html)
+    redirect_to edit_ticket_sales_import_path(@import), :alert => (@import.warnings.as_html if !@import.warnings.empty?)
   end
 
+  def show
+    @import = TicketSalesImport.find params[:id]
+  end
+  
   def edit
     @import = TicketSalesImport.find params[:id]
-    @import.parse
+    return redirect_to(ticket_sales_import_path(@import)) if @import.completed?
     if !@import.errors.empty?
       @import.destroy
       return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
@@ -40,33 +43,27 @@ class TicketSalesImportsController < ApplicationController
   def update
     import = TicketSalesImport.find params[:id]
     # If another tab or window had already completed this import, stop.
-    if import.completed?
-      return redirect_to(ticket_sales_imports_path,
-                         :alert => t('import.already_imported', :date => import.updated_at.to_formatted_s(:foh)))
-    end
-    order_hash = params[:o]
-    # each hash key is the id of a saved (but not finalized) order
-    # each hash value is {:action => a, :customer_id => c, :first => f, :last => l, :email => e}
-    #  if action is ALREADY_IMPORTED, do nothing
-    #  if action is MAY_CREATE_NEW_CUSTOMER, create new customer & finalize order
-    #  if action is MUST_USE_EXISTING_CUSTOMER, attach given customer ID & finalize order
+    return redirect_to(ticket_sales_imports_path,
+                       :alert => t('import.already_imported', :date => import.updated_at.to_formatted_s(:foh)))  if import.completed?
     begin
+      customer_for = params[:customer_id] || {}
       Order.transaction do
-        order_hash.each_pair do |order_id, o|
-          order = Order.find order_id
-          order.ticket_sales_import = import
+        import.imported_orders.each do |order|
           order.processed_by = current_user
-          sold_on = Time.zone.parse o[:transaction_date]
-          if o[:action] == ImportableOrder::MAY_CREATE_NEW_CUSTOMER && o[:customer_id].blank?
-            customer = Customer.new(:first_name => o[:first], :last_name => o[:last],
-              :email => o[:email], :ticket_sales_import => import)
+          io = order.from_import
+          sold_on = io.transaction_date
+          # if a non-nil customer ID is specified, assign to that customer; else create new
+          cid = customer_for[order.id.to_s].to_i
+          if (cid != 0)
+            order.finalize_with_existing_customer_id!(cid, current_user, sold_on)
+            import.existing_customers += 1
+          else                  # create new customer
+            customer = Customer.new(:first_name => io.first, :last_name => io.last,
+                                    :email => io.email, :ticket_sales_import => import)
             order.finalize_with_new_customer!(customer, current_user, sold_on)
             import.new_customers += 1
-          else
-            order.finalize_with_existing_customer_id!(o[:customer_id], current_user, sold_on)
-            import.existing_customers += 1
           end
-          import.tickets_sold += order.ticket_count unless o[:action] == ImportableOrder::ALREADY_IMPORTED
+          import.tickets_sold += order.ticket_count
         end
         import.completed = true
         import.save!
@@ -97,12 +94,11 @@ class TicketSalesImportsController < ApplicationController
     vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
     seats = params[:seats].split(/\s*,\s*/)
     vouchers.each_with_index do |v,i|
-      if v.update_attributes(:seat => seats[i])
-        render :nothing => true
-      else
-        render :status => :unprocessable_entity, :plain => v.errors.full_messages.join(', ')
+      unless v.update_attributes(:seat => seats[i])
+        return render(:status => :unprocessable_entity, :plain => v.errors.full_messages.join(', '))
       end
     end
+    render :nothing => true
   end
 
   private

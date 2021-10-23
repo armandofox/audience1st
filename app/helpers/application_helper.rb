@@ -21,8 +21,9 @@ module ApplicationHelper
 
   def venue_stylesheet_link_tag
     if (url = Option.stylesheet_url).blank?
-      # use local
-      url = '/assets/venue/default.css'
+      return unless Rails.env.development?
+      # if development mode, can use local stylesheet
+      url = '/assets/stylesheets/venue/default.css'
     end
     tag('link', {rel: "stylesheet", href: url, :media => 'all'})
   end
