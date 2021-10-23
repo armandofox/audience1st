@@ -25,7 +25,7 @@
             - if (s = ord.reserved_seating_params)
               = hidden_field_tag 'showdate_id', s[:showdate_id], :id => nil, :class => 'showdate-id'
               = hidden_field_tag 'num_seats', s[:num_seats], :id => nil, :class => 'num-seats'
-              = button_tag 'Choose...', :type => 'button', :id => nil, :class => 'btn btn-sm btn-outline-primary  select-seats'
+              = button_tag 'Choose Seats...', :type => 'button', :id => nil, :class => 'btn btn-sm btn-outline-primary  select-seats'
               = button_tag 'Confirm', :type => 'button', :id => nil, :disabled => true, :class => 'btn btn-sm btn-success d-none confirm-seats'
               = display_seats_field(seats: Voucher.seats_for(ord.vouchers))
             - else

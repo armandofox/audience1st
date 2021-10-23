@@ -10,7 +10,8 @@ module TicketSalesImportsHelper
     # if email matches, MUST use existing customer
 
     if io.must_use_existing_customer
-      rollover_with_contact_info(customers.first)
+      rollover_with_contact_info(customers.first) +
+        hidden_field_tag("customer_id[#{order.id}]", customers.first.id)
 
     # if NO matches, MUST create new customer
       

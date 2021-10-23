@@ -7,7 +7,8 @@ class TicketSalesImportsController < ApplicationController
   # should be used to set the 'vendor' field of the import.
   def index
     @ticket_sales_imports = TicketSalesImport.completed.sorted
-    @vendors = TicketSalesImport::IMPORTERS
+    @vendors = TicketSalesImport::IMPORTERS.sort
+    @default_vendor = params[:vendor]
   end
 
   # upload: grab uploaded data, create a new TicketSalesImport instance whose 'vendor'
@@ -17,9 +18,9 @@ class TicketSalesImportsController < ApplicationController
   def create
     return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
     @import = TicketSalesImport.new(ticketsalesimport_params)
-    return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html) unless @import.valid?
-    @import.parser.parse or return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
-    @import.save or return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
+    return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html) unless @import.valid?
+    @import.parser.parse or return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html)
+    @import.save or return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html)
     redirect_to edit_ticket_sales_import_path(@import), :alert => (@import.warnings.as_html if !@import.warnings.empty?)
   end
 
