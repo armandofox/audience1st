@@ -56,3 +56,4 @@ end
 Then /there should be no import with filename "(.*)"/ do |filename|
   expect(TicketSalesImport.where(:filename => filename)).to be_empty
 end
+

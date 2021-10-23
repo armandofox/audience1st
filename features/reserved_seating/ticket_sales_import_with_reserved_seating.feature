@@ -22,10 +22,14 @@ Feature: import third party ticket sales for a reserved seating performance
     
   Scenario Outline: successful import while assigning seats
 
-    When I press "Choose..." for import customer "<customer>"
-    And I choose seats <seats>
-    And I press "Confirm" for import customer "<customer>"
-    
+    When I confirm seat Reserved-A1 for import customer "Newcustomer, Cynthia"
+    And I confirm seats Reserved-A2,Reserved-B1 for import customer "Albrecht, Bob"
+    And I press "Import Orders"
+    Then seats Reserved-A1,Reserved-A1,Reserved-B1 should be occupied for the Jan 12,2010,8pm performance
+    And the Jan 12,2010,8pm performance should have the following seat assignments:
+      | name                | seats                    |
+      | Bob Albrecht        | Reserved-A2, Reserved-B1 |
+      | Cynthia Newcustomer | Reserved-A1              |
 
   Scenario: if import cancelled, temporarily-assigned seats get released
 

@@ -193,13 +193,3 @@ Then /^(?:|I )should have the following query string:$/ do |expected_pairs|
   expected_params = Hash[expected_pairs.rows_hash.map{|k,v| [k,[v]]}]
   expect(actual_params).to eq(expected_params)
 end
-
-Then /^show me the page$/ do
-  save_and_open_page
-end
-
-Then /^show me the page and debug$/ do
-  save_and_open_page
-  require "rubygems"; require "byebug"; byebug
-  1 #intentionally force debugger context in this method 
-end
