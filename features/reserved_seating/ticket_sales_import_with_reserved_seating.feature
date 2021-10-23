@@ -19,23 +19,23 @@ Feature: import third party ticket sales for a reserved seating performance
       | Bob Albrecht        |   2 | Goldstar - General |
       | Cynthia Newcustomer |   1 | Goldstar - Comp    |
     
-  Scenario Outline: successful import while assigning seats
+  Scenario: successful import while assigning seats
 
-    When I confirm seat Reserved-A1 for import customer "Newcustomer, Cynthia"
-    And I confirm seats Reserved-A2,Reserved-B1 for import customer "Albrecht, Bob"
+    When I confirm seat "Reserved-A1" for import customer "Newcustomer, Cynthia"
+    And I confirm seats "Reserved-A2,Reserved-B1" for import customer "Albrecht, Bob"
     And I press "Import Orders"
-    Then seats Reserved-A1,Reserved-A1,Reserved-B1 should be occupied for the Jan 12,2010,8pm performance
+    Then seats A1,A2,B1 should be occupied for the Jan 12,2010,8pm performance
     And the Jan 12,2010,8pm performance should have the following seat assignments:
-      | name                | seats                    |
-      | Bob Albrecht        | Reserved-A2, Reserved-B1 |
-      | Cynthia Newcustomer | Reserved-A1              |
+      | name                | seats |
+      | Bob Albrecht        | A2,B1 |
+      | Cynthia Newcustomer | A1    |
 
   Scenario: if import cancelled, temporarily-assigned seats get released
 
-    When I confirm seat Reserved-A1 for import customer "Newcustomer, Cynthia"
-    And I confirm seats Reserved-A2,Reserved-B1 for import customer "Albrecht, Bob"
+    When I confirm seat "Reserved-A1" for import customer "Newcustomer, Cynthia"
+    And I confirm seats "Reserved-A2,Reserved-B1" for import customer "Albrecht, Bob"
     And I press "Cancel Import"
-    Then seats Reserved-A1,Reserved-A1,Reserved-B1 should be available for the Jan 12,2010,8pm performance
+    Then seats A1,A2,B1 should be available for the Jan 12,2010,8pm performance
 
   Scenario: if race condition occurs during seat assignment, error message is clear
 

@@ -24,7 +24,7 @@ When /I successfully choose seats? (.*)/ do |seats|
   steps %Q{
 When I press "Choose Seats..."
 Then I should see the seatmap
-When I choose seats #{seats}
+When I choose seats "#{seats}"
 }
 end
 
@@ -36,7 +36,7 @@ Then /I should (not )?see the seatmap/ do |no|
   end
 end
 
-When /I choose seats? (.*)(?: for import customer "(.*)")?/ do |seat_list, name|
+When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, name|
   if name
     within(find_import_row_for name) { click_button "Choose Seats..." }
     steps %Q{Then I should see the seatmap}
@@ -46,8 +46,8 @@ When /I choose seats? (.*)(?: for import customer "(.*)")?/ do |seat_list, name|
   end
 end
 
-When /I confirm seats? (.*) for import customer "(.*)"/ do |seat_list, name|
-  steps %Q{When I choose seats #{seat_list} for import customer "#{name}"}
+When /I confirm seats? "(.*)" for import customer "(.*)"/ do |seat_list, name|
+  steps %Q{When I choose seats "#{seat_list}" for import customer "#{name}"}
   within(find_import_row_for name) { click_button "Confirm" }
 end
 
@@ -71,6 +71,6 @@ end
 
 Then /the (.*) performance should have the following seat assignments:/ do |showdate,list|
   list.hashes.each do |v|
-    steps %Q{Then customer "#{v[name]}" should have seats #{v[seats]} for the #{showdate} performance}
+    steps %Q{Then customer "#{v['name']}" should have seats #{v['seats']} for the #{showdate} performance}
   end
 end

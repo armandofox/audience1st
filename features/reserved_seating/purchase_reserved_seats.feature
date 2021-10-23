@@ -20,7 +20,7 @@ Scenario: purchase tickets with reserved seating
   And I select "1" from "General - $11.00"
   And I select "1" from "Discount - $9.00"
   And I press "Choose Seats..."
-  And I choose seats Reserved-B1,Reserved-B2
+  And I choose seats "Reserved-B1,Reserved-B2"
   And I press "Continue to Billing Information"
   Then the cart should show the following items:
     | description             | seats | price |
@@ -35,7 +35,7 @@ Scenario: when admin purchases tickets, nonticket items shouldn't require seats
   And I fill in "General - $11.00" with "2"
   And I fill in "Wine - $7.00" with "1"
   And I press "Choose Seats..."
-  And I choose seats Reserved-B1,Reserved-B2
+  And I choose seats "Reserved-B1,Reserved-B2"
   When I press "Continue to Billing Information"
   Then the cart should show the following items:
     | description             | seats | price |
