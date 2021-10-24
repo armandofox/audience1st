@@ -33,7 +33,8 @@ class Seatmap < ActiveRecord::Base
     unavailable = unavailable.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
     # seat classes: 'r' = regular, 'a' = accessible
     seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
-    %Q{ {"map": #{seatmap}, "rows": #{rows}, "columns": #{columns}, "seats": #{seats}, "unavailable": #{unavailable}, "image_url": #{image_url} }}
+    selected = [].to_json
+    %Q{ {"map": #{seatmap}, "rows": #{rows}, "columns": #{columns}, "seats": #{seats}, "unavailable": #{unavailable}, "selected": #{selected}, "image_url": #{image_url} }}
   end
 
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
