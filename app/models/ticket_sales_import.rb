@@ -21,6 +21,7 @@ class TicketSalesImport < ActiveRecord::Base
   scope :sorted, -> { order('updated_at DESC') }
   scope :completed, -> { where(:completed => true) }
   scope :in_progress, -> { where(:completed => false) }
+  scope :abandoned_since, ->(since) { where(:completed => false).where('updated_at < ?', since) }
 
   attr_reader :parser
   after_initialize :set_parser
@@ -55,8 +56,6 @@ class TicketSalesImport < ActiveRecord::Base
   def valid_for_parsing?
     @parser.valid?
   end
-
-  public
 
   # Check whether the import will exceed either the house capacity or a per-ticket-type capacity control
   def check_sales_limits

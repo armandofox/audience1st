@@ -84,6 +84,9 @@ en:
         probably a bug on Goldstar's part, but check with this customer to see whether they
         successfully completed their purchase on Goldstar.
                     
+    blank_filename: >
+      Please choose a will-call list to upload.
+
     import_cancelled: >
       Import of '%{filename}' cancelled.
 
