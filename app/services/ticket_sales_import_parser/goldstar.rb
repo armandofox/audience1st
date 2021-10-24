@@ -48,7 +48,7 @@ module TicketSalesImportParser
             import_params = ImportedOrder::ImportInfo.new(
               :first => first, :last => last, :transaction_date => Time.zone.parse(date))
             import_params.set_possible_customers
-            order = ImportedOrder.create(:external_key => purchase_id, :from_import => import_params)
+            order = ImportedOrder.create!(:external_key => purchase_id, :from_import => import_params, :processed_by => @import.processed_by)
             purchase['claims'].each do |claim|
               num_seats,offer_id = claim.values_at('quantity', 'offer_id')
               # does offer ID actually refer to an offer_id in this file?

@@ -29,7 +29,8 @@ class ImportedOrder < Order
 
   validates_presence_of :external_key
   validates_uniqueness_of :external_key, :allow_blank => true, conditions: -> { where.not(:sold_on => nil) }
-
+  validates_presence_of :processed_by
+  
   serialize :from_import
   after_initialize :initialize_import_info
 
@@ -58,7 +59,27 @@ class ImportedOrder < Order
     self.purchasemethod = Purchasemethod.get_type_by_name 'ext'
   end
 
+  
   public
+
+  def finalize(for_customer, by_user)
+    io = self.from_import
+    sold_on = io.transaction_date
+    # if a non-nil customer ID is specified, assign to that customer; else create new
+    cid = customer_for[self.id.to_s].to_i
+    if (cid != 0)
+      self.finalize_with_existing_customer_id!(cid, current_user, sold_on)
+      @import.existing_customers += 1
+    else                  # create new customer
+      customer = Customer.new(:first_name => io.first, :last_name => io.last,
+                              :email => io.email, :ticket_sales_import => @import)
+      self.finalize_with_new_customer!(customer, current_user, sold_on)
+      @import.new_customers += 1
+    end
+    @import.tickets_sold += self.ticket_count
+    @import.completed = true
+    @import.save!
+  end
   
   def self.find_valid_voucher_for(thedate,vendor,price)
     showdate = Showdate.where(:thedate => thedate).first

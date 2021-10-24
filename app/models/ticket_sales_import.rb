@@ -14,6 +14,7 @@ class TicketSalesImport < ActiveRecord::Base
 
   validates_inclusion_of :vendor, :in => IMPORTERS
   validates_length_of :raw_data, :within => 1..65535
+  validates_presence_of :processed_by
   validate :not_previously_imported?
   validate :valid_for_parsing?
 
@@ -38,14 +39,17 @@ class TicketSalesImport < ActiveRecord::Base
 
   def not_previously_imported?
     # just in case, don't preload all imports!
-    TicketSalesImport.completed.each do |i|
+    (TicketSalesImport.all - [self]).each do |i|
       if self.raw_data.strip == i.raw_data.strip
-        self.errors.add(:base, I18n.translate('import.already_imported',
-            :date => i.updated_at.to_formatted_s(:foh)))
-        return nil
+        msg = i.completed? ?
+                I18n.translate('import.already_imported',
+                               :date => i.updated_at.to_formatted_s(:foh),
+                               :user => i.processed_by.full_name) :
+                I18n.translate('import.already_in_progress',
+                               :user => self.processed_by.full_name)
+        return self.errors.add(:base, msg)
       end
     end
-    true
   end
 
   def valid_for_parsing?

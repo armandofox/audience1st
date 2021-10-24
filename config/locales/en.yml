@@ -91,7 +91,14 @@ en:
       Are you sure you want to cancel this in-progress import?
 
     already_imported: >
-      This list was already imported, on %{date}.      
+      This list was already imported by %{user} on %{date}.      
+
+    already_in_progress: >
+      This list is already open in another tab or window by %{user}.
+      
+    was_cancelled: >
+      This import was started but was either cancelled or timed out.
+      Please re-upload the original file to restart it.
 
     wrong_file_type: >
       This appears to be a %{type} file, but you must upload a %{desired_type} file.
