@@ -17,7 +17,7 @@ class TicketSalesImportsController < ApplicationController
 
   def create
     params[:file].blank? or
-      return redirect_to(ticket_sales_imports_path, :alert => t('import.blank_filename')
+      return redirect_to(ticket_sales_imports_path, :alert => t('import.blank_filename'))
     @import = TicketSalesImport.new(ticketsalesimport_params)
     @import.processed_by = current_user
     unless (@import.valid? &&
