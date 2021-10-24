@@ -38,6 +38,8 @@ class TicketSalesImport < ActiveRecord::Base
     end
   end
 
+  public
+
   def not_previously_imported?
     # just in case, don't preload all imports!
     (TicketSalesImport.all - [self]).each do |i|

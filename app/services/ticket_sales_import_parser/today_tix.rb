@@ -32,7 +32,7 @@ module TicketSalesImportParser
       begin
         Order.transaction do
           @csv.map(&:to_hash).each do |h|
-            order = ImportedOrder.create!(:external_key => h["Order #"])
+            order = ImportedOrder.create!(:external_key => h["Order #"], :processed_by => @import.processed_by)
             populate_from_import(order, h)
             @import.imported_orders << order
           end

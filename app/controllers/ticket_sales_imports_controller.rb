@@ -15,16 +15,14 @@ class TicketSalesImportsController < ApplicationController
   # field is populated from the dropdown on the index page and whose 'raw_data' is populated
   # from the contents of the uploaded file; then immediately continue to Edit action 
 
+
   def create
-    params[:file].blank? or
-      return redirect_to(ticket_sales_imports_path, :alert => t('import.blank_filename'))
+    return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
     @import = TicketSalesImport.new(ticketsalesimport_params)
     @import.processed_by = current_user
-    unless (@import.valid? &&
-            @import.parser.parse &&
-            @import.save)
-      return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html)
-    end
+    return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html) unless @import.valid?
+    @import.parser.parse or return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html)
+    @import.save or return redirect_to(ticket_sales_imports_path(:vendor => @import.vendor), :alert => @import.errors.as_html)
     redirect_to edit_ticket_sales_import_path(@import), :alert => (@import.warnings.as_html if !@import.warnings.empty?)
   end
 
