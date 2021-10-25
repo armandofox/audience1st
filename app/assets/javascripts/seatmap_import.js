@@ -27,7 +27,19 @@ A1.ticketSalesImport = {
       // only enable Submit button when all seats have been assigned
       submit.prop('disabled', seatsStillToAssign());
     };
-    
+
+    function assignSeats() {
+      $.ajax({
+        method: 'POST',
+        url: '/ajax/import_assign_seats', 
+        data: {
+          seats: A1.seatmap.selectedSeatsAsString,
+          vouchers: voucherIds.val()
+        },
+        error: function(jqXHR, textStatus, errorString) { alert(textStatus + ': ' + jqXHR.responseText); }
+      });
+      resetPage();
+    }
     evt.preventDefault();
     // move the hidden table row to just below our own, and reveal it
     $('#seatmap-table-row').insertAfter(container);
@@ -37,23 +49,12 @@ A1.ticketSalesImport = {
     // before can choose seats for another order
     chooseSeats.prop('disabled', true);
     choose.addClass('d-none'); 
-    confirm.removeClass('d-none').click(
-      function() {
-        $.ajax({
-          method: 'POST',
-          url: '/ajax/import_assign_seats', 
-          data: {
-            seats: A1.seatmap.selectedSeatsAsString,
-            vouchers: voucherIds.val()
-          },
-          error: function(jqXHR, textStatus, errorString) { alert(textStatus + ': ' + jqXHR.responseText); }
-        });
-        resetPage();
-      });
+    confirm.removeClass('d-none').click(assignSeats);
     A1.seatmap.max = Number(container.find('.num-seats').val());
     A1.seatmap.resetAfterCancel = function() {
-      resetPage();
       selectedSeats.val('');
+      A1.seatmap.selectedSeatsAsString = '';
+      assignSeats();
     };
     A1.seatmap.onSelect = function() {
       selectedSeats.val(A1.seatmap.selectedSeatsAsString);
