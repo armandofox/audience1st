@@ -15,7 +15,7 @@ class CheckinsController < ApplicationController
       @showdates = Showdate.in_theater.all_showdates_for_seasons(Time.current.year, Time.current.year+1)
       @showdates << @showdate unless @showdates.include?(@showdate)
       @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
-      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate, restrict_to_zone=nil) if @showdate.has_reserved_seating?
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate) if @showdate.has_reserved_seating?
       return
     end
     # nil showdate: try defaulting to current or next

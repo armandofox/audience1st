@@ -40,7 +40,7 @@ class Seatmap < ActiveRecord::Base
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
-  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone)
+  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: nil)
     return EMPTY_SEATMAP_AS_JSON unless (sm = showdate.seatmap)
     occupied = showdate.occupied_seats
     if !restrict_to_zone.blank?

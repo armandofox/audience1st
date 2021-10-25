@@ -20,7 +20,7 @@ describe Seatmap do
         )
     end
     it 'further restricts unavailability by zone' do
-      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone='res')
+      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone: 'res')
       expect(res).to include_json(
                        unavailable: %w(Reserved-A1 P-B1 B-B2)
                      )

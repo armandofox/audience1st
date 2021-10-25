@@ -53,7 +53,7 @@ class SeatmapsController < ApplicationController
     restrict_to_zone = params[:zone]
     already_selected = params[:selected]
     if showdate.has_reserved_seating?
-      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone)
+      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: restrict_to_zone)
     else
       render :json => {'map' => nil}
     end
