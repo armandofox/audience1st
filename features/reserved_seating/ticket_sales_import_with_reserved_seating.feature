@@ -37,6 +37,10 @@ Feature: import third party ticket sales for a reserved seating performance
     And I press "Cancel Import"
     Then seats A1,A2,B1 should be available for the Jan 12,2010,8pm performance
 
+  Scenario: if patron has seats assigned and then you re-assign, current seats show as selected
+
+  Scenario: Cancel Seat Selection releases patron's seats, even if they were previously assigned
+
   Scenario: if race condition occurs during seat assignment, error message is clear
 
     

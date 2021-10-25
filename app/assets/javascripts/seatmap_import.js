@@ -54,21 +54,21 @@ A1.ticketSalesImport = {
     A1.seatmap.resetAfterCancel = function() {
       selectedSeats.val('');
       A1.seatmap.selectedSeatsAsString = '';
-      assignSeats();
+      assignSeats();            // cause the vouchers to "un-assign" seat numbers
     };
     A1.seatmap.onSelect = function() {
       selectedSeats.val(A1.seatmap.selectedSeatsAsString);
       chooseSeats.prop('disabled', true);
       confirm.prop('disabled', true);
     };
-    A1.seatmap.allSeatsSelected = function() {
-      confirm.prop('disabled', false);
-    };
-    $.getJSON('/ajax/seatmap/' + showdateID, function(json_data) {
-      A1.seatmap.configureFrom(json_data);
-      A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
-      A1.seatmap.setupMap();
-    });
+    A1.seatmap.allSeatsSelected = function() { confirm.prop('disabled', false);  };
+    var uri = encodeURI('/ajax/seatmap/' + showdateID + '?selected=' + selectedSeats.val());
+    $.getJSON(uri,
+              function(json_data) {
+                A1.seatmap.configureFrom(json_data);
+                A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+                A1.seatmap.setupMap();
+              });
   }
   ,setup: function() {
     if ($('body#ticket_sales_imports_edit').length > 0 // imports page

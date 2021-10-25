@@ -38,7 +38,7 @@ end
 
 When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, name|
   if name
-    within(find_import_row_for name) { click_button "Choose Seats..." }
+    within(find_import_row_for name) { find('.select-seats').click }
     steps %Q{Then I should see the seatmap}
   end
   seat_list.split(/\s*,\s*/).each do |seat|

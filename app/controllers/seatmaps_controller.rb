@@ -46,9 +46,12 @@ class SeatmapsController < ApplicationController
   # AJAX responders for seatmap-related functions
 
   def seatmap
-    # return the seatmap for this production, and array of UNAVAILABLE seats for this performance
+    # return the seatmap for this production, and array of UNAVAILABLE seats for this performance.
+    # if 'selected' is passed, it is a comma-separated list of full seat labels to show as
+    # already-selected seats (if the seatmap workflow in question respects it).
     showdate = Showdate.find(params[:id]) 
     restrict_to_zone = params[:zone]
+    already_selected = params[:selected]
     if showdate.has_reserved_seating?
       render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone)
     else
