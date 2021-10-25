@@ -76,10 +76,13 @@ class TicketSalesImportsController < ApplicationController
   end
 
   def destroy
-    i = TicketSalesImport.find(params[:id])
-    flash[:notice] = I18n.translate('import.import_cancelled', :filename => i.filename)
-    i.destroy
-    redirect_to ticket_sales_imports_path
+    begin
+      i = TicketSalesImport.find params[:id]
+      i.destroy
+      redirect_to ticket_sales_imports_path, :notice => t('import.import_cancelled', :filename => i.filename)
+    rescue ActiveRecord::RecordNotFound
+      redirect_to ticket_sales_imports_path, :notice => t('import.was_cancelled')
+    end
   end
 
   def assign_seats

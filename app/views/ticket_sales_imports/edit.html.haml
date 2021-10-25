@@ -40,5 +40,5 @@
   = submit_tag 'Import Orders', :id => 'submit', :class => 'btn btn-success confirm-import'
 
 = form_for @import, :method => :delete, :class => 'form form-inline' do
-  = submit_tag 'Cancel Import', :class => 'btn btn-danger my-2'
+  = submit_tag 'Cancel Import', :class => 'btn btn-danger my-2', 'data-confirm' => t('import.confirm_delete_import')
 
