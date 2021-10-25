@@ -51,9 +51,10 @@ class SeatmapsController < ApplicationController
     # already-selected seats (if the seatmap workflow in question respects it).
     showdate = Showdate.find(params[:id]) 
     restrict_to_zone = params[:zone]
-    already_selected = params[:selected]
+    already_selected = params[:selected].to_s.split(/\s*,\s*/)
     if showdate.has_reserved_seating?
-      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: restrict_to_zone)
+      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(
+               showdate, restrict_to_zone: restrict_to_zone, selected: already_selected)
     else
       render :json => {'map' => nil}
     end

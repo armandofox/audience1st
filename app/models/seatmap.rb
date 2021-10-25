@@ -25,28 +25,29 @@ class Seatmap < ActiveRecord::Base
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image)
 
-  def emit_json(unavailable = [])
+  def emit_json(unavailable = [], selected = [])
     seatmap = self.json
     image_url = self.image_url.to_json
-    # since the 'unavailable' value is used by the actual seatmap JS code to identify seats,
-    #  the unavailable seats must include the full seating zone display name.
+    # since the 'unavailable' and 'selected' values are used by the actual
+    # seatmap JS code to identify seats, labels must include the full seating zone display name.
     unavailable = unavailable.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
+    selected = selected.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
     # seat classes: 'r' = regular, 'a' = accessible
     seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
-    selected = [].to_json
     %Q{ {"map": #{seatmap}, "rows": #{rows}, "columns": #{columns}, "seats": #{seats}, "unavailable": #{unavailable}, "selected": #{selected}, "image_url": #{image_url} }}
   end
 
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
-  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: nil)
+  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: nil, selected: [])
     return EMPTY_SEATMAP_AS_JSON unless (sm = showdate.seatmap)
-    occupied = showdate.occupied_seats
+    # if any preselected seats, show them as selected not occupied
+    occupied = showdate.occupied_seats - selected
     if !restrict_to_zone.blank?
       occupied = (occupied + sm.excluded_from_zone(restrict_to_zone)).sort.uniq
     end
-    sm.emit_json(occupied)
+    sm.emit_json(occupied, selected)
   end
 
   # Return JSON hash of ids to seat counts

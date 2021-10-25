@@ -10,12 +10,13 @@ A1.ticketSalesImport = {
     var submit = $('#submit');
     
     function seatsStillToAssign() {
+      var stillToAssign = false;
       $('.seat-display').each(function() {
         if ($(this).val() == '') {
-          return(true);
+          stillToAssign = true;
         }
       });
-      return(false);
+      return(stillToAssign);
     }
 
     function resetPage() {
