@@ -1,5 +1,7 @@
 class ImportedOrder < Order
 
+  def haml_object_ref ; 'order' ; end # so Haml treats as parent class when creating view elts
+  
   belongs_to :ticket_sales_import
   
   # This subclass captures the abstraction of "an order that is almost ready to be imported,
