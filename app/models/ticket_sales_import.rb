@@ -59,6 +59,42 @@ class TicketSalesImport < ActiveRecord::Base
     @parser.valid?
   end
 
+  # Given a mapping of order_id => customer_id to use as order owner, 
+  # finalize an import as long as all the orders are valid.  If any 
+  # are not, add error messages to the import object and don't update it.
+  def finalize(customer_for)
+    begin
+      ActiveRecord::Base.transaction do
+        self.imported_orders.each do |order|
+          order.processed_by = self.processed_by
+          io = order.from_import
+          sold_on = io.transaction_date
+          # if a non-nil customer ID is specified, assign to that customer; else create new
+          cid = customer_for[order.id.to_s].to_i
+          if (cid != 0)
+            order.finalize_with_existing_customer_id!(cid, self.processed_by, sold_on)
+            self.existing_customers += 1
+          else                  # create new customer
+            customer = Customer.new(:first_name => io.first, :last_name => io.last,
+                                    :email => io.email, :ticket_sales_import => self)
+            order.finalize_with_new_customer!(customer, self.processed_by, sold_on)
+            self.new_customers += 1
+          end
+          self.tickets_sold += order.ticket_count
+        end
+        self.completed = true
+        self.save!
+        true
+      end                       # transaction block
+    rescue Order::OrderFinalizeError => e
+      raise e
+    rescue ActiveRecord::RecordInvalid => e
+      raise e
+    rescue StandardError => e
+      raise e
+    end
+  end
+
   # Check whether the import will exceed either the house capacity or a per-ticket-type capacity control
   def check_sales_limits
     showdates = Hash.new { 0 }

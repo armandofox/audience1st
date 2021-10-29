@@ -159,10 +159,11 @@ en:
 
     import_timeout: >
 
-      Number of minutes allowed for a box office worker to import an external
-      will-call list.  If the import process is neither completed nor cancelled
-      this many minutes after starting, the import will be automatically cancelled and
-      will have to be restarted by re-uploading the file.
+      Number of minutes allowed for box office staff to import an external
+      reseller's will-call list. If the import process is not completed this
+      many minutes after starting, the import will automatically get
+      cancelled, any selected seats will get released, and you will need to
+      start over.
 
     session_timeout: >
 

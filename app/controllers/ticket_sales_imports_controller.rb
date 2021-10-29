@@ -39,39 +39,16 @@ class TicketSalesImportsController < ApplicationController
   # Finalize the import according to dropdown menu selections
   def update
     return unless check_not_imported_or_in_progress(params[:id])
-    begin
-      customer_for = params[:customer_id] || {}
-      Order.transaction do
-        @import.imported_orders.each do |order|
-          order.processed_by = current_user
-          io = order.from_import
-          sold_on = io.transaction_date
-          # if a non-nil customer ID is specified, assign to that customer; else create new
-          cid = customer_for[order.id.to_s].to_i
-          if (cid != 0)
-            order.finalize_with_existing_customer_id!(cid, current_user, sold_on)
-            @import.existing_customers += 1
-          else                  # create new customer
-            customer = Customer.new(:first_name => io.first, :last_name => io.last,
-                                    :email => io.email, :ticket_sales_import => @import)
-            order.finalize_with_new_customer!(customer, current_user, sold_on)
-            @import.new_customers += 1
-          end
-          @import.tickets_sold += order.ticket_count
-        end
-        @import.completed = true
-        @import.save!
-      end                       # transaction block
-      flash[:notice] = [
-        t('import.success.num_tickets', :count => @import.tickets_sold),
-        t('import.success.total_customers', :count => @import.existing_customers + @import.new_customers),
-        t('import.success.existing_customers', :count => @import.existing_customers),
-        t('import.success.new_customers_created', :count => @import.new_customers)].
-                         join(' ')
-      redirect_to ticket_sales_imports_path
-    rescue StandardError => e
-      flash[:alert] = t('import.import_failed', :message => e.message)
-      return redirect_to(edit_ticket_sales_import_path(@import))
+    if @import.finalize(params[:customer_id] || {})
+      redirect_to ticket_sales_imports_path, :notice => [
+                    t('import.success.num_tickets', :count => @import.tickets_sold),
+                    t('import.success.total_customers', :count => @import.existing_customers + @import.new_customers),
+                    t('import.success.existing_customers', :count => @import.existing_customers),
+                    t('import.success.new_customers_created', :count => @import.new_customers)].
+                                                          join(' ')
+    else
+      redirect_to(edit_ticket_sales_import_path(@import),
+                  :alert => t('import.import_failed', :message => @import.errors.as_html))
     end
   end
 
@@ -117,11 +94,14 @@ class TicketSalesImportsController < ApplicationController
 
   def ticketsalesimport_params
     permitted = params.permit(:vendor, :file)
-    { vendor: permitted[:vendor],
+    {
+      vendor: permitted[:vendor],
       raw_data: permitted[:file].read,
       filename: permitted[:file].original_filename,
       completed: false, processed_by: current_user,
-      existing_customers: 0, new_customers: 0,
-      tickets_sold: 0 }
+      existing_customers: 0,
+      new_customers: 0,
+      tickets_sold: 0 
+    }
   end
 end
