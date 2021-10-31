@@ -62,19 +62,6 @@ class TicketSalesImportsController < ApplicationController
     end
   end
 
-  def assign_seats
-    # XHR call with params['seats'] = JSON array of selected seats, params['vouchers'] =
-    #  comma-separated IDs of vouchers
-    vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
-    seats = params[:seats].split(/\s*,\s*/)
-    vouchers.each_with_index do |v,i|
-      unless v.update_attributes(:seat => seats[i])
-        return render(:status => :unprocessable_entity, :plain => v.errors.full_messages.join(', '))
-      end
-    end
-    render :nothing => true
-  end
-
   private
 
   def check_not_imported_or_in_progress(id)

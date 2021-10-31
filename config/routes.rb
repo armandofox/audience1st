@@ -64,9 +64,9 @@ Rails.application.routes.draw do
     post '/ajax/mark_fulfilled'       => 'reports#mark_fulfilled', :as => 'mark_fulfilled'
     get '/ajax/create_sublist'        => 'reports#create_sublist', :as => 'create_sublist'
 
+    # AJAX responders for seatmap functions
     get '/ajax/seatmap/:id'           => 'seatmaps#seatmap'
-
-    post '/ajax/import_assign_seats'  => 'ticket_sales_imports#assign_seats', :as => 'import_assign_seats'
+    post '/ajax/import_assign_seats'  => 'seatmaps#assign_seats', :as => 'import_assign_seats'
 
     # shows
     resources :shows, :except => [:show] do

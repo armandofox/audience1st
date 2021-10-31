@@ -41,6 +41,11 @@ Feature: import third party ticket sales for a reserved seating performance
 
   Scenario: Cancel Seat Selection releases patron's seats, even if they were previously assigned
 
-  Scenario: if race condition occurs during seat assignment, error message is clear
+  Scenario: if race condition occurs during seat assignment, error message is clear and seats are not assigned
+
+    When I fail to confirm seat "Reserved-A1" for import customer "Newcustomer, Cynthia"
+    Then the "Import Orders" button should be disabled
+    And import customer "Newcustomer, Cynthia" should not have any seat assignment
+    
 
     

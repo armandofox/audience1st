@@ -37,9 +37,13 @@ A1.ticketSalesImport = {
           seats: A1.seatmap.selectedSeatsAsString,
           vouchers: voucherIds.val()
         },
-        error: function(jqXHR, textStatus, errorString) { alert(textStatus + ': ' + jqXHR.responseText); }
+        error: assignSeatsFailed
       });
       resetPage();
+    }
+    function assignSeatsFailed(jqXHR, textStatus, errorString) {
+      alert(textStatus + ': ' + jqXHR.responseText);
+      selectedSeats.val('');    // ensure we don't actually try to select seats
     }
     evt.preventDefault();
     // move the hidden table row to just below our own, and reveal it
@@ -50,7 +54,12 @@ A1.ticketSalesImport = {
     // before can choose seats for another order
     chooseSeats.prop('disabled', true);
     choose.addClass('d-none'); 
-    confirm.removeClass('d-none').click(assignSeats);
+    //confirm.removeClass('d-none').off().on('click',assignSeats); // make sure we attach exactly 1 onlick event, rather than adding a new one each time this is called
+
+
+    confirm.removeClass('d-none');
+
+
     A1.seatmap.max = Number(container.find('.num-seats').val());
     A1.seatmap.resetAfterCancel = function() {
       selectedSeats.val('');
@@ -75,6 +84,7 @@ A1.ticketSalesImport = {
     if ($('body#ticket_sales_imports_edit').length > 0 // imports page
         && ($('.select-seats').length > 0)) { // reserved seating for this import
       $('.select-seats').on('click', A1.ticketSalesImport.showMap);
+      $('.confirm-seats').on('click', A1.ticketSalesImport.assignSeats);
       $('#submit').prop('disabled', true); // until all seats selected
     }
   }

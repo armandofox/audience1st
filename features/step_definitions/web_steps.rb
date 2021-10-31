@@ -137,6 +137,13 @@ Then /^(?:|I )should (not )?see the following: "([^\"]*)"$/ do |no,textlist|
   end
 end
 
+Then /^the "([^\"]*)" button(?: within "([^\"]*)")? should be (enabled|disabled)$/ do |name, sel, abled|
+  with_scope(sel) do
+    button = page.find_button(name, :disabled => :all)
+    expect(button.send("#{abled}?")).to be_truthy
+  end
+end
+   
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should (contain|equal) "([^\"]*)"$/ do |field, selector, equality_check, value|
   with_scope(selector) do
     val = find_field(field, :disabled => :all).value

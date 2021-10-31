@@ -10,7 +10,7 @@ class Voucher < Item
   validate :checkin_requires_reservation
   validates_presence_of :seat, :if => :for_reserved_seating_performance?, :unless => :is_placeholder?
   validate :existing_seat, :if => :reserved?, :unless => :is_placeholder?
-  validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :unless => :is_placeholder?, :message => '%{value} is already taken'
+  validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :unless => :is_placeholder?, :message => '%{value} is no longer available'
 
   delegate :gift?, :ship_to, :to => :order # association is via Item (ancestor class)
   
@@ -278,6 +278,11 @@ class Voucher < Item
   def un_check_in! ; update_attribute(:checked_in, false) ; self ; end
   
   # operations on vouchers:
+
+  def assign_seat(seat)
+    self.update_attributes(:seat => seat)
+    # relies on caller to check for nil return/validation failure
+  end
 
   # BUG there should not be 3 separate methods here
   

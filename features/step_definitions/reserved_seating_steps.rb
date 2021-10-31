@@ -46,9 +46,23 @@ When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, 
   end
 end
 
-When /I confirm seats? "(.*)" for import customer "(.*)"/ do |seat_list, name|
+When /I (fail to )?confirm seats? "(.*)" for import customer "(.*)"/ do |should_fail, seat_list, name|
+  if should_fail
+    # this is messy: all we can really do is force assign_seat to fail for ANY voucher
+    # so scenarios that use this step cannot subsequently expect a different seat
+    # assignment confirmation to fail.
+    allow_any_instance_of(Voucher).to receive(:assign_seat).and_return(nil)
+  end
   steps %Q{When I choose seats "#{seat_list}" for import customer "#{name}"}
   within(find_import_row_for name) { click_button "Confirm" }
+end
+
+Then /import customer "(.*)" should not have any seat assignment/ do |name|
+  within(find_import_row_for name) { expect(find('.seat-display').value).to be_blank }
+end
+
+Then /import customer "(.*)" should have seats (.*)/ do |name,seats|
+  within(find_import_row_for name) { expect(find('.seat-display').value.gsub(/\s+/,'')).to eq(seats) }
 end
 
 Then /I should see "(.*)" in the list of selected seats/ do |seat_list|
