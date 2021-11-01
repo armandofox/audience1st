@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script language="javascript">
+      var d = function(e) { return(document.getElementById(e)); };
+      document.addEventListener("DOMContentLoaded", function() {
+        d('venue').onchange = function(evt) {
+          if (this.value == '') {
+            d('no_payment').style.display = 'block';
+            d('payment').style.display = 'none';
+          } else {
+            d('no_payment').style.display = 'none';
+            d('payment').style.display = 'block';
+            d('payment_button').setAttribute("value", this.value);
+            d('venue_name').innerText = this.options[this.selectedIndex].text;
+          }
+          return(false);
+        };
+      });
+    </script>
+  </head>
+  <body class="container">
+    <div class='alert alert-info'>
+      <p>
+        This page is for the Arts & Culture Organizations that use Audience1st.
+        You only need to set up monthly billing once, and only if you have not already
+        made other payment arrangements with Audience1st.
+      </p>
+      <p>
+        By using this page, you represent that you are an agent of the Organization
+        authorized to make vendor payments.
+      </p>
+    </div>
+    <div class='row my-2'>
+      <div class='col-6'>
+        <select class='form-control' id='venue'>
+          <option value=''>Select organization...</option>
+          <option value='JYKCWRLSYG59J'>Altarena Playhouse</option>
+          <option value='UE526UP9U6P9Y'>Theatre Rhinoceros</option>
+          <option value='PTVUC3MN8UDNA'>The Lorraine Hansberry Theatre</option>
+          <option value='GCELVD4X5ZD5W'>Landmark Musicals</option>
+          <option value=''>Night Out/Night Off at Berkeley</option>
+          <option value=''>Tickets 4 a Good Cause</option>
+        </select>
+      </div>
+      <div class='col-6 text-center' id='payment' style='display: none;'>
+        <p>Continue to PayPal to set up monthly billing for<br/><em><span id="venue_name"></span></em>.</p>
+        <form action='https://www.paypal.com/cgi-bin/webscr' class='form' method='post'>
+          <input name='cmd' type='hidden' value='_s-xclick'>
+          <input id='payment_button' name='hosted_button_id' type='hidden' value=''>
+          <input alt='PayPal - The safer, easier way to pay online!' border='0' name='submit' src='https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif' type='image'>
+        </form>
+      </div>
+      <div class='col-6 alert alert-success p-3 text-center' id='no_payment' style='display: none;'>
+        Your organization has already made other payment arrangements.  No action required.
+      </div>
+    </div>
+  </body>
+</html>
+
