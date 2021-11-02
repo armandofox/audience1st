@@ -14,7 +14,7 @@
         %th{:scope => 'col'} Email on import
         %th{:scope => 'col', :width => '20%'} Import to customer
     %tbody.tbody-import
-      - @import.imported_orders.each do |ord|
+      - @imported_orders.each do |ord|
         - p = ord.from_import
         %tr.import-row
           %td.import-key= ord.external_key

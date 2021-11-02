@@ -33,6 +33,9 @@ class TicketSalesImportsController < ApplicationController
   def edit
     return unless check_not_imported_or_in_progress(params[:id])
     @import.check_sales_limits
+    @imported_orders = @import.imported_orders.sort do |o1, o2|
+      o1.from_import.last <=> o2.from_import.last
+    end
     flash.now[:alert] = @import.warnings.as_html if !@import.warnings.empty?
   end
 
