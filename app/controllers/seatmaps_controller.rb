@@ -65,15 +65,22 @@ class SeatmapsController < ApplicationController
     #  comma-separated IDs of vouchers
     vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
     seats = params[:seats].split(/\s*,\s*/)
-    begin
-      Voucher.transaction do
-        vouchers.each_with_index do |v,i|
-          raise ActiveRecord::Rollback unless v.assign_seat(seats[i])
+    error_message = nil
+    # This is messy: we want a transaction so that if ANY seat assignment fails they ALL rollback,
+    # but the ActiveRecord::Rollback exception breaks out of the transaction but cannot be
+    # rescued.  (Normally we'd put the error message render into a rescue of the rollback exception)
+    Voucher.transaction do
+      vouchers.each_with_index do |v,i|
+        unless v.assign_seat(seats[i])
+          error_message = v.errors.full_messages.join(', ')
+          raise ActiveRecord::Rollback # this exception doesn't need to be rescued
         end
       end
-      render :nothing => true, :status => :ok
-    rescue ActiveRecord::Rollback
-      return render(:status => :bad_request, :plain => v.errors.full_messages.join(', '))
+    end
+    if error_message
+      render(:status => :bad_request, :plain => error_message)
+    else
+      render(:status => :ok, :nothing => true)
     end
   end
 
