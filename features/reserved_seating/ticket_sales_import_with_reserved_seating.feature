@@ -21,9 +21,10 @@ Feature: import third party ticket sales for a reserved seating performance
     
   Scenario: successful import while assigning seats
 
-    When I confirm seat "Reserved-A1" for import customer "Newcustomer, Cynthia"
-    And I confirm seats "Reserved-A2,Reserved-B1" for import customer "Albrecht, Bob"
-    And I press "Import Orders"
+    And I confirm seat "Reserved-A1" for import customer "Newcustomer, Cynthia"
+    When I confirm seats "Reserved-A2,Reserved-B1" for import customer "Albrecht, Bob"
+    Then the "Import Orders" button should be enabled
+    When I press "Import Orders"
     Then seats A1,A2,B1 should be occupied for the Jan 12,2010,8pm performance
     And the Jan 12,2010,8pm performance should have the following seat assignments:
       | name                | seats |

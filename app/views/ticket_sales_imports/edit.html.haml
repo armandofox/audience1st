@@ -17,7 +17,7 @@
       - @import.imported_orders.each do |ord|
         - p = ord.from_import
         %tr.import-row
-          %td= ord.external_key
+          %td.import-key= ord.external_key
           %td= p.transaction_date.strftime('%b %d, %-l:%M%p')
           %td= p.description.html_safe
           %td.text-center
@@ -30,8 +30,8 @@
               = display_seats_field
             - else
               = display_seats_field(seats: Voucher.seats_for(ord.vouchers))
-          %td #{p.last}, #{p.first}
-          %td= p.email
+          %td.import-name #{p.last}, #{p.first}
+          %td.import-email= p.email
           %td.actions= import_choices(ord).html_safe
       %tr#seatmap-table-row
         %td{:colspan => 7}

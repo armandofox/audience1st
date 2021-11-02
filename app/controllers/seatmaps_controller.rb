@@ -1,6 +1,6 @@
 class SeatmapsController < ApplicationController
 
-  before_action :is_boxoffice_manager_filter, :except => 'seatmap'
+  before_action :is_boxoffice_manager_filter, :except => %w(seatmap assign_seats)
 
   def index
     @seatmaps = Seatmap.all.order(:name)
@@ -65,12 +65,16 @@ class SeatmapsController < ApplicationController
     #  comma-separated IDs of vouchers
     vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
     seats = params[:seats].split(/\s*,\s*/)
-    vouchers.each_with_index do |v,i|
-      unless v.assign_seat(seats[i])
-        return render(:status => :bad_request, :plain => v.errors.full_messages.join(', '))
+    begin
+      Voucher.transaction do
+        vouchers.each_with_index do |v,i|
+          raise ActiveRecord::Rollback unless v.assign_seat(seats[i])
+        end
       end
+      render :nothing => true, :status => :ok
+    rescue ActiveRecord::Rollback
+      return render(:status => :bad_request, :plain => v.errors.full_messages.join(', '))
     end
-    render :nothing => true
   end
 
   # helpers

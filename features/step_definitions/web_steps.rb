@@ -140,7 +140,11 @@ end
 Then /^the "([^\"]*)" button(?: within "([^\"]*)")? should be (enabled|disabled)$/ do |name, sel, abled|
   with_scope(sel) do
     button = page.find_button(name, :disabled => :all)
-    expect(button.send("#{abled}?")).to be_truthy
+    if (abled =~ /dis/)
+      expect(button).to be_disabled
+    else
+      expect(button).not_to be_disabled
+    end
   end
 end
    

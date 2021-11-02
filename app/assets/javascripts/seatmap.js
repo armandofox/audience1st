@@ -11,6 +11,7 @@ A1.seatmap = {
     return(str.substr(str.lastIndexOf("-") + 1));
   }
   ,selectThisSeat: function(seatNum) {
+    // console.log("======= setup select " + seatNum);
     A1.seatmap.selectedSeats.push(seatNum);
     A1.seatmap.selectedSeatsAsString = A1.seatmap.selectedSeats.sort().join(', ');
     A1.seatmap.onSelect.call(seatNum);
