@@ -2,6 +2,15 @@
 
 %h1 Proposed Import From #{@import.vendor}
 
+= hidden_field_tag 'import_url', ticket_sales_import_path(@import)
+= hidden_field_tag 'import_timer_expires', (@import.created_at + Option.import_timeout.minutes).to_i
+%h4.timer
+  Please complete this import in
+  %span#timer #{Option.import_timeout.to_i}:00
+  minutes
+  %br
+  or it will automatically cancel.
+
 = form_for @import do
   %table.table#proposed_import
     %thead

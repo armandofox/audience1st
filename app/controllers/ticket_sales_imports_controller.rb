@@ -59,9 +59,9 @@ class TicketSalesImportsController < ApplicationController
     begin
       i = TicketSalesImport.find params[:id]
       i.destroy
-      redirect_to ticket_sales_imports_path, :notice => t('import.import_cancelled', :filename => i.filename)
+      request.xhr? ? render(:status => :ok, :nothing => true) : redirect_to(ticket_sales_imports_path, :notice => t('import.import_cancelled', :filename => i.filename))
     rescue ActiveRecord::RecordNotFound
-      redirect_to ticket_sales_imports_path, :notice => t('import.was_cancelled')
+      request.xhr? ? render(:status => :ok, :nothing => true) : redirect_to(ticket_sales_imports_path, :notice => t('import.was_cancelled'))
     end
   end
 

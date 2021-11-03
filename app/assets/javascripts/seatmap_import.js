@@ -88,11 +88,23 @@ A1.ticketSalesImport = {
                 A1.seatmap.setupMap();
               });
   }
+  ,cancel: function() {
+    $.ajax({
+      method: 'DELETE',
+      url: $('#import_url').val(),
+      success: function() {
+        alert("This import has timed out and will be cancelled.");
+        window.location.replace('/ticket_sales_imports');
+      }
+    });
+  }
   ,setup: function() {
-    if ($('body#ticket_sales_imports_edit').length > 0 // imports page
-        && ($('.select-seats').length > 0)) { // reserved seating for this import
-      $('.select-seats').on('click', A1.ticketSalesImport.showMap);
-      $('#submit').prop('disabled', true); // until all seats selected
+    if ($('body#ticket_sales_imports_edit').length > 0) { // imports page
+      A1.startTimer($('#import_timer_expires'), $('#timer'), A1.ticketSalesImport.cancel);
+      if ($('.select-seats').length > 0) { // reserved seating for this import
+        $('.select-seats').on('click', A1.ticketSalesImport.showMap);
+        $('#submit').prop('disabled', true); // until all seats selected
+      }
     }
   }
 };
