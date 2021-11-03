@@ -92,9 +92,9 @@ A1.ticketSalesImport = {
     $.ajax({
       method: 'DELETE',
       url: $('#import_url').val(),
-      success: function() {
+      complete: function() {
         alert("This import has timed out and will be cancelled.");
-        window.location.replace('/ticket_sales_imports');
+        window.location.replace('/ticket_sales_imports?warn=1');
       }
     });
   }

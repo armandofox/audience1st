@@ -9,6 +9,9 @@ class TicketSalesImportsController < ApplicationController
     @ticket_sales_imports = TicketSalesImport.completed.sorted
     @vendors = TicketSalesImport::IMPORTERS.sort
     @default_vendor = params[:vendor]
+    # if we were sent here as the result of an auto-expiring timer during import,
+    # display a warning to that effect.
+    flash.now[:alert] = t('import.was_cancelled') if params[:warn]
   end
 
   # create: grabs uploaded data, create a new TicketSalesImport instance whose 'vendor'
