@@ -13,7 +13,7 @@
       %th{:scope => 'col'} Email on import
       %th{:scope => 'col', :width => '20%'} Imported to customer (&nbsp;* created by this import)
   %tbody.tbody-import
-    - @import.imported_orders.each do |ord|
+    - @import.imported_orders.sorted_by_import_customer.each do |ord|
       - p = ord.from_import
       %tr.import-row
         %td= ord.external_key

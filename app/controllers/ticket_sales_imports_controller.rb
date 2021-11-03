@@ -6,7 +6,7 @@ class TicketSalesImportsController < ApplicationController
   # The view provides a dropdown populated from TicketSalesImporter::IMPORTERS, which
   # should be used to set the 'vendor' field of the import.
   def index
-    @ticket_sales_imports = TicketSalesImport.completed.sorted
+    @ticket_sales_imports = TicketSalesImport.sorted
     @vendors = TicketSalesImport::IMPORTERS.sort
     @default_vendor = params[:vendor]
     # if we were sent here as the result of an auto-expiring timer during import,
@@ -36,9 +36,9 @@ class TicketSalesImportsController < ApplicationController
   def edit
     return unless check_not_imported_or_in_progress(params[:id])
     @import.check_sales_limits
-    @imported_orders = @import.imported_orders.sort do |o1, o2|
-      o1.from_import.last <=> o2.from_import.last
-    end
+    # @imported_orders = @import.imported_orders.sort do |o1, o2|
+    #   o1.from_import.last <=> o2.from_import.last
+    @imported_orders = @import.imported_orders.sorted_by_import_customer
     flash.now[:alert] = @import.warnings.as_html if !@import.warnings.empty?
   end
 

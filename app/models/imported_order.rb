@@ -64,6 +64,10 @@ class ImportedOrder < Order
   
   public
 
+  def self.sorted_by_import_customer
+    all.to_a.sort { |o1,o2|  o1.from_import.last <=> o2.from_import.last  }
+  end
+
   def finalize(for_customer, by_user)
     io = self.from_import
     sold_on = io.transaction_date
