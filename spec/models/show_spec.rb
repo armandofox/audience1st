@@ -11,6 +11,31 @@ describe Show do
     expect { @s.revenue_per_seat }.not_to raise_error
     expect(@s.revenue_per_seat).to be_zero
   end
+  describe 'sorts', focus: true do
+    before(:each) do
+      @s1 = create(:show, :name => 'D')
+      create(:showdate, :show => @s1, :thedate => 2.days.from_now)
+      @s2 = create(:show, :name => 'C')
+      @s3 = create(:show, :name => 'B')
+      create(:showdate, :show => @s3, :thedate => 1.day.from_now)
+      @s4 = create(:show, :name => 'A')
+    end
+    it 'shows with showdates by showdate' do
+      shows = Show.where(:id => [@s1.id, @s3.id]) 
+      expect(shows.sorted).to eq [@s3,@s1]
+      expect(shows).to eq [@s1,@s3]
+    end
+    it 'shows without showdates by name' do
+      shows = Show.where(:id => [@s2.id, @s4.id])
+      expect(shows).to eq [@s2,@s4]
+      expect(shows.sorted).to eq [@s4,@s2]
+    end
+    it 'shows with showdates before shows without showdates' do
+      shows = Show.all
+      expect(shows).to eq [@s1,@s2,@s3,@s4]
+      expect(shows.sorted).to eq [@s3,@s1,@s4,@s2]
+    end
+  end
   describe 'opening and closing dates' do
     before(:each) do
       @list = 2.days.from_now.to_date

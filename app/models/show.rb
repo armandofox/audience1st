@@ -33,6 +33,10 @@ class Show < ActiveRecord::Base
   }
 
   scope :for_seasons, ->(from,to) {  where(:season => from..to) }
+
+  scope :with_showdates, -> { joins(:showdates) }
+
+  scope :sorted, -> {  includes(:showdates).order('showdates.thedate ASC NULLS LAST', 'shows.name')  }
   
   def opening_date
     first_showdate = showdates.order('thedate').first
