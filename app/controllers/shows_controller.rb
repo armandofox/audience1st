@@ -9,7 +9,7 @@ class ShowsController < ApplicationController
     @earliest = Show.minimum(:season) || year
     @latest = Show.maximum(:season) || year
     @season = @latest unless @season.between?(@earliest,@latest)
-    @shows = Show.for_seasons(@season,@season)
+    @shows = Show.for_seasons(@season,@season).sorted
     @page_title = "#{Option.humanize_season(@season)} Shows"
   end
 
