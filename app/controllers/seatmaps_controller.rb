@@ -1,6 +1,6 @@
 class SeatmapsController < ApplicationController
 
-  before_action :is_boxoffice_manager_filter, :except => 'seatmap'
+  before_action :is_boxoffice_manager_filter, :except => %w(seatmap assign_seats)
 
   def index
     @seatmaps = Seatmap.all.order(:name)
@@ -46,13 +46,41 @@ class SeatmapsController < ApplicationController
   # AJAX responders for seatmap-related functions
 
   def seatmap
-    # return the seatmap for this production, and array of UNAVAILABLE seats for this performance
+    # return the seatmap for this production, and array of UNAVAILABLE seats for this performance.
+    # if 'selected' is passed, it is a comma-separated list of full seat labels to show as
+    # already-selected seats (if the seatmap workflow in question respects it).
     showdate = Showdate.find(params[:id]) 
     restrict_to_zone = params[:zone]
+    already_selected = params[:selected].to_s.split(/\s*,\s*/)
     if showdate.has_reserved_seating?
-      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone)
+      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(
+               showdate, restrict_to_zone: restrict_to_zone, selected: already_selected)
     else
       render :json => {'map' => nil}
+    end
+  end
+
+  def assign_seats
+    # XHR call with params['seats'] = JSON array of selected seats, params['vouchers'] =
+    #  comma-separated IDs of vouchers
+    vouchers = Voucher.find(params[:vouchers].split(/\s*,\s*/))
+    seats = params[:seats].split(/\s*,\s*/)
+    error_message = nil
+    # This is messy: we want a transaction so that if ANY seat assignment fails they ALL rollback,
+    # but the ActiveRecord::Rollback exception breaks out of the transaction but cannot be
+    # rescued.  (Normally we'd put the error message render into a rescue of the rollback exception)
+    Voucher.transaction do
+      vouchers.each_with_index do |v,i|
+        unless v.assign_seat(seats[i])
+          error_message = v.errors.full_messages.join(', ')
+          raise ActiveRecord::Rollback # this exception doesn't need to be rescued
+        end
+      end
+    end
+    if error_message
+      render(:status => :bad_request, :plain => error_message)
+    else
+      render(:status => :ok, :nothing => true)
     end
   end
 

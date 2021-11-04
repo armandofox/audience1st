@@ -18,7 +18,7 @@ class OptionsController < ApplicationController
     if (@o.update_attributes(option_params))
       redirect_to options_path, :notice => "Update successful."
     else
-      flash[:alert] = @o.errors.as_html
+      flash.now[:alert] = @o.errors.as_html
       render :action => :index
     end
   end

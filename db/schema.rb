@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20211013203325) do
+ActiveRecord::Schema.define(version: 20211103011900) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -196,6 +196,7 @@ ActiveRecord::Schema.define(version: 20211013203325) do
     t.text     "html_email_template",                                                default: "<!DOCTYPE html><html><head></head><body>{{body}}</body></html>",                                                                null: false
     t.string   "reminder_emails",                                                    default: "Never"
     t.text     "general_reminder_email_notes"
+    t.integer  "import_timeout",                                                     default: 15,                                                                                                                              null: false
   end
 
   create_table "orders", force: :cascade do |t|
@@ -214,6 +215,8 @@ ActiveRecord::Schema.define(version: 20211013203325) do
     t.text     "retail_items"
     t.string   "external_key"
     t.integer  "ticket_sales_import_id"
+    t.string   "type"
+    t.text     "from_import"
   end
 
   add_index "orders", ["customer_id"], name: "index_orders_on_customer_id", using: :btree
@@ -281,6 +284,7 @@ ActiveRecord::Schema.define(version: 20211013203325) do
     t.integer  "existing_customers"
     t.string   "filename"
     t.boolean  "completed",          default: false
+    t.datetime "created_at"
   end
 
   add_index "ticket_sales_imports", ["processed_by_id"], name: "index_ticket_sales_imports_on_processed_by_id", using: :btree

@@ -157,6 +157,14 @@ en:
       containing any ticket valid for a specific show date, whether
       reserved seating or general admission.
 
+    import_timeout: >
+
+      Number of minutes allowed for box office staff to import an external
+      reseller's will-call list. If the import process is not completed this
+      many minutes after starting, the import will automatically get
+      cancelled, any selected seats will get released, and you will need to
+      start over.
+
     session_timeout: >
 
       Number of minutes of inactivity after which a user is automatically

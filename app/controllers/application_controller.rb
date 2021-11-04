@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
   end
 
   def maybe_run_sweepers
-    StaleOrderSweeper.sweep! if Option.last_sweep < 5.minutes.ago
+    StaleOrderSweeper.sweep! if Option.last_sweep < 3.minutes.ago
   end
 
   def set_globals

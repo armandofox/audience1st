@@ -110,7 +110,7 @@ class Audience1stSeeder
       :help_email => 'help@example.com',
       :box_office_email => 'help@example.com',
       :html_email_template => ERB.new(IO.read(File.join(Rails.root, 'app', 'views', 'mailer', 'default_template.html.erb'))).result(binding),
-      :stylesheet_url => 'https://cdn.jsdelivr.net/gh/armandofox/stylesheets@master/sandbox/default.css',
+      :stylesheet_url => nil,
       :stripe_key => 'Replace with real Stripe key',
       :stripe_secret => 'Replace with real Stripe secret',
       :sender_domain => '',

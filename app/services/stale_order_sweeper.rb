@@ -6,9 +6,11 @@ class StaleOrderSweeper
 
   def self.sweep!
     # destroy stale orders and update sweep timer
-    stale_date = (Option.order_timeout + 1).minutes.ago # just to be on the safe side
-    Order.transaction do
-      Order.abandoned_since(stale_date).destroy_all
+    stale_order_date = (Option.order_timeout + 1).minutes.ago # just to be on the safe side
+    stale_import_date = (Option.import_timeout + 1).minutes.ago
+    ActiveRecord::Base.transaction do
+      Order.where(:type => 'Order').abandoned_since(stale_order_date).destroy_all
+      TicketSalesImport.abandoned_since(stale_import_date).destroy_all
       Option.first.update_attribute(:last_sweep, Time.current)
     end
   end

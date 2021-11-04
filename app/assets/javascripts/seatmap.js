@@ -7,6 +7,18 @@ A1.seatmap = {
   ,onSelect: null
   ,allSeatsSelected: null
   ,resetAfterCancel: null
+  ,seatLabelToSeatNum: function(str) {
+    return(str.substr(str.lastIndexOf("-") + 1));
+  }
+  ,selectThisSeat: function(seatNum) {
+    // console.log("======= setup select " + seatNum);
+    A1.seatmap.selectedSeats.push(seatNum);
+    A1.seatmap.selectedSeatsAsString = A1.seatmap.selectedSeats.sort().join(', ');
+    A1.seatmap.onSelect.call(seatNum);
+    if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
+      A1.seatmap.allSeatsSelected.call();
+    }
+  }
   ,settings: {
     seats: {}
     ,map: []
@@ -19,19 +31,14 @@ A1.seatmap = {
     }
     ,click: function(evt) {
       var clickedSeat = this.settings.id; // format:  ZoneName-A111 (hyphen is separator)
-      var seatNum = clickedSeat.substr(clickedSeat.lastIndexOf("-") + 1);
+      var seatNum = A1.seatmap.seatLabelToSeatNum(clickedSeat);
       switch(this.status()) {
       case 'available':           // clicking on available seat selects it...
         if (A1.seatmap.selectedSeats.length < A1.seatmap.max) { // ...if still seats to select
           if (this.settings.character == "a") { // accessible seat: show warning
             alert($('#accessibility_advisory_for_reserved_seating').val());
           }
-          A1.seatmap.selectedSeats.push(seatNum);
-          A1.seatmap.selectedSeatsAsString = A1.seatmap.selectedSeats.sort().join(', ');
-          A1.seatmap.onSelect.call(seatNum);
-          if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
-            A1.seatmap.allSeatsSelected.call();
-          }
+          A1.seatmap.selectThisSeat(seatNum);
           return('selected');
         } else {
           return('available');
@@ -58,6 +65,7 @@ A1.seatmap = {
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
+    A1.seatmap.selected = j.selected;  // pre-selected seats
     A1.seatmap.columns = j.columns;         // determines minimum displaywidth
     // set background image
     $('img.seating-charts-overlay').attr('src', j.image_url);
@@ -88,6 +96,11 @@ A1.seatmap = {
     // now indicate unavailable seats for this new showdate
     A1.seatmap.unavailable.forEach(function(seat_num) {
       A1.seatmap.seats.status(seat_num, 'unavailable');
+    });
+    // finally, "select" any pre-selected seats
+    A1.seatmap.selected.forEach(function(seatLabel) {
+      A1.seatmap.selectThisSeat(A1.seatmap.seatLabelToSeatNum(seatLabel));
+      A1.seatmap.seats.status(seatLabel, 'selected');
     });
     A1.seatmap.centerMap();
     $(window).resize(A1.seatmap.centerMap);

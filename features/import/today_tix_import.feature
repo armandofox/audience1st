@@ -26,13 +26,8 @@ Scenario: successful import creates new customers; then attempt re-import of sam
     | Maria Moran |   3 | Oct 1, 2010, 8:00pm |
     | Adrian Ray  |   1 | Oct 3, 2010, 3:00pm |
   And I should see "4 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
-  When I visit the ticket sales import page for the most recent "TodayTix" import
-  Then the import for "Moran, Maria" should show "View imported order" 
-  And  the import for "Ray, Adrian" should show "View imported order" 
-  And  I should not see "Import Orders"
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then I should see "This list was already imported"
-  And  I should be on the ticket sales import page
   And customer "Maria Moran" should exist with email "mmoran-rn98@not-hotmail.com"
 
 Scenario: customer unique match on email; verify customer is linked to this import
@@ -68,8 +63,7 @@ Scenario: customer non-unique match, boxoffice agent decides whether to import a
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
   But customer "Adrianna Ray" should have 0 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
   And customer "Adrian Ray" should exist with email "arrayavalani@not.gmail.com"
-  When I visit the ticket sales import page for the most recent "TodayTix" import
-  Then the import for "Moran, Maria" should show "View imported order"
+
 
 Scenario: import includes comps
 

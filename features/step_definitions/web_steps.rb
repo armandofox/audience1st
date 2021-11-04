@@ -137,6 +137,17 @@ Then /^(?:|I )should (not )?see the following: "([^\"]*)"$/ do |no,textlist|
   end
 end
 
+Then /^the "([^\"]*)" button(?: within "([^\"]*)")? should be (enabled|disabled)$/ do |name, sel, abled|
+  with_scope(sel) do
+    button = page.find_button(name, :disabled => :all)
+    if (abled =~ /dis/)
+      expect(button).to be_disabled
+    else
+      expect(button).not_to be_disabled
+    end
+  end
+end
+   
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should (contain|equal) "([^\"]*)"$/ do |field, selector, equality_check, value|
   with_scope(selector) do
     val = find_field(field, :disabled => :all).value
@@ -192,14 +203,4 @@ Then /^(?:|I )should have the following query string:$/ do |expected_pairs|
   actual_params   = CGI.parse(URI.parse(current_url).query)
   expected_params = Hash[expected_pairs.rows_hash.map{|k,v| [k,[v]]}]
   expect(actual_params).to eq(expected_params)
-end
-
-Then /^show me the page$/ do
-  save_and_open_page
-end
-
-Then /^show me the page and debug$/ do
-  save_and_open_page
-  require "rubygems"; require "byebug"; byebug
-  1 #intentionally force debugger context in this method 
 end

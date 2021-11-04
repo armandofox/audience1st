@@ -11,7 +11,7 @@ describe Seatmap do
       allow(@sd).to receive(:occupied_seats).and_return(@unavailable)
     end
     it 'includes unavailable seats if called for a showdate' do
-      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone=nil)
+      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
       expect(res).to include_json(
         map: ['r[Reserved-A1, ]r[Reserved-A2, ]r[P-B1, ]r[B-B2, ]'],
         unavailable: %w(Reserved-A1 B-B2),
@@ -20,7 +20,7 @@ describe Seatmap do
         )
     end
     it 'further restricts unavailability by zone' do
-      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone='res')
+      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone: 'res')
       expect(res).to include_json(
                        unavailable: %w(Reserved-A1 P-B1 B-B2)
                      )

@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '2.6.6'
 
 # basic app components
-gem 'pg', '~> 0.21'
+gem 'pg', '0.20'                # Rails5: OK to upgrade to latest version
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
 gem 'rails', '4.2.11.1'
 

@@ -25,6 +25,7 @@ class Option < ActiveRecord::Base
 
   validates_numericality_of :advance_sales_cutoff
   validates_numericality_of :order_timeout, :greater_than_or_equal_to => 1, :less_than_or_equal_to => 15
+  validates_numericality_of :import_timeout, :greater_than_or_equal_to => 5, :less_than_or_equal_to => 30, :message => 'must be between 5 and 30 minutes'
   validates_inclusion_of :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
   validate :availability_levels_monotonically_increase
   validates_inclusion_of :season_start_month, :in => 1..12

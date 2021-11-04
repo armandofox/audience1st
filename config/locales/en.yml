@@ -84,6 +84,9 @@ en:
         probably a bug on Goldstar's part, but check with this customer to see whether they
         successfully completed their purchase on Goldstar.
                     
+    blank_filename: >
+      Please choose a will-call list to upload.
+
     import_cancelled: >
       Import of '%{filename}' cancelled.
 
@@ -91,7 +94,15 @@ en:
       Are you sure you want to cancel this in-progress import?
 
     already_imported: >
-      This list was already imported, on %{date}.      
+      This list was already imported by %{user} on %{date}.      
+
+    already_in_progress: >
+      This list is already open in another tab or window by %{user}.
+      
+    was_cancelled: >
+      This import was cancelled either by another user or because it
+      was not completed within the allotted time. You will need to
+      upload the file again to begin the import process.  
 
     wrong_file_type: >
       This appears to be a %{type} file, but you must upload a %{desired_type} file.
