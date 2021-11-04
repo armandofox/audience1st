@@ -100,9 +100,9 @@ en:
       This list is already open in another tab or window by %{user}.
       
     was_cancelled: >
-      This import was automatically cancelled because it was not completed
-      within the allotted time. You will need to upload the file again to
-      begin the import process.
+      This import was cancelled either by another user or because it
+      was not completed within the allotted time. You will need to
+      upload the file again to begin the import process.  
 
     wrong_file_type: >
       This appears to be a %{type} file, but you must upload a %{desired_type} file.
