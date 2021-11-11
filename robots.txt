@@ -1,0 +1,2 @@
+Disallow: /payment.html
+Disallow: /assets/
