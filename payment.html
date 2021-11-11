@@ -1,61 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script language="javascript">
-      var d = function(e) { return(document.getElementById(e)); };
-      document.addEventListener("DOMContentLoaded", function() {
-        d('venue').onchange = function(evt) {
-          if (this.value == '') {
-            d('no_payment').style.display = 'block';
-            d('payment').style.display = 'none';
-          } else {
-            d('no_payment').style.display = 'none';
-            d('payment').style.display = 'block';
-            d('payment_button').setAttribute("value", this.value);
-            d('venue_name').innerText = this.options[this.selectedIndex].text;
-          }
-          return(false);
-        };
-      });
-    </script>
-  </head>
-  <body class="container">
-    <div class='alert alert-info'>
-      <p>
-        This page is for the Arts & Culture Organizations that use Audience1st.
-        You only need to set up monthly billing once, and only if you have not already
-        made other payment arrangements with Audience1st.
-      </p>
-      <p>
-        By using this page, you represent that you are an agent of the Organization
-        authorized to make vendor payments.
-      </p>
-    </div>
-    <div class='row my-2'>
-      <div class='col-6'>
-        <select class='form-control' id='venue'>
-          <option value=''>Select organization...</option>
-          <option value='JYKCWRLSYG59J'>Altarena Playhouse</option>
-          <option value='UE526UP9U6P9Y'>Theatre Rhinoceros</option>
-          <option value='PTVUC3MN8UDNA'>The Lorraine Hansberry Theatre</option>
-          <option value='GCELVD4X5ZD5W'>Landmark Musicals</option>
-          <option value=''>Night Out/Night Off at Berkeley</option>
-          <option value=''>Tickets 4 a Good Cause</option>
-        </select>
+    <title>Audience1st</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Audience1st">
+    <meta name="author" content="Audience1st">    
+    <link rel="shortcut icon" href="favicon.ico">  
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'> 
+    <!-- FontAwesome JS-->
+    <script defer src="assets/fontawesome/js/all.min.js"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="assets/css/theme.css">
+    <!-- Javascript -->          
+    <script type="text/javascript" src="assets/plugins/jquery-3.4.1.min.js"></script>   
+    <script type="text/javascript" src="assets/plugins/jquery.easing.1.3.js"></script>   
+    <script type="text/javascript" src="assets/plugins/popper.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script> 
+    <script type="text/javascript" src="assets/plugins/prism/prism.js"></script>    
+    <script type="text/javascript" src="assets/js/main.js"></script>  
+    
+  </head> 
+
+  <body>
+    
+    <!-- ******HEADER****** --> 
+    <header id="header" class="header">  
+      <div class="container">            
+        <h1 class="logo float-left">
+          <a href="index.html">
+            <span class="logo-title">Audience1st</span>
+          </a>
+        </h1><!--//logo-->              
+        <nav id="main-nav" class="main-nav navbar-expand-md float-right" role="navigation">
+          
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button><!--//nav-toggle-->
+          
+          <div class="navbar-collapse collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li class="nav-item sr-only"><a class="nav-link" href="index.html">Home</a></li>
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="true">
+                  <span class="nav-label">Features</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item nav-link scrollto" href="features.html#faq-ticketing">Shows &amp; Ticketing</a></li>
+                  <li><a class="dropdown-item nav-link scrollto" href="features.html#faq-backoffice">Donation Tracking &amp; Back Office </a></li>
+                  <li><a class="dropdown-item nav-link scrollto" href="features.html#faq-foh">Front of House</a></li>
+                  <li><a class="dropdown-item nav-link scrollto" href="features.html#faq-branding">User Experience &amp; Branding</a></li>
+                  <li><a class="dropdown-item nav-link scrollto" href="features.html#faq-getting-started">Getting Started</a></li>
+                </ul>
+              </li>
+
+              <li class="nav-item"><a class="nav-link" href="index.html#tour">Tour</a></li>
+
+              <li class="nav-item">
+                <a class="nav-link" target="_blank" href="https://docs.audience1st.com">
+                  Docs
+                  <span class="icon-holder"><i class="fas fa-external-link-alt"></i></span>
+              </a></li>
+              <li class="nav-item last"><a class="nav-link scrollto" href="#contact">Contact</a></li>
+            </ul><!--//nav-->
+          </div><!--//navabr-collapse-->
+        </nav><!--//main-nav-->
       </div>
-      <div class='col-6 text-center' id='payment' style='display: none;'>
-        <p>Continue to PayPal to set up monthly billing for<br/><em><span id="venue_name"></span></em>.</p>
-        <form action='https://www.paypal.com/cgi-bin/webscr' class='form' method='post'>
-          <input name='cmd' type='hidden' value='_s-xclick'>
-          <input id='payment_button' name='hosted_button_id' type='hidden' value=''>
-          <input alt='PayPal - The safer, easier way to pay online!' border='0' name='submit' src='https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif' type='image'>
-        </form>
+    </header><!--//header-->
+
+    <!-- ****** FAQ ****** -->
+    <section id="faq-ticketing" class="docs section">
+      <div class="container">
+        <div class="docs-inner">
+          <h3 class="title text-center">Payment</h3>            
+
+          <p>
+            This page is for the Arts & Culture Organizations that use Audience1st.
+            You only need to set up monthly billing once, and only if you have not already
+            made other payment arrangements with Audience1st.
+          </p>
+          <p>
+            By using this page, you represent that you are an agent of the Organization
+            authorized to make vendor payments.
+          </p>
+
+          <p>Click below to continue to PayPal to set up monthly billing:</p>
+          <center>
+          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <input type="hidden" name="cmd" value="_s-xclick">
+            <input type="hidden" name="hosted_button_id" value="GCELVD4X5ZD5W">
+            <input type="image" src="https://www.audience1st.com/assets/images/a1button.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+          </form>
+          </center>
+        </div>
       </div>
-      <div class='col-6 alert alert-success p-3 text-center' id='no_payment' style='display: none;'>
-        Your organization has already made other payment arrangements.  No action required.
-      </div>
-    </div>
+    </section>
   </body>
 </html>
 
