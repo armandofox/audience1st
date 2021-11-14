@@ -5,7 +5,7 @@ class Voucher < Item
 
   belongs_to :vouchertype
   validates_associated :vouchertype
-  delegate :category, :to => :vouchertype
+  delegate :category, :display_order, :to => :vouchertype
 
   validate :checkin_requires_reservation
   validates_presence_of :seat, :if => :for_reserved_seating_performance?, :unless => :is_placeholder?

@@ -216,6 +216,14 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def includes_bundle?
+    if completed?
+      items.any? { |v| v.bundle? }
+    else
+      vouchers.any? { |v| v.bundle? }
+    end
+  end
+  
   def add_retail_item(r)
     raise Order::NotPersistedError unless persisted?
     self.retail_items << r if r

@@ -11,7 +11,7 @@ describe Show do
     expect { @s.revenue_per_seat }.not_to raise_error
     expect(@s.revenue_per_seat).to be_zero
   end
-  describe 'sorts', focus: true do
+  describe 'sorts' do
     before(:each) do
       @s1 = create(:show, :name => 'D')
       create(:showdate, :show => @s1, :thedate => 2.days.from_now)

@@ -1,5 +1,17 @@
 module StoreHelper
 
+  def vouchers_grouped_for_cart(vouchers)
+    subs, nonsubs = vouchers.partition(&:bundle?)
+    # within each category, sort by display order, then name
+    subs = subs.sort_by { |v| [v.display_order, v.name] }.
+             each_with_object(ActiveSupport::OrderedHash.new { 0 }) { |k,h| h[k.vouchertype] += 1 }.
+             to_a
+    nonsubs = nonsubs.sort_by { |v| [v.display_order, v.name] }.
+             each_with_object(ActiveSupport::OrderedHash.new { 0 }) { |k,h| h[k.vouchertype] += 1 }.
+             to_a
+    subs + nonsubs
+  end
+
   def to_numeric(str)
     str.blank? ? 0 : str.to_i
   end

@@ -3,6 +3,7 @@ A1.vouchertype = {
     var category = $('.vouchertype-category').val();
     $('#vouchertype-form .form-row').show();
     $('#vouchertype-form .form-row.' + category).hide();
+    $('#vouchertype-form .btn.' + category).hide();
     $('#vouchertype-form input.' + category).val('0'); // numeric price field(s)
     $('#vouchertype-form input.' + category).checked = false;
   },
