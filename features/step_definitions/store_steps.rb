@@ -54,7 +54,7 @@ end
 # Cart should contain items
 
 Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
-  steps %Q{Then I should see /#{type}/ within "#cart" #{num} times}
+  steps %Q{Then I should see /#{num}\\n#{type}/ within "#cart"}
 end
 
 Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, date_string|

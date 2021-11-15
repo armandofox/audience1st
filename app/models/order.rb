@@ -218,7 +218,7 @@ class Order < ActiveRecord::Base
 
   def includes_bundle?
     if completed?
-      items.any? { |v| v.bundle? }
+      items.any? { |v| v.kind_of?(Voucher) && v.bundle? }
     else
       vouchers.any? { |v| v.bundle? }
     end
