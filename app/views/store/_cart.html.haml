@@ -1,9 +1,10 @@
 #cart
   = hidden_field_tag 'timer_expires', (@gOrderInProgress.created_at + Option.order_timeout.minutes).to_i
-  .h3.timer
-    Please complete your order in
-    %span#timer #{Option.order_timeout.to_i}:00
-    minutes.
+  - unless defined?(completed)
+    .h3.timer.d-none
+      Please complete your order in
+      %span#timer #{Option.order_timeout.to_i}:00
+      minutes.
 
   - if @gOrderInProgress.includes_bundle?
     - vouchers_grouped_for_cart(@gOrderInProgress.vouchers).each do |v,qty|

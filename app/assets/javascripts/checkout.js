@@ -14,8 +14,8 @@ A1.checkout = {
   }
 
   ,setupForCheckout: function() {
-    if ($('#cart').length > 0) {
-      // on any page where in-progress order is displayed, show countdown timer
+    if ($('.timer').length > 0) {
+      // on any page where timer (in-progress order) is displayed, run countdown timer
       A1.startTimer($('#timer_expires'), $('#timer'), A1.checkout.timerExpired);
     }
     if ($('body#store_checkout').length > 0) {
