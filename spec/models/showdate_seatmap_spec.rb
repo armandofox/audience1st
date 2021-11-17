@@ -62,7 +62,7 @@ describe Showdate do
       it 'fails to reserve occupied seat' do
         @v3 = build(:revenue_voucher, :showdate => @showdate, :seat => 'B1')
         expect(@v3).to_not be_valid
-        expect(@v3.errors.full_messages).to include_match_for(/B1 is already taken/)
+        expect(@v3.errors.full_messages).to include_match_for(/B1 is no longer available/)
       end
       it 'fails to reserve nonexistent seat' do
         @v3 = build(:revenue_voucher, :showdate => @showdate, :seat => 'K1')

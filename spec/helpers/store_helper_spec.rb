@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe StoreHelper, focus: true do
+describe StoreHelper do
   describe 'cart voucher order' do
     describe 'for bundles' do
       before(:each) do
@@ -17,13 +17,13 @@ describe StoreHelper, focus: true do
       it 'sorts bundles first' do
         3.times do
           @list = helper.vouchers_grouped_for_cart([@v1,@v1,@v2,@v2,@v3,@v3,@sub,@sub].shuffle)
-          expect(@list[0]).to eq([@sub,2])
+          expect(@list[0]).to eq([@sub.vouchertype,2])
         end
       end
       it 'sorts regular vouchers' do
         3.times do
           @list = helper.vouchers_grouped_for_cart([@v1,@v1,@v1,@v2,@v2,@v2].shuffle)
-          expect(@list).to eq([[@v1,3],[@v2,3]])
+          expect(@list).to eq([[@v1.vouchertype,3],[@v2.vouchertype,3]])
         end
       end
     end
