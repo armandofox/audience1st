@@ -1,6 +1,6 @@
 # Fill in fields for gift, checkout, etc
 
-When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*(\S+)\s+(\S+),\s*([^,]+),\s*(.*@.*)"$/ do |fieldset, first, last, street, city, state, zip, phone, email|
+When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*(\S+)\s+(\S+),\s*([^,]+),\s*(.*)"$/ do |fieldset, first, last, street, city, state, zip, phone, email|
   with_scope fieldset do
     fill_in 'customer[first_name]', :with => first
     fill_in 'customer[last_name]', :with => last
