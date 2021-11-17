@@ -21,7 +21,7 @@ Scenario Outline: browse reports
     | report_type                         | alert                                               |
     | Lapsed subscribers                  | You must specify at least one type of voucher       |
     | Attendance at specific performances | Please select a valid show date                     |
-    | New customers                       | 0 matches                                           |
+    | All customers                       | 0 matches                                           |
     | Subscriber open vouchers            | Please specify one or more subscriber voucher types |
     | Attendance by show                  | Please specify one or more productions              |
     | Donor appeal                        | 0 matches                                           |

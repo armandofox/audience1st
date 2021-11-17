@@ -19,7 +19,7 @@ module DatesHelper
     init_range = %Q{
 { start: new Date('#{start_date.iso8601}'), end: new Date('#{end_date.iso8601}') }
 }
-      json = %Q{
+    json = %Q{
 {
   initialText: 'Select date range...',
   clearButtonText: '',
@@ -57,7 +57,7 @@ module DatesHelper
     dateEnd:   function() { return moment('#{(t-1.year).at_end_of_season.iso8601}') }
   }, {
     text:      'All time',
-    dateStart: function() { return moment('1968-01-01') },
+    dateStart: function() { return moment('2007-01-01') },
     dateEnd:   function() { return moment('#{t8601}') }
   }]
 }
@@ -71,7 +71,12 @@ $('##{name}').daterangepicker('setRange', #{init_range});
 $('##{name}').daterangepicker({ open: function() { $('#{en}').prop('checked',true); } })
 })
     end
-    text_field_tag(name,'',:class => options[:class]) << "\n" << popup_help_for(:select_dates) <<  "\n" << js
+    ('<div class="d-inline">' <<
+     text_field_tag(name,'',:class => options[:class]) <<
+     '</div><div class="d-inline">' <<
+     popup_help_for(:select_dates) <<
+     '</div>' <<
+     js).html_safe
 
   end
 
