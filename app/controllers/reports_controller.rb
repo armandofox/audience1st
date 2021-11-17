@@ -16,7 +16,7 @@ class ReportsController < ApplicationController
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.this_season)
     # list of all special reports
-    @special_report_names = Report.subclasses.map { |s| ActiveModel::Name.new(s).human }.unshift('Select report...')
+    @special_report_names = Report.subclasses.map { |s| ActiveModel::Name.new(s).human }.sort.unshift('Select report...')
   end
 
   def advance_sales
