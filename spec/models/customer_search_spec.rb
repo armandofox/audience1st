@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'quick donation customer search', focus: true do
+describe 'quick donation customer search' do
   context 'when matching customer' do
     specify 'has different address, address gets updated' do
       create(:customer, :email => 'joe@joescafe.com')
