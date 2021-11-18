@@ -55,6 +55,7 @@ module NavigationHelpers
     when /the checkin page for (.*)$/ then checkin_path(sd $1)
     when /the door list page for (.*)$/ then door_list_checkin_path(sd $1)
     when /the seatmap editor page/ then seatmaps_path
+    when /the seating zones page/ then seating_zones_path
 
     when /the admin:(.*) page/i
       page = $1

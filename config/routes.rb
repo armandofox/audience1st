@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :ticket_sales_imports, :except => [:new]
     resources :labels, :only => [:index, :create, :update, :destroy]
     resources :seatmaps, :except => [:new] 
+    resources :seating_zones, :only => [:index, :create, :destroy]
 
     resources :customers, :except => :destroy do
       collection do
