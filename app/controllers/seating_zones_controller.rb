@@ -13,7 +13,7 @@ class SeatingZonesController < ApplicationController
       redirect_to seating_zones_path, :notice => "Seating zone '#{@sz.short_name}' (#{@sz.name}) created successfully."
     else
       @seating_zones = SeatingZone.all # to reload index page
-      flash[:alert] = @sz.errors.as_html
+      flash.now[:alert] = @sz.errors.as_html
       render :action => 'index'
     end
   end

@@ -23,7 +23,7 @@ module ApplicationHelper
     if (url = Option.stylesheet_url).blank?
       return unless Rails.env.development?
       # if development mode, can use local stylesheet
-      url = '/assets/stylesheets/venue/default.css'
+      url = '/assets/venue/default.css'
     end
     tag('link', {rel: "stylesheet", href: url, :media => 'all'})
   end

@@ -38,15 +38,15 @@
     %thead
       %tr 
         %th
-        %th Sort #{popup_help_for(:vouchertype_display_order)}
+        %th.position-relative Sort #{popup_help_for(:vouchertype_display_order)}
         %th Name
         %th Price
-        %th Acc# #{popup_help_for(:vouchertype_account_code)}
+        %th.position-relative Acc# #{popup_help_for(:vouchertype_account_code)}
         %th Sub?
         %th Who can purchase?
         %th Link
         %th Description
-        %th Walkup? #{popup_help_for(:vouchertype_walkup_sale_allowed)}
+        %th.position-relative Walkup? #{popup_help_for(:vouchertype_walkup_sale_allowed)}
         %th
     %tbody
       - @vouchertypes.each do |vouchertype|
