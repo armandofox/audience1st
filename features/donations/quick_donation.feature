@@ -14,7 +14,7 @@ Scenario: donor logged in, page gets prepopulated with donor info
   When I fill in "Donation amount" with "15"
   And I press "Charge Donation to Credit Card"
   Then I should see "You have paid a total of $15.00 by Credit card"
-  And an email should be sent to customer "Tom Foolery" containing "$ 15.00  Donation to General Fund"
+  And an email should be sent to customer "Tom Foolery" containing /Sandbox Theatre thanks you for your donation!.* $ 15.00  Donation to General Fund/
   And customer "Tom Foolery" should have a donation of $15.00 to "General Fund"
   And customer "Tom Foolery" should have a donation of $10.00 to "General Fund"
   And customer "Tom Foolery" should have an order dated "2009-12-01" containing a check donation of $10.00 to "General Fund"

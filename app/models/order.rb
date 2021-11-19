@@ -412,4 +412,14 @@ class Order < ActiveRecord::Base
       join("\n")
   end
 
+  def summary_of_contents
+    if includes_vouchers? && includes_donation? 
+      'order and donation' 
+    elsif includes_donation?
+      'donation'
+    else
+      'order'
+    end
+  end    
+
 end

@@ -1,7 +1,7 @@
 <div class="a1-confirm-order">
   <p>Dear <%= greet(@order.purchaser) %>,</p>
 
-  <p>Thank you for your order from <%= @venue %>!</p>
+  <p><%= @venue %> thanks you for your <%= @order.summary_of_contents -%>! </p>
 
   <p>Please check this information carefully:</p>
 
