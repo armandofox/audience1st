@@ -192,6 +192,13 @@ en:
       A reserved seating performance can be changed to use a different seat map
       if all existing patrons' seats can be accommodated in the new seat map.
 
+    seating_zones: >
+
+      Full name appears when you hover over a seat in a seating chart.
+      Short name is used to label the seats when you create a seating chart spreadsheet.
+      Display order controls the order in which zones are listed here
+      and on the Create/Edit Voucher Type page.
+
     showdate_house_capacity: >
 
       For General Admission shows, specify the true (physical) seating

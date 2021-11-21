@@ -1,4 +1,4 @@
-class NewCustomers < Report
+class AllCustomers < Report
 
   def initialize(options={})
     super

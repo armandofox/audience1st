@@ -1,0 +1,33 @@
+= set_active_tab '#t_shows_index'
+
+.position-relative.my-3
+  %span.h1 Add/Edit Seating Zones
+  = popup_help_for :seating_zones
+
+
+%table.table.table-striped
+  %thead.thead-dark
+    %th Sort
+    %th Full Name
+    %th Short Name
+    %th Seat Maps Where Used
+    %th
+  %tbody
+    - @seating_zones.each do |zone|
+      %tr
+        %td= zone.display_order
+        %td= zone.name
+        %td= zone.short_name
+        %td
+          - if (seatmaps = zone.seatmaps).empty?
+            = button_to 'Delete', seating_zone_path(zone), :method => :delete, 'data-confirm' => 'Delete this seating zone?', :class => 'btn btn-danger'
+          - else
+            = zone.seatmaps.map(&:name).join(', ')
+        %td
+    %tr#new-seating-zone
+      = form_for @sz do |f|
+        %td= f.text_field :display_order, :class => 'form-control', :size => 3, :maxlength => 3
+        %td= f.text_field :name, :class => 'form-control'
+        %td= f.text_field :short_name, :class => 'form-control'
+        %td= f.submit 'Create', :class => 'btn btn-success'
+        %td

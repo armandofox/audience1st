@@ -30,7 +30,9 @@
     = popup_help_for :vouchertype_seating_zone
   .col-md-4
     = collection_select 'vouchertype', 'seating_zone_id', SeatingZone.all, :id, ->(z) { "#{z.name} [#{z.short_name}]" }, {:include_blank => 'No restriction'}, {:class => 'form-control'}
-
+  .col-md-2
+    = link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary'
+    
 .form-row.subscriber.comp
   .col-md-3.text-right
     %label.col-form-label{:for=>:vouchertype_price} Price
@@ -44,7 +46,7 @@
   .col-md-4
     = collection_select 'vouchertype', 'account_code_id', AccountCode.all, :id, :name_with_code, {}, {:class => 'form-control'}
   .col-md-2
-    = link_to "Add/Edit Account Codes", account_codes_path, :class => 'btn btn-primary'
+    = link_to "Add/Edit Account Codes...", account_codes_path, :class => 'btn btn-primary'
 
 .form-row.subscriber
   .col-md-3.text-right

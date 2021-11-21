@@ -79,6 +79,11 @@ class Seatmap < ActiveRecord::Base
     SeatingZone.find_by!(:short_name => key).name
   end
 
+  # Does this seatmap reference a particular zone or not ?
+  def references_zone?(zone)
+    csv =~ /\b#{zone.short_name}:/
+  end
+
   # Given a collection of vouchers, some of which may have seat numbers, return the subset
   # that COULD NOT be accommodated by this seatmap.  Used to determine if it's possible to
   # change a seatmap for a performance after sales have begun.

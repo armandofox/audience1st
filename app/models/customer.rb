@@ -154,18 +154,22 @@ class Customer < ActiveRecord::Base
   # match up donation customer with an existing one, or create it
   def self.for_donation(params)
     customer_info = Customer.new params
-    @customer =
-      if (found_customer = Customer.find_unique(customer_info)) &&
-          found_customer.valid_as_purchaser?
-        # use this customer
-        found_customer
-      elsif customer_info.valid_as_purchaser?
-        # create this customer
-        Customer.find_or_create!(customer_info)
-      else
-        # invalid info given
-        customer_info           # has failed validation as purchaser
-      end
+    found_customer = Customer.find_unique(customer_info)
+    if found_customer
+      # unique match; but if our stored customer doesn't have a valid name/billing address,
+      #  update it from this info.
+      found_customer.update_for_purchase_from(customer_info)
+      # if at this point we have a valid customer, done
+      return found_customer if found_customer.valid_as_purchaser?
+    end
+    # no unique match: find or create from the info we do have
+    if customer_info.valid_as_purchaser?
+      # create this customer
+      Customer.find_or_create!(customer_info)
+    else
+      # invalid info given
+      customer_info           # has failed validation as purchaser
+    end
   end
 
   # address is allowed to be blank, but if nonblank, it must be valid
@@ -284,6 +288,12 @@ class Customer < ActiveRecord::Base
   def valid_as_purchaser?
     # must have full address and full name
     valid_mailing_address? && !first_name.blank? && !last_name.blank?
+  end
+  def update_for_purchase_from(other_customer)
+    %w(first_name last_name street city state zip).each do |field|
+      other = other_customer.send(field)
+      self.send("#{field}=", other) unless other.blank?
+    end
   end
 
   @@user_entered_strings =

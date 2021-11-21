@@ -146,7 +146,7 @@ class StoreController < ApplicationController
     @gOrderInProgress.processed_by = @customer
     @gOrderInProgress.comments = params[:comments].to_s
     @gOrderInProgress.ready_for_purchase? or return redirect_to(redirect_route, :alert => @gOrderInProgress.errors.as_html)
-    if finalize_order(@gOrderInProgress)
+    if finalize_order(@gOrderInProgress, send_email_confirmation: @gOrderInProgress.purchaser.valid_email_address?)
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
@@ -262,7 +262,7 @@ class StoreController < ApplicationController
       redirect_to_checkout
       return
     end
-    if finalize_order(@gOrderInProgress)
+    if finalize_order(@gOrderInProgress, send_email_confirmation: params[:email_confirmation])
       if session[:guest_checkout]
         # forget customer after successful guest checkout
         logout_keeping_session!
@@ -276,12 +276,12 @@ class StoreController < ApplicationController
 
   private
 
-  def finalize_order(order)
+  def finalize_order(order, send_email_confirmation: nil)
     success = false
     begin
       order.finalize!
       Rails.logger.error("SUCCESS purchase #{order.customer}; Cart summary: #{order.summary}")
-      email_confirmation(:confirm_order,order.purchaser,order) if params[:email_confirmation]
+      email_confirmation(:confirm_order,order.purchaser,order) if send_email_confirmation
       success = true
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
       flash[:alert] = order.errors.full_messages

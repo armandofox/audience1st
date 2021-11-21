@@ -14,6 +14,8 @@ Scenario: donor logged in, page gets prepopulated with donor info
   When I fill in "Donation amount" with "15"
   And I press "Charge Donation to Credit Card"
   Then I should see "You have paid a total of $15.00 by Credit card"
+  And an email should be sent to customer "Tom Foolery" containing "A1 Staging Theater thanks you for your donation!"
+  And an email should be sent to customer "Tom Foolery" containing "15.00  Donation to General Fund"
   And customer "Tom Foolery" should have a donation of $15.00 to "General Fund"
   And customer "Tom Foolery" should have a donation of $10.00 to "General Fund"
   And customer "Tom Foolery" should have an order dated "2009-12-01" containing a check donation of $10.00 to "General Fund"
@@ -32,7 +34,8 @@ Scenario: donor not logged in but has matching account
 
   Then I should see "Donation to General Fund $20.00"
   And customer "Tom Foolery" should have a donation of $20.00 to "General Fund"
-  And  customer "Tom Foolery" should have a donation of $10.00 to "General Fund"
+  And customer "Tom Foolery" should have a donation of $10.00 to "General Fund"
+  And an email should be sent to customer "Tom Foolery" containing "$ 20.00  Donation to General Fund"
   And customer "Tom Foolery" should have an order dated "2010-01-01" containing a credit_card donation of $20.00 to "General Fund"
   And I should not see "Back to My Tickets"
   And customer "Tom Foolery" should not be logged in
@@ -47,9 +50,37 @@ Scenario: donor not logged in and no previous account
   Then I should see "Thank You for Your Purchase!"
   And customer "Joe Mallon" should exist
   And customer "Joe Mallon" should have a donation of $10.00 to "General Fund"
+  And an email should be sent to customer "Joe Mallon" containing "$ 10.00  Donation to General Fund"
   And I should not see "Back to My Tickets"
   And customer "Joe Mallon" should not be logged in
   
+Scenario: donor not logged in and provides valid address but no email
+
+  Given I am not logged in
+  When I go to the quick donation page
+  And I fill in the ".billing_info" fields with "Joe Mallon, 123 Fake St, Oakland, CA 94611, 555-1212, "
+  And I fill in "Donation amount" with "10"
+  And I press "Charge Donation to Credit Card"
+  Then I should see "Thank You for Your Purchase"
+  And customer "Joe Mallon" should exist with email ""
+  
+Scenario: donor has account, is not logged in, and provides different billing address than account
+
+  Given I am not logged in
+  And customer "Joe Mallon" exists with email "joe@joescafe.com"
+  When I go to the quick donation page
+  And I fill in the ".billing_info" fields with "Joe Mallon, 99999 New Address, Oakland, CA 94611, 555-1212, joe@joescafe.com"
+  And I fill in "Donation amount" with "10"
+  And I press "Charge Donation to Credit Card"
+  Then I should see "Thank You for Your Purchase"
+  And an email should be sent to customer "Joe Mallon" containing "$ 10.00  Donation to General Fund"
+  And customer "Joe Mallon" should have the following attributes:
+    | attribute | value             |
+    | street    | 99999 New Address |
+    | city      | Oakland           |
+    | state     | CA                |
+    | zip       | 94611             |
+
 Scenario: admin logged in, records donation on behalf of patron
 
   Given I am logged in as boxoffice manager
@@ -59,4 +90,5 @@ Scenario: admin logged in, records donation on behalf of patron
   And I press "Charge Donation to Credit Card"
   Then I should see "Thank You for Your Purchase!"
   And customer "Joe Mallon" should have a donation of $9.00 to "General Fund"
+  And an email should be sent to customer "Joe Mallon" containing "$  9.00  Donation to General Fund"
   

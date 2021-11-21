@@ -1,5 +1,47 @@
 require 'rails_helper'
 
+describe 'quick donation customer search' do
+  context 'when matching customer' do
+    specify 'has different address, address gets updated' do
+      create(:customer, :email => 'joe@joescafe.com')
+      @new = Customer.for_donation({:street => '999 Broadway', :email => 'joe@joescafe.com'})
+      expect(@new.street).to eq('999 Broadway')
+    end
+    specify 'has blank address, address gets updated' do
+      create(:customer, :street => nil, :city => nil, :state => nil, :zip => nil, :created_by_admin => true)
+      @new = Customer.for_donation({:email => 'joe@joescafe.com',
+                                    :street => '999 Broadway', :city => 'New York',
+                                    :state => 'NY', :zip => '10019'})
+      expect(@new.street).to eq '999 Broadway'
+      expect(@new.city).to eq 'New York'
+      expect(@new.state).to eq 'NY'
+      expect(@new.zip).to eq '10019'
+    end
+    describe 'when no email match' do
+      before(:each) do
+        @cust = create(:customer, :first_name => 'Joe', :last_name => 'Mallon',
+                      :street => '999 Broadway', :city => 'New York',
+                      :state => 'NY', :zip => '10019', :email => 'tom@fool.com')
+      end
+      specify 'but unique address match, returns customer using same address' do
+        @new = Customer.for_donation({:first_name => 'joe', :last_name => 'mallon',
+                                      :street => '999 Broadway', :city => 'New York',
+                                      :state => 'NY', :zip => '10019'})
+        expect(@new).to eq(@cust)
+      end
+      specify 'and no unique address match, creates customer with given address' do
+        @new = Customer.for_donation({:first_name => 'joe', :last_name => 'mallon',
+                                      :street => '123 Fakeroo', :city => 'Albany',
+                                      :state => 'CA', :zip => '94745'})
+        expect(@new.street).to eq('123 Fakeroo')
+        expect(@new.city).to eq('Albany')
+        expect(@new.state).to eq('CA')
+        expect(@new.zip).to eq('94745')
+      end
+    end
+  end
+end
+
 describe 'possible customer matches' do
   before :each do
     @c = [
