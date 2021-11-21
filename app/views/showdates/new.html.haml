@@ -32,8 +32,9 @@
       %label.col-form-label{:for => :showdate_seatmap_id} Seat map
       = popup_help_for :reserved_seating
     .col-md-3= select_tag 'showdate[seatmap_id]', ga_option + seatmap_options, :class => 'form-control showdate-seating-choices'
-    .col-md-2= link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
-    .col-md-2= link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary mx-1'
+    .col-md-6
+      = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
+      = link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary mx-1'
 
   .form-row.py-1.Tt
     .col-md-3.text-right
