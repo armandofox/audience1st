@@ -28,7 +28,7 @@ a1client = namespace :a1client  do
     puts "done"
   end
 
-  desc "Configures sender domain, venue full name, random admin password, boxoffice & help email addresses, and staff-only access for the (new) client named TENANT using VENUE_FULLNAME, using underscores for spaces. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
+  desc "Configures sender domain, venue full name,  admin@audience1st.com admin user with ADMIN_PASSWORD or a random password if not given, boxoffice & help email addresses, and staff-only access for the (new) client named TENANT using VENUE_FULLNAME, using underscores for spaces. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
   task :configure => :environment do
     Audience1stRakeTasks.check_vars!
     tenant = ENV['TENANT']
@@ -39,13 +39,14 @@ a1client = namespace :a1client  do
         :box_office_email   => "boxoffice@#{tenant}.org",
         :help_email         => "help@#{tenant}.org",
         :staff_access_only  => true )
+      admin_pw = ENV['ADMIN_PASSWORD'] || ('a'..'z').to_a.shuffle[0,8].join
       Customer.find_by(:first_name => 'Super', :last_name => 'Administrator').
-        update_attributes!(:password => ('a'..'z').to_a.shuffle[0,8].join)
+        update_attributes!(:password => admin_pw)
     end
     puts "Sender domain configured, venue full name/help email/boxoffice email set up (educated guesses), admin password randomized, and staff-only access enabled for #{ENV['VENUE_FULLNAME']} (#{tenant})"
   end
 
-  desc "Set up new client TENANT as VENUE_FULLNAME."
+  desc "Use `heroku run -e \"TENANT=tenantname;VENUE_FULLNAME=name with spaces\" rake a1:provision` to set up new client TENANT as VENUE_FULLNAME."
   task :provision => :environment do
     Audience1stRakeTasks.check_vars!
     a1client['create'].invoke
