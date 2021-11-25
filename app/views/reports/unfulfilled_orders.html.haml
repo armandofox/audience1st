@@ -2,10 +2,12 @@
 
 %h1= "#{@report.vouchers.length} unfulfilled orders (#{@report.unique_addresses} unique addresses) as of #{Time.current.to_s(:short)}"
 
-= form_tag mark_fulfilled_path, :id=>'uf' do
-  = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'btn btn-primary'
-  = popup_help_for 'download_to_excel'
-  = submit_tag 'Mark Checked Orders as Fulfilled', :class => 'btn btn-success'
+= form_tag mark_fulfilled_path, :id=>'uf', :class => 'form' do
+  .row
+    .col
+      = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'btn btn-primary'
+      = popup_help_for 'download_to_excel'
+      = submit_tag 'Mark Checked Orders as Fulfilled', :class => 'btn btn-success'
 
   %table.a1-table.table.table-hover
     %tr
