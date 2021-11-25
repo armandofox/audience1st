@@ -28,13 +28,22 @@ class Seatmap < ActiveRecord::Base
   def emit_json(unavailable = [], selected = [])
     seatmap = self.json
     image_url = self.image_url.to_json
+    # if seatmap has only one zone, hide zone name during seat selection
+    hide_zone_name = (!!(zones.keys.length == 1)).to_json
     # since the 'unavailable' and 'selected' values are used by the actual
     # seatmap JS code to identify seats, labels must include the full seating zone display name.
     unavailable = unavailable.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
     selected = selected.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
     # seat classes: 'r' = regular, 'a' = accessible
     seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
-    %Q{ {"map": #{seatmap}, "rows": #{rows}, "columns": #{columns}, "seats": #{seats}, "unavailable": #{unavailable}, "selected": #{selected}, "image_url": #{image_url} }}
+    %Q{ {"map": #{seatmap},
+"rows": #{rows},
+"columns": #{columns},
+"seats": #{seats},
+"unavailable": #{unavailable},
+"selected": #{selected},
+"hideZoneName": #{hide_zone_name},
+"image_url": #{image_url} }}
   end
 
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
