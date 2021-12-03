@@ -53,4 +53,21 @@ a1client = namespace :a1client  do
     a1client['configure'].invoke
     puts "Client provisioned. Next: Set up DNS subdomain resolution in Heroku, add to tenant_names envar, and configure Stripe keys."
   end
+
+  desc 'In preparation for importing to tenant TO, dump contents of tenant FROM (schema) on APP (Heroku app name) into ${TO}.pgdump, renaming all schema references to TO for importing to a destination schema (which must not already exist)'
+  task :dump_schema => :environment do
+    raise 'FROM is required' unless (from = ENV["FROM"])
+    raise 'TO is required' unless (to = ENV["TO"])
+    raise 'APP is required' unless (app = ENV["APP"])
+    sed = %Q{perl -pe 's/#{from};/#{to};/g, s/#{from}\./#{to}./g, s/"#{from}"\./"#{to}"./g, s/\r\n/ /g'}
+    cmd = %Q{heroku run pg_dump -Fp --inserts --no-privileges --no-owner '$DATABASE_URL' --schema=#{from} -a #{app} } <<
+          %Q{ | #{sed}  > #{to}.pgdump } 
+    puts cmd
+    if system(cmd)
+      puts "Done.  Use `heroku pg:psql -a appname < #{to}.pgdump` to import schema."
+    else
+      puts "Error: #{$?}"
+    end
+  end
+
 end
