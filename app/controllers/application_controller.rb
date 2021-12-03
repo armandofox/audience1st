@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   if Rails.env.production?
     force_ssl
-    before_action :strict_transport_security
+    before_action :set_secure_headers
   end
 
   include AuthenticatedSystem
@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   before_action :maintenance_mode?
   before_action :maybe_run_sweepers  # periodically sweep stale orders
   before_action :set_globals  # set current_user, among other things
-
+  
   private
 
   def maintenance_mode?
@@ -29,10 +29,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def strict_transport_security # :rails4: can be omitted for rails >=5
+  def set_secure_headers
     if request.ssl?
+      # :rails4: can be omitted for rails >=5
       response.headers['Strict-Transport-Security'] = "max-age=31536000; includeSubDomains"
     end
+    response.headers['X-Robots-Tag'] = 'none' # equivalent to 'noindex,nofollow'
   end
 
   public
