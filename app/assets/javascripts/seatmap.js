@@ -1,5 +1,6 @@
 A1.seatmap = {
   selectedSeats: []
+  ,hideZoneName: false
   ,enclosingSelector: ''
   ,unavailable: []
   ,max: 0
@@ -64,6 +65,7 @@ A1.seatmap = {
     A1.seatmap.settings.legend.node = $('.legend-container .legend');
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
+    A1.seatmap.hideZoneName = j.hideZoneName;
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
     A1.seatmap.selected = j.selected;  // pre-selected seats
     A1.seatmap.columns = j.columns;         // determines minimum displaywidth
@@ -108,7 +110,11 @@ A1.seatmap = {
     $('.seatCharts-seat').each(function(index) {
       var id = $(this).attr('id');
       if ((typeof(id) != 'undefined')  &&  (id != '')) {
-        $(this).attr('data-seatnum', id);
+        if (A1.seatmap.hideZoneName) {
+          $(this).attr('data-seatnum', A1.seatmap.seatLabelToSeatNum(id));
+        } else {
+          $(this).attr('data-seatnum', id);
+        }
       }
     });
   }
