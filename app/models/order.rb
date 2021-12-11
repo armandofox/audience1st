@@ -33,7 +33,6 @@ class Order < ActiveRecord::Base
 
   def initialize(*args)
     @purchase_args = {}
-    attributes[:type] ||= 'Order'
     super
   end
 
