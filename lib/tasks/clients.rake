@@ -9,7 +9,7 @@ module Audience1stRakeTasks
 end
 
 a1client = namespace :a1client  do
-  desc "Add and seed new client named TENANT.  Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, and set DNS resolution for <tenant>.audience1st.com."
+  desc "Use `heroku run -e \"TENANT=tenant_name\" rake a1client:drop` to drop client named `tenant_name` by deleting its schema.  Don't forget to also remove the tenant name from `tenant_names` runtime environment variable, and unset DNS resolution for <tenant>.audience1st.com."
   task :drop => :environment do
     raise 'TENANT is required' unless (tenant = ENV["TENANT"])
     puts "Dropping '#{tenant}'..."
@@ -17,6 +17,7 @@ a1client = namespace :a1client  do
     puts "Dropped.  Don't forget to remove from Heroku DNS and from `tenant_names` envar."
   end
 
+  desc "Add and seed new client named TENANT, but you probably should be using the a1client:provision task instead."
   task :create => :environment do
     raise 'TENANT is required' unless (tenant = ENV["TENANT"])
     puts "Creating '#{tenant}'..."
@@ -59,7 +60,7 @@ a1client = namespace :a1client  do
     raise 'FROM is required' unless (from = ENV["FROM"])
     raise 'TO is required' unless (to = ENV["TO"])
     raise 'APP is required' unless (app = ENV["APP"])
-    sed = %Q{perl -pe 's/#{from};/#{to};/g, s/#{from}\./#{to}./g, s/"#{from}"\./"#{to}"./g, s/\r\n/ /g'}
+    sed = %Q{perl -pe 's/#{from};/#{to};/g, s/#{from}\./#{to}./g, s/"#{from}"\./"#{to}"./g'}
     cmd = %Q{heroku run pg_dump -Fp --inserts --no-privileges --no-owner '$DATABASE_URL' --schema=#{from} -a #{app} } <<
           %Q{ | #{sed}  > #{to}.pgdump } 
     puts cmd
