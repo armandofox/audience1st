@@ -59,8 +59,8 @@ staging = namespace :staging do
   task :api_keys => :environment do
     StagingHelper::switch_to_staging!
     Option.first.update_attributes!(
-      :stripe_key => Figaro.env.STRIPE_TEST_KEY_FOR_PROVISIONING!,
-      :stripe_secret => Figaro.env.STRIPE_TEST_SECRET_FOR_PROVISIONING!,
+      :stripe_key => '',
+      :stripe_secret => '',
       :sender_domain => '')   # domain blank disables email sending
   end
 
