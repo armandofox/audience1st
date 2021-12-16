@@ -351,11 +351,12 @@ class Order < ActiveRecord::Base
         self.items += retail_items
         self.items << donation if donation
         self.items.each do |i|
-          i.finalize!
-          i.sold_on = sold_on_date
-          i.walkup = self.walkup? 
-          i.processed_by = self.processed_by
-          i.comments = self.comments if i.comments.blank?  && i.kind_of?(Voucher)
+          i.assign_attributes(
+            :finalized => true,
+            :sold_on => sold_on_date,
+            :walkup  => self.walkup?,
+            :processed_by => self.processed_by,
+            :comments => (self.comments if i.comments.blank?  && i.kind_of?(Voucher)))a
         end
         # there is also a direct relationship Customer has-many Items, which we should get rid of...
         customer.add_items(vouchers)
