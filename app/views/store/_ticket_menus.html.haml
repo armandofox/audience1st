@@ -5,27 +5,27 @@
 
   %br/
 
-  - if !(@sh.try(:description).blank?)
-    #show_description.explanation= @sh.description
+  - if !(@store.sh.try(:description).blank?)
+    #show_description.explanation= @store.sh.description
 
   .form-group.form-row
-    %label.col-form-label.text-right.col-sm-4{:for => "show"}= label_for_event_type(@what)
-    = select_tag('show', options_with_default(@sh, @all_shows),                |
-      :onchange => "window.location = '#{@show_url}'.replace(/XXXX/,$('#show').val())", :class => 'form-control col-sm-4') |
+    %label.col-form-label.text-right.col-sm-4{:for => "show"}= label_for_event_type(@store.what)
+    = select_tag('show', options_with_default(@store.sh, @store.all_shows),          |
+      :onchange => "window.location = '#{@store.show_url}'.replace(/XXXX/,$('#show').val())", :class => 'form-control col-sm-4') |
     .col-sm-4
   .form-group.form-row
     %label.col-form-label.text-right.col-sm-4{:for => "showdate"} Date
-    = select_tag('showdate', options_with_default(@sd, @all_showdates),        |
-      :onchange => "window.location = '#{@showdate_url}'.replace(/XXXX/,$('#showdate').val())", :class => 'form-control col-sm-4') |
+    = select_tag('showdate', options_with_default(@store.sd, @store.all_showdates),        |
+      :onchange => "window.location = '#{@store.showdate_url}'.replace(/XXXX/,$('#showdate').val())", :class => 'form-control col-sm-4') |
     .col-sm-4
-      - if @gAdminDisplay &&  (@sd.kind_of?(Showdate))
-        %label.col-form-label.alert-warning= "#{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} in house"
+      - if @gAdminDisplay &&  (@store.sd.kind_of?(Showdate))
+        %label.col-form-label.alert-warning= "#{@store.sd.saleable_seats_left} saleable/#{@store.sd.total_seats_left} in house"
 
   #voucher_menus
-    - if @valid_vouchers.empty? && @sd
-      %p.text-center.border-danger= @sd.show.sold_out_customer_info
+    - if @store.valid_vouchers.empty? && @store.sd
+      %p.text-center.border-danger= @store.sd.show.sold_out_customer_info
     - else
-      - @valid_vouchers.each do |v|
+      - @store.valid_vouchers.each do |v|
         %div{:id => "vouchertype_#{v.vouchertype_id}",:class => 'form-group form-row'}
           - fieldname = "valid_voucher[#{v.id}]"
           - max_sales = [30, v.max_sales_for_this_patron].min
@@ -42,7 +42,7 @@
               %span.text-info.col-sm-7.border.border-danger.s-explain= v.explanation
           = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 
-    - if ! @valid_vouchers.empty? && !@sd.stream?
+    - if ! @store.valid_vouchers.empty? && !@store.sd.stream?
       .form-group.form-row
         %label.col-form-label.text-right.col-sm-4= t('store.accessible_seating_prompt')
         = text_area_tag 'comments', '', :rows => 1, :class => 'form-control col-sm-6', :placeholder => t('store.accessible_seating_description')
