@@ -29,7 +29,7 @@ class Show < ActiveRecord::Base
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
     select('DISTINCT shows.*').
-    order('listing_date')
+    order('showdates.thedate')
   }
 
   scope :for_seasons, ->(from,to) {  where(:season => from..to) }

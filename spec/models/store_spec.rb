@@ -2,24 +2,31 @@ require 'rails_helper'
 
 describe Store, "landing page" do
   before(:each) do
-    @sd1 = create(:showdate, :thedate => 1.week.from_now)
-    @sd2 = create(:showdate, :thedate => 4.weeks.from_now)
+    @sd1 = create(:showdate, :thedate => 4.weeks.from_now)
+    @sd2 = create(:showdate, :thedate => 1.week.from_now)
   end
   context 'for patron' do
     before(:each) do ; @u = create(:customer) ; end
+    it 'orders shows by first showdate, not by listing date' do
+      @sd1.show.update_attributes!(:listing_date => 3.weeks.ago) # earlier listing date, later showdate
+      @sd2.show.update_attributes!(:listing_date => 1.day.ago)
+      @s = Store::Flow.new(@u, @u, nil, {})
+      @s.setup
+      expect(@s.all_shows).to eq([@sd2.show, @sd1.show])
+    end
     describe "with valid & listed showdate" do
       before(:each) do
         @s = Store::Flow.new(@u, @u, nil, {:showdate_id => @sd1.id})
         @s.setup
       end
       it 'selects showdate' do ; expect(@s.sd.id).to eq(@sd1.id) ; end
-      it 'includes shows' do ; expect(@s.all_shows).to eq ([@sd1.show,@sd2.show]) ; end
+      it 'includes shows' do ; expect(@s.all_shows).to eq ([@sd2.show,@sd1.show]) ; end
     end
     describe 'with invalid showdate' do
       it 'defaults to earliest valid showdate with tickets' do
         @s = Store::Flow.new(@u, @u, nil, {:showdate_id => 99999})
         @s.setup
-        expect(@s.sd.id).to eq (@sd1.id)
+        expect(@s.sd.id).to eq (@sd2.id)
       end
     end
     describe 'with valid but not-yet-listed show' do
