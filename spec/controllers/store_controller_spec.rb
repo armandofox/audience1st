@@ -197,26 +197,6 @@ describe StoreController do
 
   end
 
-  describe "landing page with show selected" do
-    before(:each) do
-      login_as @buyer
-      @sd1 = create(:showdate, :thedate => 1.week.from_now)
-      @sd2 = create(:showdate, :thedate => 4.weeks.from_now)
-    end
-    it "should select showdate if given" do
-      get :index, {:customer_id => @buyer.id, :showdate_id => @sd2.id}
-      expect(assigns(:sd).id).to eq(@sd2.id)
-    end
-    it "should default to earliest showdate with tickets if invalid" do
-      get :index, {:customer_id => @buyer.id, :showdate_id => 9999999}
-      expect(assigns(:sd).id).to eq(@sd1.id)
-    end
-    it "should not display show before its listing date" do
-      @sd1.show.update_attributes!(:listing_date => 2.days.from_now)
-      get :index, {:customer_id => @buyer.id, :showdate_id => @sd1.id}
-      expect(assigns(:all_shows)).not_to include(@sd1.show)
-    end
-  end
 
   describe 'redirect if error adding to cart' do
     before(:each) do

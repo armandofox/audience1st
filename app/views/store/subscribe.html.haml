@@ -1,6 +1,6 @@
 = themed
 = set_active_tab '#t_store_subscribe'
-= sales_banners_for :subscription, @subscriber, @next_season_subscriber
+= sales_banners_for :subscription, @customer.subscriber?, @customer.next_season_subscriber?
 
 - if @store.logged_in.nil?
   %p.lead.text-center.bg-light.py-4

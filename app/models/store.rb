@@ -52,11 +52,6 @@ class Store
 
       @what = Show.type(params[:what])
       @promo_code = params[:promo_code]
-
-      @show_url = url_for(params.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
-      @showdate_url = url_for(params.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
-      @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
-
     end
 
     def nothing_to_buy?
@@ -65,8 +60,8 @@ class Store
       @all_showdates.empty?     # no other eligible showdates for this show
     end
 
-    def setup_for_showdate(sd)
-      return if sd.nil?
+    def setup
+      return unless (sd = showdate_from_params || showdate_from_show_params || showdate_from_default)
       @what = sd.show.event_type
       @sd = sd
       @sh = @sd.show
@@ -107,11 +102,19 @@ class Store
         v.adjust_for_customer
       end.find_all(&:visible?).sort_by(&:display_order)
       
-      @all_shows = Show.current_and_future.of_type(@what) || []
-      if (@what == 'Regular Show' && !@all_shows.include?(@sh))
-        @all_shows << @sh
-      end
+      @all_shows = Show.current_and_future.where('listing_date <= ?', Time.current.to_date).
+                     of_type(@what) || []
     end
+
+    def showdate_from_params
+      Showdate.includes(:valid_vouchers).find_by_id(@params[:showdate_id])
+    end
+    def showdate_from_show_params
+      (s = Show.find_by_id(@params[:show_id])) &&
+        (s.upcoming_showdates.first || s.showdates.first)
+    end
+    def showdate_from_default ; Showdate.current_or_next(:type => @params[:what]) ; end
+
 
   end
 

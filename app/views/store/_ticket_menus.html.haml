@@ -11,12 +11,12 @@
   .form-group.form-row
     %label.col-form-label.text-right.col-sm-4{:for => "show"}= label_for_event_type(@store.what)
     = select_tag('show', options_with_default(@store.sh, @store.all_shows),          |
-      :onchange => "window.location = '#{@store.show_url}'.replace(/XXXX/,$('#show').val())", :class => 'form-control col-sm-4') |
+      :onchange => "window.location = '#{@show_url}'.replace(/XXXX/,$('#show').val())", :class => 'form-control col-sm-4') |
     .col-sm-4
   .form-group.form-row
     %label.col-form-label.text-right.col-sm-4{:for => "showdate"} Date
     = select_tag('showdate', options_with_default(@store.sd, @store.all_showdates),        |
-      :onchange => "window.location = '#{@store.showdate_url}'.replace(/XXXX/,$('#showdate').val())", :class => 'form-control col-sm-4') |
+      :onchange => "window.location = '#{@showdate_url}'.replace(/XXXX/,$('#showdate').val())", :class => 'form-control col-sm-4') |
     .col-sm-4
       - if @gAdminDisplay &&  (@store.sd.kind_of?(Showdate))
         %label.col-form-label.alert-warning= "#{@store.sd.saleable_seats_left} saleable/#{@store.sd.total_seats_left} in house"

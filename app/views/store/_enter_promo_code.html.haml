@@ -1,7 +1,7 @@
 .form-group.row#enter_promo_code
   %label.col-form-label.text-right.col-sm-4{:for => "promo_code"} Discount Code
   = text_field_tag 'promo_code', @promo_code, :size => 12, :class => 'form-control col-sm-2'
-  = link_to 'Redeem', '#', :onclick => "window.location = '#{@store.reload_url}'.replace('XXXX',$('#promo_code').val().toUpperCase()); false;", :class => 'btn btn-success col-sm-2'
+  = link_to 'Redeem', '#', :onclick => "window.location = '#{@reload_url}'.replace('XXXX',$('#promo_code').val().toUpperCase()); false;", :class => 'btn btn-success col-sm-2'
 - unless @promo_code.blank?
   .row
     .col-sm-6.offset-4 (Discounted price appears below <b>only</b> if discount still available)

@@ -77,20 +77,22 @@ class StoreController < ApplicationController
 
     @page_title = "#{Option.venue} - Tickets"
     reset_shopping unless (@promo_code = params[:promo_code])
-    @store.setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
+
+    @show_url = url_for(params.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @showdate_url = url_for(params.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
+    @store.setup
   end
 
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,
   # but valid for eligibility for tickets
   def subscribe
     return_after_login params.except(:customer_id)
-    @nobody_really_logged_in = (current_user().nil?)
     @store = Store::Flow.new(current_user(), @customer, @gAdminDisplay, params)
     @page_title = "#{Option.venue} - Subscriptions"
     @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
-    @subscriber = @customer.subscriber?
     @what = 'Subscription'
-    @next_season_subscriber = @customer.next_season_subscriber?
+
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
     if @gAdminDisplay
@@ -285,14 +287,6 @@ class StoreController < ApplicationController
     success
   end
 
-  def showdate_from_params
-    Showdate.includes(:valid_vouchers).find_by_id(params[:showdate_id])
-  end
-  def showdate_from_show_params
-    (s = Show.find_by_id(params[:show_id])) &&
-      (s.upcoming_showdates.first || s.showdates.first)
-  end
-  def showdate_from_default ; Showdate.current_or_next(:type => params[:what]) ; end
   def recipient_from_params(customer_params)
     try_customer = Customer.new(customer_params)
     recipient = Customer.find_unique(try_customer)
