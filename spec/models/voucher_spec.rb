@@ -135,7 +135,7 @@ describe Voucher do
           { (@vt1 = create(:vouchertype_included_in_bundle)) => 2,
             (@vt2 = create(:vouchertype_included_in_bundle)) => 1 })
         vouchers = VoucherInstantiator.new(@bundle).from_vouchertype
-        vouchers.each(&:finalize!)
+        vouchers.each { |v| v.finalized = true }
         @from.vouchers += vouchers
         @from.save!
         # now transfer it

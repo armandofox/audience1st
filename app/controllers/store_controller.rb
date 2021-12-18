@@ -172,7 +172,7 @@ class StoreController < ApplicationController
       @gOrderInProgress.destroy
       return redirect_to(referer_target)
     end
-    add_service_charge_to_cart
+    @gOrderInProgress.add_service_charge
     # order looks OK; all subsequent actions should display in-progress order at top of page
     @gOrderInProgress.save!
     set_order_in_progress @gOrderInProgress
@@ -422,10 +422,6 @@ class StoreController < ApplicationController
       @gOrderInProgress.errors.add(:base, "There were problems with your retail purchase: " <<
         r.errors.full_messages.join(', '))
     end
-  end
-
-  def add_service_charge_to_cart
-    @gOrderInProgress.add_retail_item RetailItem.new_service_charge_for(params[:what])
   end
 
 end

@@ -13,21 +13,17 @@ class RetailItem < Item
     "Retail: #{comments}"
   end
 
-  def self.new_service_charge_for(what='Regular Show')
-    if (what == 'Class' && (amount = Option.classes_order_service_charge) > 0)
-      new(:amount => amount,
-        :comments => Option.classes_order_service_charge_description,
-        :account_code => AccountCode.find(Option.classes_order_service_charge_account_code))
-    elsif (what == 'Subscription' && (amount = Option.subscription_order_service_charge) > 0)
-      new(:amount => amount,
-        :comments => Option.subscription_order_service_charge_description,
-        :account_code => AccountCode.find(Option.subscription_order_service_charge_account_code))
-    elsif (amount = Option.regular_order_service_charge) > 0
-      new(:amount => amount,
-        :comments => Option.regular_order_service_charge_description,
-        :account_code => AccountCode.find(Option.regular_order_service_charge_account_code))
+  def self.new_service_charge_for(what)
+    if [:classes, :subscription, :regular].include?(what)
+      if (amount = Option.send("#{what}_order_service_charge")) > 0
+        new(:amount => amount,
+            :comments => Option.send("#{what}_order_service_charge_description"),
+            :account_code => AccountCode.find(Option.send("#{what}_order_service_charge_account_code")))
+      else
+        nil
+      end
     else
-      nil
+      raise "Unknown service charge type: #{what}"
     end
   end
 

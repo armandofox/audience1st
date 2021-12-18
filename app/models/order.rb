@@ -193,6 +193,16 @@ class Order < ActiveRecord::Base
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
 
+  def add_service_charge
+    if includes_enrollment?
+      add_retail_item RetailItem.new_service_charge_for(:classes)
+    elsif includes_regular_vouchers?
+      add_retail_item RetailItem.new_service_charge_for(:regular)
+    elsif includes_bundle?
+      add_retail_item RetailItem.new_service_charge_for(:subscription)
+    end
+  end
+
   def reserved_seating_params
     if vouchers.any? { |v| v.showdate.has_reserved_seating? }
       {:showdate_id => vouchers.first.showdate_id, :num_seats => vouchers.size}
@@ -351,12 +361,12 @@ class Order < ActiveRecord::Base
         self.items += retail_items
         self.items << donation if donation
         self.items.each do |i|
-          i.assign_attributes(
-            :finalized => true,
-            :sold_on => sold_on_date,
-            :walkup  => self.walkup?,
-            :processed_by => self.processed_by,
-            :comments => (self.comments if i.comments.blank?  && i.kind_of?(Voucher)))
+          i.assign_attributes(:finalized => true,
+                              :sold_on => sold_on_date,
+                              :walkup  => self.walkup?,
+                              :processed_by => self.processed_by)
+          # "Pickup by" comments should get copied to vouchers (only)
+          i.comments = self.comments if i.comments.blank? && i.kind_of?(Voucher)
         end
         # there is also a direct relationship Customer has-many Items, which we should get rid of...
         customer.add_items(vouchers)
@@ -376,7 +386,7 @@ class Order < ActiveRecord::Base
       raise e
     end
   end
-
+  
   def refundable?
     completed? &&
       items.any? { |i| !i.kind_of?(CanceledItem) } # in case all items were ALREADY refunded and now marked as canceled

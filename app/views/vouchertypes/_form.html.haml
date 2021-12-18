@@ -14,7 +14,7 @@
       = text_field_tag 'vouchertype_category', human_name_for_category(@vouchertype.category), :class => 'form-control text-bold', :disabled => 'disabled'
       = hidden_field_tag 'vouchertype_category_sym', @vouchertype.category, :class => 'vouchertype-category'
 
-- if @vouchertype.new_record?
+- if @vouchertype.new_record? && @vouchertype.bundle?
   .form-row.my-2.revenue.comp.subscriber.nonticket 
     .col-md-8.offset-3.alert.alert-info Enter bundle/subscription info below, click "Create", then edit this bundle/subscription to add the appropriate tickets to it.
 

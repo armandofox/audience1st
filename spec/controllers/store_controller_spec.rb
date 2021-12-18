@@ -211,6 +211,11 @@ describe StoreController do
       get :index, {:customer_id => @buyer.id, :showdate_id => 9999999}
       expect(assigns(:sd).id).to eq(@sd1.id)
     end
+    it "should not display show before its listing date" do
+      @sd1.show.update_attributes!(:listing_date => 2.days.from_now)
+      get :index, {:customer_id => @buyer.id, :showdate_id => @sd1.id}
+      expect(assigns(:all_shows)).not_to include(@sd1.show)
+    end
   end
 
   describe 'redirect if error adding to cart' do
