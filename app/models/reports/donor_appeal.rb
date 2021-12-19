@@ -11,6 +11,6 @@ class DonorAppeal < Report
     # if subscribers included, need to join to vouchertypes table
     amount = params[:donation_amount].to_f
     from,to = Time.range_from_params(params[:special_report_dates])
-    @relation = Customer.donated_during(from, to, amount)
+    @relation = Customer.regular_customers.donated_during(from, to, amount)
   end
 end

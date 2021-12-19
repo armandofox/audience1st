@@ -11,7 +11,7 @@ class AllSubscribers < Report
   def generate(params = {})
     add_error("Please specify one or more subscriber voucher types.") and return if (vouchertypes = params[:vouchertypes]).blank?
     vouchertypes = Report.list_of_ints_from_multiselect(params[:vouchertypes])
-    @relation = Customer.purchased_any_vouchertypes(vouchertypes) 
+    @relation = Customer.regular_customers.purchased_any_vouchertypes(vouchertypes) 
   end
 end
 
