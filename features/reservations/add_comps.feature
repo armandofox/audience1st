@@ -67,7 +67,7 @@ Feature: add comps and reserve for a show
     And  I fill in "Optional comments:" with "Courtesy Comp"
     And I check "Send Email Confirmation"
     And  I press "Add Vouchers"
-    And an email should be sent to customer "Armando Fox" containing "Macbeth"
+    Then an email should be sent to customer "Armando Fox" containing "Macbeth"
     
   Scenario: email should not be sent if customer_email is unchecked
 
@@ -79,7 +79,7 @@ Feature: add comps and reserve for a show
     And  I fill in "Optional comments:" with "Courtesy Comp"
     And I uncheck "Send Email Confirmation"
     And  I press "Add Vouchers"
-    And no email should be sent to customer "Armando Fox"
+    Then no email should be sent to customer "Armando Fox"
 
   Scenario: checkbox unavailable if customer has no email
 
