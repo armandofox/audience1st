@@ -140,7 +140,7 @@ class StoreController < ApplicationController
     redirect_route = quick_donate_path(:customer_id => @customer.id, :donation => @amount)
     @amount > 0 or return redirect_to(redirect_route, :alert => 'Donation amount must be provided')
     # Given valid donation, customer, and charge token, create & place credit card order.
-    @gOrderInProgress = Order.new_from_donation(@amount, AccountCode.default_account_code, @customer)
+    @gOrderInProgress = Order.new_from_donation(@amount, Donation.default_code, @customer)
     @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
     @gOrderInProgress.purchase_args = {:credit_card_token => params[:credit_card_token]}
     @gOrderInProgress.processed_by = @customer
