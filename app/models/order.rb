@@ -377,7 +377,7 @@ class Order < ActiveRecord::Base
         self.sold_on = sold_on_date
         self.save!
         if purchase_medium == :credit_card
-          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
+          Store::Payment.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
         end
       end
     rescue ValidVoucher::InvalidRedemptionError => e

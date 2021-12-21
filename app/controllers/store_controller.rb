@@ -71,34 +71,28 @@ class StoreController < ApplicationController
 
   def index
     return_after_login params.except(:customer_id)
-    @logged_in = current_user()  
-    @valid_vouchers = []
-    @all_shows = []
-    @all_showdates = []
+
+    @store = Store::Flow.new(current_user(), @customer, @gAdminDisplay, params)
+    return redirect_to(store_subscribe_path(@customer)) if params[:what] == 'Subscription'
+
+    @page_title = "#{Option.venue} - Tickets"
+    reset_shopping unless (@promo_code = params[:promo_code])
+
     @show_url = url_for(params.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @showdate_url = url_for(params.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
-    @what = Show.type(params[:what])
-    redirect_to store_subscribe_path(@customer) and return if @what == 'Subscription'
-    @page_title = "#{Option.venue} - Tickets"
-    reset_shopping unless (@promo_code = params[:promo_code])
-    setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
-    @nothing_to_buy =
-      @valid_vouchers.empty? && # no tickets for this showdate
-      @all_shows.size == 1   && # no other shows coming up
-      @all_showdates.empty?     # no other eligible showdates for this show
+    @store.setup
   end
 
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,
   # but valid for eligibility for tickets
   def subscribe
     return_after_login params.except(:customer_id)
-    @nobody_really_logged_in = (current_user().nil?)
+    @store = Store::Flow.new(current_user(), @customer, @gAdminDisplay, params)
     @page_title = "#{Option.venue} - Subscriptions"
     @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
-    @subscriber = @customer.subscriber?
     @what = 'Subscription'
-    @next_season_subscriber = @customer.next_season_subscriber?
+
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
     if @gAdminDisplay
@@ -293,14 +287,6 @@ class StoreController < ApplicationController
     success
   end
 
-  def showdate_from_params
-    Showdate.includes(:valid_vouchers).find_by_id(params[:showdate_id])
-  end
-  def showdate_from_show_params
-    (s = Show.find_by_id(params[:show_id])) &&
-      (s.upcoming_showdates.first || s.showdates.first)
-  end
-  def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
   def recipient_from_params(customer_params)
     try_customer = Customer.new(customer_params)
     recipient = Customer.find_unique(try_customer)
@@ -355,52 +341,6 @@ class StoreController < ApplicationController
       flash[:alert] = "Invalid form of payment."
     end
     return meth,args
-  end
-
-  def setup_for_showdate(sd)
-    return if sd.nil?
-    @what = sd.show.event_type
-    @sd = sd
-    @sh = @sd.show
-    if @gAdminDisplay
-      @all_showdates = @sh.showdates
-      setup_ticket_menus_for_admin
-    else
-      @all_showdates = @sh.upcoming_showdates
-      setup_ticket_menus_for_patron
-    end
-  end
-
-  def setup_ticket_menus_for_admin
-    @valid_vouchers =
-      @sd.valid_vouchers.includes(:vouchertype).to_a.
-      delete_if(&:subscriber_voucher?).
-      map do |v|
-      v.customer = @customer
-      v.adjust_for_customer
-    end.sort_by(&:display_order)
-    # remove any comps, EXCEPT those that are "self service with promo code"
-    @valid_vouchers = @valid_vouchers.reject do |vv|
-      vv.comp? && vv.promo_code.blank?
-    end
-    @all_shows = Show.for_seasons(Time.this_season - 1, Time.this_season + 1).of_type(@what)  ||  []
-    # ensure default show is included in list of shows
-    if (@what == 'Regular Show' && !@all_shows.include?(@sh))
-      @all_shows << @sh
-    end
-  end
-
-  def setup_ticket_menus_for_patron
-    @valid_vouchers = @sd.valid_vouchers.includes(:vouchertype).map do |v|
-      v.customer = @customer
-      v.supplied_promo_code = @promo_code
-      v.adjust_for_customer
-    end.find_all(&:visible?).sort_by(&:display_order)
-    
-    @all_shows = Show.current_and_future.of_type(@what) || []
-    if (@what == 'Regular Show' && !@all_shows.include?(@sh))
-      @all_shows << @sh
-    end
   end
 
   def add_donation_to_cart

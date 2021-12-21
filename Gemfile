@@ -81,7 +81,7 @@ group :development, :test do
   gem 'spring-commands-rspec'   # for use with Guard
   gem 'minitest'
   gem 'faye-websocket'
-  gem 'rb-readline'
+  #gem 'rb-readline'
   gem 'rspec', '~> 3.0'
   gem 'rspec-rails'
   gem 'rspec-its'

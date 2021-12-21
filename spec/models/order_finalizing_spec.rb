@@ -29,7 +29,7 @@ describe 'finalizing' do
       @order.add_tickets_without_capacity_checks(@vv,2)
       @order.add_tickets_without_capacity_checks(@vv2,1)
       @order.add_donation(@donation)
-      expect(Store).not_to receive(:pay_with_credit_card) # stub this out, it has its own tests
+      expect(Store::Payment).not_to receive(:pay_with_credit_card) # stub this out, it has its own tests
       expect(@order.errors).to be_empty
     end
     describe 'web order' do
@@ -98,7 +98,7 @@ describe 'finalizing' do
       @order.add_donation(@donation)
       @previous_vouchers_count = Voucher.count
       @previous_donations_count = Donation.count
-      allow(Store).to receive(:pay_with_credit_card).and_return(nil)
+      allow(Store::Payment).to receive(:pay_with_credit_card).and_return(nil)
       expect { @order.finalize! }.to raise_error(Order::PaymentFailedError)
     end
     it 'should leave authorization field blank' do
