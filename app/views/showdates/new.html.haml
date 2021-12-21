@@ -64,18 +64,19 @@
   .Tt.Tl
     .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
     .form-row
-      %label.col-form-label Every
-      - %w(Mon Tue Wed Thu Fri Sat Sun).each_with_index do |day,i|
-        - idx = (i+1) % 7
-        .form-check.form-check-inline
-          %label.form-check-label{:for => "day_#{idx}"}= day
-          = check_box_tag 'day', idx, false, :name => 'day[]', :id => "day_#{idx}", :class => 'form-check-input'
-      %label.col-form-label.px-3{:for => 'time'} At
-      = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :minute_step => 15, :class => 'form-control')
+      %label.col-2.text-right.col-form-label Every
+      .col-10
+        - %w(Mon Tue Wed Thu Fri Sat Sun).each_with_index do |day,i|
+          - idx = (i+1) % 7
+          .form-check.form-check-inline
+            %label.form-check-label{:for => "day_#{idx}"}= day
+            = check_box_tag 'day', idx, false, :name => 'day[]', :id => "day_#{idx}", :class => 'form-check-input'
+        %label.col-form-label.px-3{:for => 'time'} At
+        = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :minute_step => 15, :class => 'form-control')
 
     .form-row.py-2
-      %label.col-form-label{:for => 'start'} From
-      = select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date, :class => 'form-control'
+      %label.col-form-label.text-right.col-2{:for => 'start'} Date Range
+      .col-4= select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date, :class => 'form-control'
 
   .Ts.d-none
     .form-row.py-2

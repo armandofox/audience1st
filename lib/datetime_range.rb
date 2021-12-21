@@ -24,6 +24,11 @@ class DatetimeRange
 
   def dates
     return @dates unless @dates.empty?
+    # Special case: if only a single date is selected, ignore the 'which days'
+    # boxes and just return a list consisting of this date.
+    if (@start_date == @end_date)
+      return (@dates = [Time.zone.local(@start_date.year, @start_date.month, @start_date.day, @hour, @minute)])
+    end
     (@start_date..@end_date).each do |day|
       next unless @days.include?(day.wday)
       @dates << Time.zone.local(day.year, day.month, day.day, @hour, @minute)
