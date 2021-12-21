@@ -45,6 +45,7 @@ class ReportsController < ApplicationController
     season = (params[:id] || Time.current.year).to_i
     report = SubscriptionSalesReport.new(season).run
     if params[:download]
+      report.generate_csv
       download_to_excel(report.csv, "subs-#{season}")
     else
       render :partial => 'subscriptions', :object => report.vouchers_for_display, :locals => {:year => season}
