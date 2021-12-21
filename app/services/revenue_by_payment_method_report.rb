@@ -68,7 +68,7 @@ class RevenueByPaymentMethodReport
         'Promo Code',
         'Amount',
         'Stripe ID',
-        'Stripe Link'
+        'Stripe Link',
         'Customer ID',
         'Email', 'First', 'Last', 'Street', 'City', 'State', 'Zip', 'Day Phone', 'Eve Phone'
       ]
@@ -91,7 +91,7 @@ class RevenueByPaymentMethodReport
                 item.promo_code,
                 sprintf("%.02f", item.amount),
                 auth,
-                %Q{=HYPERLINK("https://dashboard.stripe.com/payments/#{auth}")}
+                %Q{=HYPERLINK("https://dashboard.stripe.com/payments/#{auth}")},
                 # for test mode: "dashboard.stripe.com/test/payments/#{auth}"
                 c.id,
                 c.email, c.first_name, c.last_name, c.street, c.city, c.state, c.zip, c.day_phone, c.eve_phone
