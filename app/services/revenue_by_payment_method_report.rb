@@ -65,17 +65,19 @@ class RevenueByPaymentMethodReport
         'Show',
         'Show Date',
         'Description',
-        'Customer',
         'Promo Code',
         'Amount',
         'Stripe ID',
         'Stripe Link'
+        'Customer ID',
+        'Email', 'First', 'Last', 'Street', 'City', 'State', 'Zip', 'Day Phone', 'Eve Phone'
       ]
       self.payment_types.each_pair do |payment_type, account_code_groups|
         account_code_groups.each do |account_code,items|
           items.each do |item|
             begin
               auth = item.order.authorization
+              c = item.customer
               csv << [
                 payment_type,
                 account_code.code.to_s,
@@ -86,12 +88,13 @@ class RevenueByPaymentMethodReport
                 (item.showdate ? item.showdate.name : ''),
                 (item.showdate ? item.showdate.thedate : ''),
                 item.description_for_report,
-                item.customer.full_name,
                 item.promo_code,
                 sprintf("%.02f", item.amount),
                 auth,
                 %Q{=HYPERLINK("https://dashboard.stripe.com/payments/#{auth}")}
                 # for test mode: "dashboard.stripe.com/test/payments/#{auth}"
+                c.id,
+                c.email, c.first_name, c.last_name, c.street, c.city, c.state, c.zip, c.day_phone, c.eve_phone
               ]
             rescue StandardError => e
               err = I18n.translate('reports.revenue_details.csv_error', :item => item.id, :message => e.message)

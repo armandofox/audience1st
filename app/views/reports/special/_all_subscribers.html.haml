@@ -1,5 +1,11 @@
 %fieldset{:legend => @args[:name]}
-  %p Include subscribers for the following subscription vouchertypes (Apple-click or Ctrl-click to select multiple):
+  %p
+    %strong NOTE:
+    This report just tells you who the subscribers are.  For a detailed report with the
+    number of subscriptions purchased by each subscriber and their complete contact info,
+    use the Subscription Sales Report at the bottom of this page.
+    
+  %p Include subscribers for the following subscription vouchertypes (Command-click or Ctrl-click to select multiple):
 
   = select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true
   = hidden_field_tag '_report', 'AllSubscribers'

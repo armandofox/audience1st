@@ -111,13 +111,6 @@ class Voucher < Item
     where('valid_vouchers.showdate_id' => showdate.id)
   }
 
-  # count the number of subscriptions for a given season
-  def self.subscription_vouchers(year)
-    season_start = Time.current.at_beginning_of_season(year)
-    v = Vouchertype.subscription_vouchertypes(year)
-    v.map { |t| [t.name, t.price.round, Voucher.where(:finalized => true, :vouchertype_id => t.id).count] }
-  end
-
   def item_description
     vouchertype.name_with_season << 
       (showdate ?
