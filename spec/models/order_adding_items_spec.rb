@@ -15,7 +15,7 @@ describe Order, 'adding' do
     it 'can include several' do
       @order.add_retail_item(@thing[0])
       @order.add_retail_item(@thing[1])
-      expect(@order.retail_items).to eq(@thing)
+      expect(@order.retail_items.sort).to eq(@thing.sort)
       expect(@order.total_price).to eq(12.0)
     end
     it 'includes them in price' do

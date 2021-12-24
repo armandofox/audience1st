@@ -130,7 +130,7 @@ class Show < ActiveRecord::Base
   end
 
   def self.find_unique(name)
-    Show.where('name LIKE ?', name.strip).first
+    Show.where('LOWER(name) LIKE ?', name.strip.downcase).first
   end
 
 end

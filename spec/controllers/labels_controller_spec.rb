@@ -54,7 +54,7 @@ describe LabelsController do
   describe "destroy label" do
     it "should create and destroy the label" do
       expect{ post :create, :label_name => "valid name" }.to change(Label, :count).by(+1)
-      expect{ post :destroy, :id => 1 }.to change(Label, :count).by(-1)
+      expect{ post :destroy, :id => Label.first.id }.to change(Label, :count).by(-1)
     end
   end
 
@@ -79,7 +79,7 @@ describe LabelsController do
     context 'when creating label with a mix of permitted and unpermitted params' do
       before :each do
         post :create, mixed_params
-        @lab = Label.find(1)
+        @lab = Label.first
       end
       it "create will not set vaule of unpermitted params" do
         expect(@lab).not_to have_attribute 'bad_param'
