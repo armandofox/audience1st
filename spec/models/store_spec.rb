@@ -10,13 +10,13 @@ describe Store, "landing page" do
     it 'orders shows by first showdate, not by listing date' do
       @sd1.show.update_attributes!(:listing_date => 3.weeks.ago) # earlier listing date, later showdate
       @sd2.show.update_attributes!(:listing_date => 1.day.ago)
-      @s = Store::Flow.new(@u, @u, nil, {})
+      @s = Store::Flow.new(nil, @u, nil, {})
       @s.setup
       expect(@s.all_shows).to eq([@sd2.show, @sd1.show])
     end
     describe "with valid & listed showdate" do
       before(:each) do
-        @s = Store::Flow.new(@u, @u, nil, {:showdate_id => @sd1.id})
+        @s = Store::Flow.new(nil, @u, nil, {:showdate_id => @sd1.id})
         @s.setup
       end
       it 'selects showdate' do ; expect(@s.sd.id).to eq(@sd1.id) ; end

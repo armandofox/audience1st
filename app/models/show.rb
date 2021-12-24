@@ -26,10 +26,11 @@ class Show < ActiveRecord::Base
   validates_length_of :patron_notes,           :maximum => 255
 
   scope :current_and_future, -> {
+    includes(:showdates).
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
-    select('DISTINCT shows.*').
-    order('showdates.thedate')
+    select('DISTINCT shows.*', 'showdates.*').
+    order('showdates.thedate ASC NULLS LAST')
   }
 
   scope :for_seasons, ->(from,to) {  where(:season => from..to) }
