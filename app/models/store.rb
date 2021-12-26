@@ -88,11 +88,15 @@ class Store
       @valid_vouchers = @valid_vouchers.reject do |vv|
         vv.comp? && vv.promo_code.blank?
       end
-      @all_shows = Show.for_seasons(Time.this_season - 1, Time.this_season + 1).of_type(@what)  ||  []
+      @all_shows = Show.
+                     for_seasons(Time.this_season - 1, Time.this_season + 1).
+                     of_type(@what)  ||
+                   []
       # ensure default show is included in list of shows
       if (@what == 'Regular Show' && !@all_shows.include?(@sh))
         @all_shows << @sh
       end
+      @all_shows = @all_shows.sorted
     end
 
     def setup_ticket_menus_for_patron
