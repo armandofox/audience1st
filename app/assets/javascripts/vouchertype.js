@@ -1,4 +1,12 @@
 A1.vouchertype = {
+  filter_this_vouchertype: function() {
+    var klass = 'tr.' + $(this).attr('name'); // eg 'tr.revenue'
+    if ($(this).is(':checked')) {
+      $(klass).show();
+    }  else {
+      $(klass).hide();
+    }
+  },
   reset_fields: function() {
     var category = $('.vouchertype-category').val();
     $('#vouchertype-form .form-row').show();
@@ -8,6 +16,7 @@ A1.vouchertype = {
     $('#vouchertype-form input.' + category).checked = false;
   },
   setup: function() {
+    $('.vouchertype-filter').change(A1.vouchertype.filter_this_vouchertype);   
     if ($('#vouchertype-form').length) {
       A1.vouchertype.reset_fields();
       $('#vouchertype_category').change(A1.vouchertype.reset_fields);
