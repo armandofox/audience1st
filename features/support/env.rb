@@ -109,14 +109,14 @@ end
 # Stub Stripe for certain scenarios
 Before('@stubs_successful_credit_card_payment') do
   stub_request(:post, 'stripe.com')
-  Store.stub(:pay_with_credit_card) do |order|
+  Store::Payment.stub(:pay_with_credit_card) do |order|
     order.update_attribute(:authorization, 'ABC123')
     true
   end
 end
 
 Before('@stubs_failed_credit_card_payment') do
-  Store.stub(:pay_with_credit_card) do |order|
+  Store::Payment.stub(:pay_with_credit_card) do |order|
     order.authorization = nil
     order.errors.add :base,"Credit card payment error: Forced failure in test mode"
     nil

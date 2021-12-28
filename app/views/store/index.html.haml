@@ -1,20 +1,20 @@
 = themed
-= sales_banners_for(@what, @subscriber, @next_season_subscriber)
+= sales_banners_for(@store.what, @customer.subscriber?, @customer.next_season_subscriber?)
 
 #store
   %h1.text-center
-    = label_for_page_header @what
+    = label_for_page_header @store.what
     %span.a1-text-small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   = render :partial => 'event_types'
 
   #ticket_menus
     = form_tag process_cart_path(@customer), :autocomplete => 'off' do
-      - if @sd
-        = hidden_field_tag 'showdate_id', @sd.id
-      = hidden_field_tag 'what', h(@what)
-      - if @nothing_to_buy
-        #show_description.text-center.border.border-danger There are no #{label_for_page_header @what} on sale at this time.
+      - if @store.sd
+        = hidden_field_tag 'showdate_id', @store.sd.id
+      = hidden_field_tag 'what', @store.what
+      - if @store.nothing_to_buy?
+        #show_description.text-center.border.border-danger There are no #{label_for_page_header @store.what} on sale at this time.
       - else
         = render :partial => 'ticket_menus'
 
@@ -33,14 +33,14 @@
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'text-right form-control form-control-sm col-md-1 col-sm-2'
         .col-md-6
 
-      - if Option.allow_gift_tickets? and @logged_in
+      - if Option.allow_gift_tickets? and @store.logged_in
         .form-group.form-row
           .col-md-4
           .form-check.col-md-8
             = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
             %label.form-check-label{:for=>:gift} This order is a gift
           
-      - if @sd.try(:has_reserved_seating?)
+      - if @store.sd.try(:has_reserved_seating?)
         .form-row.reserved-seating
           .col-md-4.offset-sm-4
             = hidden_field_tag 'zone', ''

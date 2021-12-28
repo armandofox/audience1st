@@ -19,9 +19,9 @@ class AttendanceByShow < Report
 
     # Start by restricting by vouchertype, if needed.
     if params[:restrict_by_vouchertype]
-      @relation = Customer.purchased_any_vouchertypes(vouchertypes)
+      @relation = Customer.regular_customers.purchased_any_vouchertypes(vouchertypes)
     else
-      @relation = Customer
+      @relation = Customer.regular_customers
     end
     # for efficiency, handle the 3 cases separately:
     #  1- customers who have seen X

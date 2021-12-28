@@ -26,10 +26,11 @@ class Show < ActiveRecord::Base
   validates_length_of :patron_notes,           :maximum => 255
 
   scope :current_and_future, -> {
+    includes(:showdates).
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
-    select('DISTINCT shows.*').
-    order('listing_date')
+    select('DISTINCT shows.*', 'showdates.*').
+    order('showdates.thedate ASC NULLS LAST')
   }
 
   scope :for_seasons, ->(from,to) {  where(:season => from..to) }
@@ -129,7 +130,7 @@ class Show < ActiveRecord::Base
   end
 
   def self.find_unique(name)
-    Show.where('name LIKE ?', name.strip).first
+    Show.where('LOWER(name) LIKE ?', name.strip.downcase).first
   end
 
 end

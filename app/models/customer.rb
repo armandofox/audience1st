@@ -414,11 +414,15 @@ class Customer < ActiveRecord::Base
   # Convert list of customers to CSV.  If with_errors is true, last column is
   # ActiveRecord error messages for the customer (joined with ';').
 
+  def self.csv_header
+    ['First name', 'Last name', 'ID', 'Email', 'Street', 'City', 'State', 'Zip',
+     'Day/main phone', 'Eve/alt phone', "Don't mail", "Don't email"].freeze
+  end
+  
   def self.to_csv(custs,opts={})
     CSV::Writer.generate(output='') do |csv|
       unless opts[:suppress_header]
-        header = ['First name', 'Last name', 'Email', 'Street', 'City', 'State', 'Zip',
-          'Day/main phone', 'Eve/alt phone', "Don't mail", "Don't email"]
+        header = self.csv_header
         header += opts[:extra].map(&:humanize) if opts[:extra]
         csv << header
       end
@@ -445,6 +449,7 @@ class Customer < ActiveRecord::Base
     [
       (first_name.name_capitalize unless first_name.blank?),
       (last_name.name_capitalize unless last_name.blank?),
+      id,
       email,
       street,city,state,zip,
       day_phone, eve_phone,

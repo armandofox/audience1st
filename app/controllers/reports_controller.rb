@@ -1,7 +1,5 @@
 class ReportsController < ApplicationController
 
-  require 'csv'
-
   before_filter :is_staff_filter
 
   def index
@@ -14,7 +12,7 @@ class ReportsController < ApplicationController
     # currently playing show
     @current_show = @next_showdate.try(:show) || @all_shows.first
     # quick subscription stats
-    @subscriptions = Voucher.subscription_vouchers(Time.this_season)
+    @subscriptions = SubscriptionSalesReport.new(Time.this_season).run.vouchers_for_display
     # list of all special reports
     @special_report_names = Report.subclasses.map { |s| ActiveModel::Name.new(s).human }.sort.unshift('Select report...')
   end
@@ -44,18 +42,13 @@ class ReportsController < ApplicationController
   end
 
   def subscriber_details
-    y = (params[:id] || Time.current.year).to_i
-    subs = Voucher.subscription_vouchers(y)
+    season = (params[:id] || Time.current.year).to_i
+    report = SubscriptionSalesReport.new(season).run
     if params[:download]
-      output = CSV.generate do |csv|
-        csv << %w[name amount quantity]
-        q=0 ; t=0
-        subs.each { |s| csv << s ; t += s[1]*s[2] ; q += s[2] }
-        csv << ['Total',t,q]
-      end
-      download_to_excel(output, "subs#{y}")
+      report.generate_csv
+      download_to_excel(report.csv, "subs-#{season}")
     else
-      render :partial => 'subscriptions', :object => subs, :locals => {:year => y}
+      render :partial => 'subscriptions', :object => report.vouchers_for_display, :locals => {:year => season}
     end
   end
 

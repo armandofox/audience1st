@@ -1,8 +1,8 @@
 = themed
 = set_active_tab '#t_store_subscribe'
-= sales_banners_for :subscription, @subscriber, @next_season_subscriber
+= sales_banners_for :subscription, @customer.subscriber?, @customer.next_season_subscriber?
 
-- if @nobody_really_logged_in
+- if @store.logged_in.nil?
   %p.lead.text-center.bg-light.py-4
     %strong Already a subscriber?
     = link_to "Sign in to your account", login_path
@@ -13,11 +13,11 @@
 
   %h1.text-center 
     Become A Subscriber
-    %span.a1-text-small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
+    %span.a1-text-small= "(Using Promo Code: #{@promo_code})" if @promo_code
 
   #subscription_menus
     = form_tag process_cart_path(@customer) do
-      = hidden_field_tag 'what', h(@what)
+      = hidden_field_tag 'what', @store.what
       = render :partial => 'enter_promo_code'
 
       - @subs_to_offer.each do |v|

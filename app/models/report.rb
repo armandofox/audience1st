@@ -59,7 +59,7 @@ class Report
   private
 
   def add_header_row(csv)
-    @headers = %w[first_name last_name email day_phone eve_phone street city state zip no_mail no_email labels created_at role_name] 
+    @headers = %w[first_name last_name email day_phone eve_phone street city state zip no_mail no_email labels created_at role_name id] 
     csv << CSV::Row.new(@headers, @headers, header_row = true).to_s
   end
 
@@ -84,7 +84,8 @@ class Report
             ("true" if c.e_blacklist?),
             c.labels.map(&:name).join(':'),
             (c.created_at.to_formatted_s(:db) rescue nil),
-            c.role_name
+            c.role_name,
+            c.id
           ],
           header_row = false
         ).to_s
