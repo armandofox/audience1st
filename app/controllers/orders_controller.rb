@@ -42,7 +42,7 @@ class OrdersController < ApplicationController
             :order_id => @order.id)
           item.cancel!(by_whom)
         end
-        Store.refund_credit_card(@order, amount_to_refund) if @order.purchase_medium == :credit_card
+        Store::Payment.refund_credit_card(@order, amount_to_refund) if @order.purchase_medium == :credit_card
       end
     rescue Stripe::StripeError => e
       redirect_to(order_path(@order), :alert => "Could not process credit card refund: #{e.message}") and return

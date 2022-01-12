@@ -124,7 +124,7 @@ Before('@stubs_failed_credit_card_payment') do
 end
 
 Before('@stubs_successful_refund') do
-  Store.stub(:refund_credit_card).and_return(true)
+  Store::Payment.stub(:refund_credit_card).and_return(true)
 end
 
 Before('@stubs_failed_refund') do
