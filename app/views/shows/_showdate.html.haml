@@ -11,7 +11,7 @@
   .col-md-3= showdate.seating_type_and_capacity
   .col-md-1= button_to_delete_performance(showdate)
 
-- redemptions = showdate.valid_vouchers
+- redemptions = showdate.valid_vouchers.for_ticket_products
 - unless redemptions.empty?
   .collapse[showdate, :details]
     .row.bg-light.text-dark.border.border-bottom.no-gutters

@@ -445,7 +445,7 @@ DEPENDENCIES
   rspec-rails
   sassc-rails
   sdoc (~> 0.4.0)
-  simplecov
+  simplecov (~> 0.17)
   spring
   spring-commands-rspec
   sprockets-rails
