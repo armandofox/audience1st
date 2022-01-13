@@ -25,6 +25,7 @@ class ValidVoucher < ActiveRecord::Base
   validates_presence_of :start_sales
   validates_presence_of :end_sales
 
+  scope :for_ticket_products, -> { joins(:vouchertype).where('vouchertypes.category != ?', 'nonticket') }
   scope :sorted, -> { joins(:vouchertype).order('vouchertypes.display_order,vouchertypes.name') }
 
   # Capacity is infinite if it is left blank

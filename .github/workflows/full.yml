@@ -1,0 +1,56 @@
+name: full CI
+on: [push]
+env:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CCTR: ./cc-test-reporter
+      
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.6
+
+    - name: confirm PhantomJS installed version
+      run: |
+        phantomjs --version
+
+    - name: run Bundler
+      run: |
+        bundle config build.nokogiri --use-system-libraries
+        bundle install --jobs 4 --retry 3
+
+    - name: create test database and secrets file
+      run: |
+        cp config/database.yml.test config/database.yml
+        gpg --passphrase "${{ secret.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
+        bundle exec rake db:setup
+        
+    - name: Setup CodeClimate test-reporter
+      run: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
+        chmod +x $CCTR
+        $CCTR before-build
+
+    - name: run Cucumber tests and capture coverage
+      run: |
+        bundle exec cucumber --retry 2 --format progress
+        $CCTR format-coverage --output coverage/codeclimaate.$SUITE.json
+  
+    - name: run RSpec tests and capture coverage
+      run: |
+        bundle exec rspec --format progress
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
+        
+    - name: Publish code coverage
+      env:
+        CC_TEST_REPORTER_ID: ${{ secret.CC_TEST_REPORTER_ID }}
+      run: |
+        export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
+        $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage
+        $CCTR after-build

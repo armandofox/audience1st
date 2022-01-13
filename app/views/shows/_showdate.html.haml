@@ -11,14 +11,15 @@
   .col-md-3= showdate.seating_type_and_capacity
   .col-md-1= button_to_delete_performance(showdate)
 
-- unless showdate.valid_vouchers.empty?
+- redemptions = showdate.valid_vouchers
+- unless redemptions.empty?
   .collapse[showdate, :details]
     .row.bg-light.text-dark.border.border-bottom.no-gutters
       .col-3 Ticket Type
       .col-3 Sales start
       .col-3 Sales end
       .col-2 Sold/Max
-    - showdate.valid_vouchers.sorted.each do |v|
+    - redemptions.sorted.each do |v|
       .row[v]
         - nsales = showdate.sales_by_type(v.vouchertype_id)
         .col-3
