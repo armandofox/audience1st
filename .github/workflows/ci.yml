@@ -13,6 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: install libxslt
+      run: |
+        sudo apt-get install -y libxslt-dev
+
     - name: Install Ruby
       uses: ruby/setup-ruby@v1
       with:
