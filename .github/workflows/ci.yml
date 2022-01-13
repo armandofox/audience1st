@@ -2,6 +2,10 @@ name: CI
 on: [push]
 
 jobs:
+  env:
+    BUNDLE_WITHOUT: production
+    BUNDLE_BUILD__NOKOGIRI: "--use-system-libraries"
+
   build:
     runs-on: ubuntu-latest
     env:
@@ -14,15 +18,11 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.6.6
-
+        bundler-cache: true
+        
     - name: confirm PhantomJS installed version
       run: |
         phantomjs --version
-
-    - name: run Bundler
-      run: |
-        bundle config build.nokogiri --use-system-libraries
-        bundle install --jobs 4 --retry 3
 
     - name: create test database and secrets file
       run: |
