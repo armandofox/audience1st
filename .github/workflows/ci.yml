@@ -4,7 +4,7 @@ on: [push]
 jobs:
   env:
     BUNDLE_WITHOUT: production
-    BUNDLE_BUILD__NOKOGIRI: "--use-system-libraries"
+    BUNDLE_BUILD__NOKOGIRI: --use-system-libraries
 
   build:
     runs-on: ubuntu-latest
