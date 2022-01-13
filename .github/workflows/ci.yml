@@ -1,6 +1,5 @@
-name: full CI
+name: CI
 on: [push]
-env:
 
 jobs:
   build:
@@ -28,7 +27,7 @@ jobs:
     - name: create test database and secrets file
       run: |
         cp config/database.yml.test config/database.yml
-        gpg --passphrase "${{ secret.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
+        gpg --passphrase "${{ secrets.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
         bundle exec rake db:setup
         
     - name: Setup CodeClimate test-reporter
@@ -49,7 +48,7 @@ jobs:
         
     - name: Publish code coverage
       env:
-        CC_TEST_REPORTER_ID: ${{ secret.CC_TEST_REPORTER_ID }}
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       run: |
         export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
         $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage
