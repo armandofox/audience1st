@@ -29,9 +29,8 @@ jobs:
 
     - name: create test database and secrets file
       run: |
-        cp config/database.yml.test config/database.yml
         gpg --passphrase "${{ secrets.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
-        bundle exec rake db:setup
+        cp config/database.yml.test config/database.yml
         
     - name: Setup CodeClimate test-reporter
       run: |
