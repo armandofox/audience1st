@@ -103,6 +103,7 @@ class ReportsController < ApplicationController
       render :js => %Q{alert(#{msg})}
     when /create/i
       name = params[:sublist_name]
+      email_list = EmailList.new
       if (num=email_list.create_sublist_with_customers(name, @customers))
         msg = ActionController::Base.helpers.escape_javascript %Q{List "#{name}" created with #{num} customers. #{email_list.errors}}
       else
