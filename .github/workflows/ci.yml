@@ -2,14 +2,13 @@ name: CI
 on: [push]
 
 jobs:
-  env:
-    BUNDLE_WITHOUT: production
-    BUNDLE_BUILD__NOKOGIRI: --use-system-libraries
-
   build:
     runs-on: ubuntu-latest
     env:
       CCTR: ./cc-test-reporter
+      BUNDLE_WITHOUT: production
+      BUNDLE_BUILD__NOKOGIRI: --use-system-libraries
+
       
     steps:
     - uses: actions/checkout@v1
