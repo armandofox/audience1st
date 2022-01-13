@@ -29,7 +29,7 @@ jobs:
 
     - name: create test database and secrets file
       run: |
-        gpg --passphrase "${{ secrets.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
+        gpg --pinentry-mode loopback --batch --passphrase "${{ secrets.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
         cp config/database.yml.test config/database.yml
         
     - name: Setup CodeClimate test-reporter
