@@ -1,5 +1,5 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/maintainability)](https://codeclimate.com/github/armandofox/audience1st/maintainability)
-[![Build Status](https://travis-ci.com/armandofox/audience1st.svg?branch=main)](https://travis-ci.org/armandofox/audience1st)
+![Build Status](https://github.com/armandofox/audience1st/actions/workflows/ci.yml/badge.svg)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
 [![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://pivotaltracker.com/n/projects/44802)
 
@@ -26,11 +26,9 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Alex Wang](https://github.com/raisindoc),
 [Kevin Yen](https://github.com/crazyberry7),
 [Casper Yang](https://github.com/cyang2020),
-[Hang (Arthur) Yin](https://github.com/LoserNoOne)
-[Justin Wong](https://github.com/JustinRWong),
-
-
-
+[Hang (Arthur) Yin](https://github.com/LoserNoOne),
+and
+[Justin Wong](https://github.com/JustinRWong)
 
 
 # This information is for developers and deployers
