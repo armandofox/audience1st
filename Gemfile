@@ -53,7 +53,7 @@ group :test do
   gem 'fake_stripe'
   gem 'poltergeist'
   gem 'rspec-json_expectations'
-  gem 'simplecov', '~> 0.17', :require => false # version is for github actions to work
+  gem 'simplecov', '= 0.17', :require => false # version is for github actions to work
   gem 'spring'                  # for 'guard'
   gem 'timecop'
   gem 'webmock'

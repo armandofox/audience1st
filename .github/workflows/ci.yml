@@ -41,17 +41,15 @@ jobs:
     - name: run RSpec tests and capture coverage
       run: |
         bundle exec rspec --format progress
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
         
     - name: run Cucumber tests and capture coverage
       run: |
         bundle exec cucumber --retry 2 --format progress
-        $CCTR format-coverage --output coverage/codeclimaate.$SUITE.json
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
   
     - name: Publish code coverage
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       run: |
         export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
-        $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage
+        $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage -i - --id ${{ secrets.CC_TEST_REPORTER_ID }}
         $CCTR after-build
