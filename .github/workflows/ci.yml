@@ -38,16 +38,16 @@ jobs:
         chmod +x $CCTR
         $CCTR before-build
 
-    - name: run Cucumber tests and capture coverage
-      run: |
-        bundle exec cucumber --retry 2 --format progress
-        $CCTR format-coverage --output coverage/codeclimaate.$SUITE.json
-  
     - name: run RSpec tests and capture coverage
       run: |
         bundle exec rspec --format progress
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
         
+    - name: run Cucumber tests and capture coverage
+      run: |
+        bundle exec cucumber --retry 2 --format progress
+        $CCTR format-coverage --output coverage/codeclimaate.$SUITE.json
+  
     - name: Publish code coverage
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
