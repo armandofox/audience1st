@@ -75,8 +75,10 @@ class Store
     end
 
     def classes_for_ticket_div
-      classes = ["show-#{@sh.id}", "showdate-#{@sd.id}"]
-      classes << 'with-promo' if !@promo_code.blank?
+      classes = []
+      classes << "show-#{@sh.id}"     if @sh
+      classes << "showdate-#{@sd.id}" if @sd
+      classes << 'with-promo'         if !@promo_code.blank?
       classes
     end
     
