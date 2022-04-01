@@ -8,7 +8,7 @@
 
   = render :partial => 'event_types'
 
-  #ticket-menus-outer{:class => @store.classes_for_ticket_div}
+  #ticket-menus-outer
     = form_tag process_cart_path(@customer), :autocomplete => 'off' do
       - if @store.sd
         = hidden_field_tag 'showdate_id', @store.sd.id
