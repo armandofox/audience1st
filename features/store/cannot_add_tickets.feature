@@ -15,14 +15,14 @@ Background: show with 3 tickets available
   |   3 | General | $15.00 | October 1, 2010, 7:00pm |
   And today is December 1, 2009
   When I go to the store page
-  Then I should see "Tickets of this type not on sale until" within "#voucher_menus"
+  Then I should see "Tickets of this type not on sale until" within "#ticket-types"
 
 Scenario: Cannot buy tickets to sold-out performance
 
   And a performance of "The Nerd" on October 1, 2010, 7:00pm
   And the "Oct 1, 2010, 7:00pm" performance has reached its max sales
   When I go to the store page
-  Then I should see "Event is sold out" within "#voucher_menus"
+  Then I should see "Event is sold out" within "#ticket-types"
 
 Scenario: Cannot buy past max sales
 

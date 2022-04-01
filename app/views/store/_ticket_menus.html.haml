@@ -21,12 +21,12 @@
       - if @gAdminDisplay &&  (@store.sd.kind_of?(Showdate))
         %label.col-form-label.alert-warning= "#{@store.sd.saleable_seats_left} saleable/#{@store.sd.total_seats_left} in house"
 
-  #voucher_menus
+  #ticket-types{:class => @store.classes_for_ticket_div}
     - if @store.valid_vouchers.empty? && @store.sd
       %p.text-center.border-danger= @store.sd.show.sold_out_customer_info
     - else
       - @store.valid_vouchers.each do |v|
-        %div{:id => "vouchertype_#{v.vouchertype_id}",:class => 'form-group form-row'}
+        %div{:id => "vouchertype_#{v.vouchertype_id}",:class => ['form-group', 'form-row', (v.promo_code.blank? ? 'no-promo' : 'promo')]}
           - fieldname = "valid_voucher[#{v.id}]"
           - max_sales = [30, v.max_sales_for_this_patron].min
           %label.col-form-label.text-right.col-sm-4{:for => "valid_voucher_#{v.id}"}= v.name_with_price

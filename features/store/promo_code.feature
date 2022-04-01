@@ -14,17 +14,17 @@ Background:
   And I am not logged in
   And I go to the store page
   Then the "Discount Code" field should be blank
-  And I should see "General" within "#voucher_menus"
-  But I should not see "MyDiscount" within "#voucher_menus"
+  And I should see "General" within "#ticket-types"
+  But I should not see "MyDiscount" within "#ticket-types"
 
 Scenario: redeem promo code redirects to tickets page
 
   When I try to redeem the "WXYZ" discount code
   Then the "Discount Code" field should contain "WXYZ"
-  And I should see "MyDiscount" within "#voucher_menus"
+  And I should see "MyDiscount" within "#ticket-types"
 
 Scenario: discount tickets disappear if promo cleared
 
   When I try to redeem the "WXYZ" discount code
   And I try to redeem the "" discount code
-  Then I should not see "MyDiscount" within "#voucher_menus"
+  Then I should not see "MyDiscount" within "#ticket-types"

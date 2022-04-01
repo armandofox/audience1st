@@ -74,6 +74,12 @@ class Store
       end
     end
 
+    def classes_for_ticket_div
+      classes = ["show-#{@sh.id}", "showdate-#{@sd.id}"]
+      classes << 'with-promo' if !@promo_code.blank?
+      classes
+    end
+    
     private
 
     def setup_ticket_menus_for_admin

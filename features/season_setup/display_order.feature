@@ -14,7 +14,7 @@ Scenario Outline: display vouchers in correct order
 
   Given the display orders of "General" and "Senior" are set to <general> and <senior>
   When I visit the Store page
-  Then label:"General" should come <when> label:"Senior" within "div[@id='voucher_menus']"
+  Then label:"General" should come <when> label:"Senior" within "div[@id='ticket-types']"
 
   Examples:
     | general | senior | when   |
