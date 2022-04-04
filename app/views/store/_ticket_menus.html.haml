@@ -3,7 +3,7 @@
   = hidden_field_tag 'what', @show_type
   = render :partial => 'enter_promo_code'
 
-  %br/
+  %br
 
   - if !(@store.sh.try(:description).blank?)
     #show_description.explanation= @store.sh.description
