@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Customizing Ticket Sales View"
-category: FirstTimeSetup
+category: Customizing
 order: 200
 ---
 
