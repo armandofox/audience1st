@@ -21,7 +21,7 @@
       - if @gAdminDisplay &&  (@store.sd.kind_of?(Showdate))
         %label.col-form-label.alert-warning= "#{@store.sd.saleable_seats_left} saleable/#{@store.sd.total_seats_left} in house"
 
-  #ticket-types{:class => @store.classes_for_ticket_div, 'data-promo' => (@store.promo_code unless @store.promo_code.blank?}
+  #ticket-types{:class => @store.classes_for_ticket_div, 'data-promo' => (@store.promo_code unless @store.promo_code.blank?)}
     - if @store.valid_vouchers.empty? && @store.sd
       %p.text-center.border-danger= @store.sd.show.sold_out_customer_info
     - else
