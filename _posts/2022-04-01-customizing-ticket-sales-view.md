@@ -26,14 +26,11 @@ Inside that container is a set of `form-group` wrappers, one for each ticket typ
 that can be purchased for that performance:
 
 ```html
-<div id="ticket-menus-outer">
-  ...
-  <div id="ticket-types" class="show-35 showdate-251">
-    <div class="form-group form-row no-promo vouchertype_810">
-       <!-- code that allows selecting tickets of this type -->
-    </div>
-    <!-- similar form-groups for other ticket types -->
+<div id="ticket-types" class="show-35 showdate-251">
+  <div class="form-group form-row no-promo vouchertype_810">
+     <!-- code that allows selecting tickets of this type -->
   </div>
+  <!-- similar form-groups for other ticket types -->
 </div>
 ```
 In the above example, the class `no-promo` indicates that this ticket
@@ -47,17 +44,14 @@ types that have become newly visible due to the promo code (809 in the
 example below) will have the class `promo` added to their form-group:
 
 ```html
-<div id="ticket-menus-outer">
-  ...
-  <div id="ticket-types" class="show-35 showdate-251 with-promo" data-promo="JETS">
-    <div class="form-group form-row promo vouchertype_809">
-       <!-- code that allows selecting tickets of this type -->
-    </div>
-    <div class="form-group form-row no-promo vouchertype_810">
-       <!-- code that allows selecting tickets of this type -->
-    </div>
-    <!-- similar form-groups for other ticket types -->
+<div id="ticket-types" class="show-35 showdate-251 with-promo" data-promo="JETS">
+  <div class="form-group form-row promo vouchertype_809">
+     <!-- code that allows selecting tickets of this type -->
   </div>
+  <div class="form-group form-row no-promo vouchertype_810">
+     <!-- code that allows selecting tickets of this type -->
+  </div>
+  <!-- similar form-groups for other ticket types -->
 </div>
 ```
 
