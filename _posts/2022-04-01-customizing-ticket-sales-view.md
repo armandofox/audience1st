@@ -10,7 +10,7 @@ affect the patron-visible layout and behavior of Audience1st in ways
 that we cannot override!
 
 This explanation assumes you already know how to [author and host the
-Audience1st CSS file]({% post_url 2020-02-09-css-stylind %}).
+Audience1st CSS file]({% post_url 2020-02-09-css-styling %}).
 
 Using CSS, you can selectively show or hide specific ticket types at
 purchase time, based on whether the ticket type requires a promo code

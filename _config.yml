@@ -28,6 +28,7 @@ sections: [
     ['FrontOfHouse', 'Front of House Operations'],
     ['Donations', 'Donations'], 
     ['Reports', 'Reports'], 
+    ['Customizing', "Customing Audience1st's Appearance"],
     ['IntegrationWithYourWebsite', "Integration With Your Theater's Website"],
     ['IntegrationWithOtherSites', 'Integration With Other Sites'],
  ]
