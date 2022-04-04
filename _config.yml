@@ -20,7 +20,7 @@ codeurl: 'https://github.com/armandofox/audience1st'
 # Default categories in order to appear in the navigation
 
 sections: [ 
-    ['FirstTimeSetup', 'Setup and Customization'], 
+    ['FirstTimeSetup', 'First Time Setup'], 
     ['PatronReportedIssues', 'Patron-Reported Issues'],
     ['WorkingWithPatronRecords', 'Working With Patron Records'],  
     ['SeasonSetup', 'Season Setup'], 
