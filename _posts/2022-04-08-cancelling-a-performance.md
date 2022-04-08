@@ -101,7 +101,7 @@ and repeat the process again later.
 4. Under What To Do With the Results, select Create New Sublist, and
 pick a descriptive name such as "Performance XYZ cancellation notice."
 
-5. Clicke "Run Report."
+5. Click "Run Report."
 
 6. Log in to your venue's MailChimp account and you will see a new
 Static List Segment with the name you chose.  You can now compose a
