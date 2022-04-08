@@ -83,26 +83,12 @@ hand-entered without an email address by box office staff.
 
 The idea is to identify all affected patrons, export that list to
 Mailchimp, and compose and send an email there.
+[This article]({% post_url 2022-04-08-contacting-patrons-by-show %})
+explains how to do it.
 
-1. Go to the Reports tab, and in the Customer Lists section, select
-"Attendance at specific performances."  Select the show and date of the
-cancelled performance.  (You'll repeat this process for each
-cancelled performance date.)
+## Other patrons
 
-2. Under Report Filtering Options, check "Require valid email
-address".
+You'll probably still have to handle some patrons' change requests
+manually, but hopefully the steps above will let you reach most of the
+affected patrons rapidly and let them choose their own dates.
 
-3. If you want to do separate email notifications to subscribers and
-non-subscribers with separate instructions rather than a single email
-with two sets of instructions, under Report Filtering Options use the
-dropdown menu to select subscribers or non-subscribers as appropriate,
-and repeat the process again later.
-
-4. Under What To Do With the Results, select Create New Sublist, and
-pick a descriptive name such as "Performance XYZ cancellation notice."
-
-5. Click "Run Report."
-
-6. Log in to your venue's MailChimp account and you will see a new
-Static List Segment with the name you chose.  You can now compose a
-message and send it just to that segment.
