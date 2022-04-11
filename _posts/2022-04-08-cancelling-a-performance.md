@@ -11,11 +11,7 @@ pain of notifying and reaccommodating your patrons.
 
 There are two possible scenarios:
 
-1. You want to reschedule an existing performance, but keep all or
-   most reservations the same.  That is, mostly the same patrons will
-   come to that performance, just on a different date.
-   In that case, read \[this article\]({
-   post_url 2022-04-08-rescheduling-a-performance }).
+1. You want to reschedule an existing performance, but keep all or most reservations the same.  That is, mostly the same patrons will come to that performance, just on a different date. In that case, read [this article](rescheduling-a-performance.html).
 2. You want to cancel a performance, reaccommodating patrons to
    various other
    existing performances or possibly to a new performance yet to be
@@ -56,9 +52,9 @@ box office intervention, by following these steps:
    cancelled performance, you should restore the previous value of this
    checkbox if needed.
 
-While enabling self-changes on regular revenue vouchers temporarily can ease the burden on theater staff by allowing single ticket buyers affected by the performance cancellation to reschedule themselves without help from the box office, there are some significant side-effects that should be considered before choosing this approach.
+While enabling self-changes on regular revenue vouchers temporarily can ease the burden on theater staff by allowing single-ticket buyers affected by the performance cancellation to reschedule themselves without help from the box office, there are some significant side-effects that should be considered before choosing this approach.
 
-Allowing self-change on a regular revenue voucher will also give the buyer the option to _refund_ their own purchases of these vouchers. Also, this change affects all vouchers of this type and not necessarily just the ones purchased for the cancelled performance. These are impacts which most theaters normally don't want; but presumably cancelling a performance is a special case.
+Allowing self-change on a regular revenue voucher will also give the buyer the ability to _refund_ their own purchases of these vouchers. Also, this change affects all vouchers of this type and not necessarily just the ones purchased for the cancelled performance. These are impacts which most theaters normally don't want; but presumably cancelling a performance is a special case.
 
 ## Step 3: Notify patrons
 
