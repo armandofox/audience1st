@@ -20,14 +20,22 @@ A1.show_only = function(div) {
   $('#'+div+'_payment').show();           
 }
 
-A1.recalc_store_total = function() {
+A1.recalcStoreTotal = function() {
   var total = A1.recalculate('#total', '.itemQty', 2, 'price');
   var itemCount = A1.recalculate(null, '.itemQty', 0);
   var ready;
   $('#total').val(total.toFixed(2));
+  // if UNRESERVED seating, we can proceed as long as EITHER tickets have been selected
+  // OR some other item(s) with nonzero price have been selected
   ready = (A1.orderState.ticketCount > 0 || A1.orderState.totalPrice > 0.0);
   $('#submit.unreserved').prop('disabled', !ready);
-  // Enable "select seats" if nonzero tickets being selected, regardless of total (could be comps)
+  // if RESERVED seating, we can also proceed (skipping seat selection) if ZERO tickets are
+  // selected but NONZERO total item price (ie nonticket products)
+  if (A1.orderState.ticketCount == 0  &&  A1.orderState.totalPrice > 0.0) {
+    $('#submit').prop('disabled', false);
+  }
+  // Finally, enable "select seats" if nonzero tickets selected, regardless of total $
+  // (eg could be selecting seats for comps)
   ready = (A1.orderState.ticketCount > 0);
   $('.show-seatmap').prop('disabled', !ready);
 };
@@ -123,7 +131,7 @@ A1.seatmapWalkupSales = {
 
 
 A1.setup_walkup_sales = function() {
-  $('#store_subscribe .itemQty').change(A1.recalc_store_total);
+  $('#store_subscribe .itemQty').change(A1.recalcStoreTotal);
   // for walkup sales page
   $('#walkup_tickets .item').change(A1.recalc_all_walkup_sales);
   // if page reloaded due to failed payment txn, recalculate totals

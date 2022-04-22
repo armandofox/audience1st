@@ -1,7 +1,10 @@
 A1.store = {
   adjustTicketMenus: function() {
+    // this is called any time a change is made to the quantity fields/dropdowns
+    // on the Buy Tickets page.
+
     // first, recalculate the new total implied by this change.
-    A1.recalc_store_total();
+    A1.recalcStoreTotal();
     
     // in case this was switching to zero tickets, start by enabling all menus/textboxes.
     $('.itemQty').prop('disabled', false);
