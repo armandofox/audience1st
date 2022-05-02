@@ -45,7 +45,7 @@
           .col-md-4.offset-sm-4
             = hidden_field_tag 'zone', ''
             = button_tag 'Choose Seats...', :disabled => true, :class => 'btn btn-primary btn-block show-seatmap'
-            = submit_tag 'Continue to Billing Information', :id => 'submit', :disabled => true, :class => 'btn btn-block btn-success text-center'
+            = submit_tag 'Continue to Billing Information', :id => 'submit', :disabled => true, :class => 'reserved btn btn-block btn-success text-center'
           .col-sm-3.text-center= text_area_tag 'seats', '', :rows => 3, :readonly => 'readonly', :class => 'seat-display a1-passive-text-input'
       - else
         .form-row

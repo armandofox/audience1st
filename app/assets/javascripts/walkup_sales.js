@@ -25,19 +25,30 @@ A1.recalcStoreTotal = function() {
   var itemCount = A1.recalculate(null, '.itemQty', 0);
   var ready;
   $('#total').val(total.toFixed(2));
+  // the submit button is either #submit.reserved or #submit.unreserved depending on whether
+  // the selected performance has general or reserved seating.  The rules for whether we can
+  // proceed to checkout vary depending on which one it is.
+
   // if UNRESERVED seating, we can proceed as long as EITHER tickets have been selected
   // OR some other item(s) with nonzero price have been selected
-  ready = (A1.orderState.ticketCount > 0 || A1.orderState.totalPrice > 0.0);
-  $('#submit.unreserved').prop('disabled', !ready);
-  // if RESERVED seating, we can also proceed (skipping seat selection) if ZERO tickets are
-  // selected but NONZERO total item price (ie nonticket products)
-  if (A1.orderState.ticketCount == 0  &&  A1.orderState.totalPrice > 0.0) {
-    $('#submit').prop('disabled', false);
+  if (A1.orderState.ticketCount > 0 || A1.orderState.totalPrice > 0.0) {
+    $('#submit.unreserved').prop('disabled', false);
+  } else {
+    $('#submit.unreserved').prop('disabled', true);
   }
-  // Finally, enable "select seats" if nonzero tickets selected, regardless of total $
-  // (eg could be selecting seats for comps)
-  ready = (A1.orderState.ticketCount > 0);
-  $('.show-seatmap').prop('disabled', !ready);
+
+  // if RESERVED seating, we can proceed (skipping seat selection) if ZERO tickets are
+  // selected but NONZERO total item price (ie nonticket products)...
+  if (A1.orderState.ticketCount == 0) {
+    $('.show-seatmap').prop('disabled', true); // disable "select seats" button since nothing to select
+    if (A1.orderState.totalPrice > 0.0) { // some items selected, no tickets desired
+      $('#submit.reserved').prop('disabled', false);
+    }
+  } else {
+    // some tickets are desired, so must select seats before continue
+    $('.show-seatmap').prop('disabled', false); // turn on "select seats" button
+    $('#submit.reserved').prop('disabled', true); // disallow "continue to billing info"
+  };
 };
 
 A1.recalc_all_walkup_sales = function() {
