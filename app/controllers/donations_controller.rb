@@ -16,13 +16,7 @@ class DonationsController < ApplicationController
     @params = {}
     @page_title = "Donation history"
     @page = (params[:page] || '1').to_i
-    if !params[:dates].blank?
-      mindate,maxdate = Time.range_from_params(params[:dates])
-      @header = "#{mindate.to_formatted_s(:compact)}-#{maxdate.to_formatted_s(:compact)}: "
-    else
-      mindate,maxdate = [Time.parse("2007-01-01"), Time.current]
-      @header = ''
-    end
+    @header = ''
     @donations = Donation.
       includes(:order,:customer,:account_code).
       where.not(:customer_id => Customer.walkup_customer.id).
@@ -33,6 +27,15 @@ class DonationsController < ApplicationController
       @full_name = Customer.find(cid).full_name
     end
     if params[:use_date]
+      if params[:dates].blank?
+        mindate,maxdate = [Time.parse("2007-01-01"), Time.current]
+      else
+        mindate,maxdate = Time.range_from_params(params[:dates])
+        @header = "#{mindate.to_formatted_s(:compact)}-#{maxdate.to_formatted_s(:compact)}: "
+        # allow dates to be picked up as default form field for next time
+        params[:from] = mindate
+        params[:to] = maxdate
+      end
       @donations = @donations.where(:sold_on => mindate..maxdate)
     end
     if params[:use_amount]
