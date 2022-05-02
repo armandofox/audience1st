@@ -36,7 +36,10 @@ class DonationsController < ApplicationController
       @donations = @donations.where(:sold_on => mindate..maxdate)
     end
     if params[:use_amount]
-      @donations = @donations.where(:amount => params[:donation_min].to_f .. params[:donation_max].to_f)
+      min,max = params[:donation_min].to_f, params[:donation_max].to_f
+      return redirect_to(donations_path, :alert => t('donations.errors.invalid_amounts')) unless
+        max > 0.0 && min > 0.0 && max > min
+      @donations = @donations.where(:amount =>  min..max)
     end
     if params[:use_ltr_sent]
       @donations = @donations.where(:letter_sent => nil)

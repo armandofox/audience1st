@@ -28,12 +28,16 @@
     = check_box_tag 'use_amount', 1, @params[:use_amount]
     %label.col-form-label Donation amount between:
   .input-group.col-md-2
-    = text_field_tag 'donation_min', @params[:donation_min], :class => 'form-control'
+    .input-group-prepend
+      %span.input-group-text.form-control $
+    = number_field_tag 'donation_min', @params[:donation_min], :class => 'form-control text-right a1-no-spinner'
     .input-group-append
       %span.input-group-text.form-control .00
-  .col-md-1.text-center and
+  .col-md-1.text-center.form-control-plaintext and
   .input-group.col-md-2
-    = text_field_tag 'donation_max', @params[:donation_max], :class => 'form-control'
+    .input-group-prepend
+      %span.input-group-text.form-control $
+    = number_field_tag 'donation_max', @params[:donation_max], :class => 'form-control text-right a1-no-spinner'
     .input-group-append
       %span.input-group-text.form-control .00
     
