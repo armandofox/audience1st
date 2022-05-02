@@ -15,6 +15,7 @@ module CustomersHelper
   #
   def link_to_customer(customer, options={})
     return '' unless customer
+    return customer.full_name if customer.special_customer?
     content_text      = options.delete(:content_text) || customer.full_name
     link_to h(content_text), customer_path(customer), options
   end

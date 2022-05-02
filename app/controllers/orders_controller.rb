@@ -3,8 +3,9 @@ class OrdersController < ApplicationController
 
   def index
     @customer = Customer.find params[:customer_id]
-    return redirect_to(root_path, :notice => "#{@customer.full_name} has no orders.") if
-      (@orders = @customer.orders.for_customer_reporting).empty?
+    return redirect_to(root_path, :alert => t('orders.errors.special_customer')) if
+      @customer.special_customer?
+    return redirect_to(root_path, :notice => t('orders.errors.no_orders', :name => @customer.full_name)) if (@orders = @customer.orders.for_customer_reporting).empty?
   end
 
   def show

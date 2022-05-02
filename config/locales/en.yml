@@ -244,6 +244,13 @@ en:
     send_magic_link: >
       Please enter the email with which you originally signed up, and we will email you a link to reset your password.
 
+  orders:
+    errors:
+      special_customer: >
+        Only orders for regular customers can be listed.
+      no_orders: >
+        Customer %{name} has no orders.
+
   reservations:
     errors:
       no_showdate: >
