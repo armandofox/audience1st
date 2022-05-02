@@ -56,7 +56,10 @@ en:
       invalid: >
         No performances were added, because the %{date} performance had errors: %{errors}
 
-
+  donations:
+    errors:
+      invalid_amounts: >
+        Donation amount range must be valid numbers greater than zero
 
   email:
 
