@@ -59,7 +59,7 @@ en:
   donations:
     errors:
       invalid_amounts: >
-        Donation amounts must be valid numbers, and maximum must be larger than minimum.
+        Donation amount range must be valid numbers greater than zero
 
   email:
 
