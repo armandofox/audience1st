@@ -29,21 +29,16 @@ A1.recalcStoreTotal = function() {
   // the selected performance has general or reserved seating.  The rules for whether we can
   // proceed to checkout vary depending on which one it is.
 
-  // if UNRESERVED seating, we can proceed as long as EITHER tickets have been selected
-  // OR some other item(s) with nonzero price have been selected
-  if (A1.orderState.ticketCount > 0 || A1.orderState.totalPrice > 0.0) {
-    $('#submit.unreserved').prop('disabled', false);
-  } else {
-    $('#submit.unreserved').prop('disabled', true);
-  }
+  // if UNRESERVED seating, disable 'proceed' if NO tickets wanted and NO other items
+  $('#submit.unreserved').prop('disabled',
+                               (A1.orderState.ticketCount == 0 &&  A1.orderState.totalPrice == 0));
 
   // if RESERVED seating, we can proceed (skipping seat selection) if ZERO tickets are
   // selected but NONZERO total item price (ie nonticket products)...
   if (A1.orderState.ticketCount == 0) {
     $('.show-seatmap').prop('disabled', true); // disable "select seats" button since nothing to select
-    if (A1.orderState.totalPrice > 0.0) { // some items selected, no tickets desired
-      $('#submit.reserved').prop('disabled', false);
-    }
+    // allow proceed iff some nonzero price items are selected, since no tickets desired
+    $('#submit.reserved').prop('disabled', !!(A1.orderState.totalPrice == 0.0));
   } else {
     // some tickets are desired, so must select seats before continue
     $('.show-seatmap').prop('disabled', false); // turn on "select seats" button
@@ -51,7 +46,7 @@ A1.recalcStoreTotal = function() {
   };
 };
 
-A1.recalc_all_walkup_sales = function() {
+A1.recalcWalkupSales = function() {
   var total = A1.recalculate('#total', '.item', 2, 'price');
   var numTickets = A1.orderState.ticketCount;
   A1.recalculate('#totaltix', '.itemCount', 0);
@@ -141,14 +136,14 @@ A1.seatmapWalkupSales = {
 }
 
 
-A1.setup_walkup_sales = function() {
+A1.setupWalkupSales = function() {
   $('#store_subscribe .itemQty').change(A1.recalcStoreTotal);
   // for walkup sales page
-  $('#walkup_tickets .item').change(A1.recalc_all_walkup_sales);
+  $('#walkup_tickets .item').change(A1.recalcWalkupSales);
   // if page reloaded due to failed payment txn, recalculate totals
   if ($('#walkup_sales_show').length) { // walkup sales page
     A1.seatmapWalkupSales.getSeatingOptions();
-    A1.recalc_all_walkup_sales();
+    A1.recalcWalkupSales();
     // SPECIAL CASE: if this is a page reload due to failed CC charge, DON'T ALLOW changing
     // seats or ticket quantities (except by clearing the order) and ONLY enable payment button.
     // We detect this because A1.seatmap.seats[] is empty on page load, BUT the actual
@@ -172,7 +167,7 @@ A1.setupWalkupSalesPreview = function() {
   }
 }
 
-$(A1.setup_walkup_sales);
+$(A1.setupWalkupSales);
 $(A1.setupWalkupSalesPreview);
 
 
