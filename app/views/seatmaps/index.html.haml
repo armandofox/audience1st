@@ -1,26 +1,27 @@
 %h1 Add/Edit Seatmaps
 
-.row.text-light.text-center.bg-dark.py-2
-  .col-md-3 Name
-  .col-md-5 Background Image URL
-  .col-md-1 
+- unless @seatmaps.empty?
+  .row.text-light.text-center.bg-dark.py-2
+    .col-md-3 Name
+    .col-md-5 Background Image URL
+    .col-md-1 
 
-:javascript
-  A1.seatmaps = {};
-- @seatmaps.each do |sm|
   :javascript
-    A1.seatmaps["#{sm.id}"] = #{sm.emit_json.html_safe};
-  = form_for sm do |f|
-    .form-row.py-2{:id => "sm-#{sm.id}"}
-      .col-md-3= f.text_field :name, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
-      .col-md-5= f.text_field :image_url, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
-      .col-md-4
-        = link_to 'Preview', '#', :class => 'btn btn-sm btn-outline-primary preview', 'data-seatmap-id' => sm.id
-        = link_to 'Download CSV', seatmap_path(sm), :class => 'btn btn-sm btn-outline-primary'
-        = link_to 'Edit', '#', :class => 'btn btn-sm btn-primary', :onclick => %Q{$('.sm-#{sm.id}').prop('disabled',false); false;}
-        = f.submit 'Save', :class => "btn btn-sm btn-success sm-#{sm.id}", :disabled => true
-        - if sm.showdates.empty?
-          = submit_tag 'Delete', :class => 'btn btn-sm btn-danger d-inline', 'data-confirm' => t('seatmaps.confirm_delete', :name => sm.name)
+    A1.seatmaps = {};
+  - @seatmaps.each do |sm|
+    :javascript
+      A1.seatmaps["#{sm.id}"] = #{sm.emit_json.html_safe};
+    = form_for sm do |f|
+      .form-row.py-2{:id => "sm-#{sm.id}"}
+        .col-md-3= f.text_field :name, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
+        .col-md-5= f.text_field :image_url, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
+        .col-md-4
+          = link_to 'Preview', '#', :class => 'btn btn-sm btn-outline-primary preview', 'data-seatmap-id' => sm.id
+          = link_to 'Download CSV', seatmap_path(sm), :class => 'btn btn-sm btn-outline-primary'
+          = link_to 'Edit', '#', :class => 'btn btn-sm btn-primary', :onclick => %Q{$('.sm-#{sm.id}').prop('disabled',false); false;}
+          = f.submit 'Save', :class => "btn btn-sm btn-success sm-#{sm.id}", :disabled => true
+          - if sm.showdates.empty?
+            = submit_tag 'Delete', :class => 'btn btn-sm btn-danger d-inline', 'data-confirm' => t('seatmaps.confirm_delete', :name => sm.name)
 
 = render :partial => 'components/seatmap'
 

@@ -22,7 +22,8 @@ A1.show_only = function(div) {
 
 A1.recalcStoreTotal = function() {
   var total = A1.recalculate('#total', '.itemQty', 2, 'price');
-  var itemCount = A1.recalculate(null, '.itemQty', 0);
+  var ticketCount = A1.orderState.ticketCount;
+  var totalPrice =  A1.orderState.totalPrice;
   var ready;
   $('#total').val(total.toFixed(2));
   // the submit button is either #submit.reserved or #submit.unreserved depending on whether
@@ -30,17 +31,16 @@ A1.recalcStoreTotal = function() {
   // proceed to checkout vary depending on which one it is.
 
   // if UNRESERVED seating, disable 'proceed' if NO tickets wanted and NO other items
-  $('#submit.unreserved').prop('disabled',
-                               (A1.orderState.ticketCount == 0 &&  A1.orderState.totalPrice == 0));
+  $('#submit.unreserved').prop('disabled', (ticketCount == 0 &&  totalPrice == 0));
 
   // if RESERVED seating, we can proceed (skipping seat selection) if ZERO tickets are
   // selected but NONZERO total item price (ie nonticket products)...
-  if (A1.orderState.ticketCount == 0) {
+  if (ticketCount == 0) {
     $('.show-seatmap').prop('disabled', true); // disable "select seats" button since nothing to select
     // allow proceed iff some nonzero price items are selected, since no tickets desired
-    $('#submit.reserved').prop('disabled', !!(A1.orderState.totalPrice == 0.0));
-  } else {
-    // some tickets are desired, so must select seats before continue
+    $('#submit.reserved').prop('disabled', !!(totalPrice == 0.0));
+  } else if (A1.seatmap.selectedSeats.length < ticketCount) {
+    // some tickets are desired, and not all seats selected, so must select seats before continue
     $('.show-seatmap').prop('disabled', false); // turn on "select seats" button
     $('#submit.reserved').prop('disabled', true); // disallow "continue to billing info"
   };
