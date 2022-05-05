@@ -11,7 +11,7 @@
   .col-md-3= showdate.seating_type_and_capacity
   .col-md-1= button_to_delete_performance(showdate)
 
-- redemptions = showdate.valid_vouchers.for_ticket_products
+- redemptions = showdate.valid_vouchers
 - unless redemptions.empty?
   .collapse[showdate, :details]
     .row.bg-light.text-dark.border.border-bottom.no-gutters
@@ -20,7 +20,7 @@
       .col-3 Sales end
       .col-2 Sold/Max
     - redemptions.sorted.each do |v|
-      .row[v]
+      .row[v]{:class => ('nonticket' if v.vouchertype.nonticket?)}
         - nsales = showdate.sales_by_type(v.vouchertype_id)
         .col-3
           = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}

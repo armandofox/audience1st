@@ -6,12 +6,14 @@
 
 = render :partial => 'form'
 
-%h2 Performances
+%h1 Performances
 
 .row
   .col-md-4
     = button_tag 'Expand All', :onclick => %Q{$('.collapse').collapse('show')}, :class => 'btn btn-outline-primary'
     = button_tag 'Collapse All', :onclick => %Q{$('.collapse').collapse('hide')}, :class => 'btn btn-outline-primary'
+    = button_tag 'Hide Nontickets', :class => 'btn btn-outline-primary nonticket', :onclick => %Q{$('.nonticket').addClass('d-none'); $('.ticket').removeClass('d-none')}
+    = button_tag 'Show Nontickets', :class => 'btn btn-outline-primary ticket d-none', :onclick => %Q{$('.ticket').addClass('d-none'); $('.nonticket').removeClass('d-none')}
   .col-md-3= link_to 'Add Performances...', new_show_showdate_path(@show), :class => 'btn btn-primary btn-block my-1'
   .col-md-4= link_to 'Add/Change Ticket Redemptions...', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary btn-block my-1'
 

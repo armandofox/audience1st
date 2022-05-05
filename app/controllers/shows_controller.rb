@@ -37,7 +37,7 @@ class ShowsController < ApplicationController
 
   def edit
     @show = Show.find(params[:id])
-    @showdates = @show.showdates.includes(:valid_vouchers => :vouchertype).sort_by { |s| s.thedate }
+    @showdates = @show.showdates.includes(:valid_vouchers => :vouchertype).sort_by(&:thedate)
     @is_boxoffice_manager = is_boxoffice_manager
     if params[:display].blank?
       @maybe_hide = "display: none;"
