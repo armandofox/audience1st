@@ -321,12 +321,25 @@ span.a1-checkin-button:hover, span.a1-checked-in {
     font-weight: bold;
     text-align: center;
     width: 3em;
+    color: red;
 }
-@media screen {  #a1-doorlist .maincolumn {  color: red;     } }
 
-/* Subscribers are hilited on door list on screen, but bolded in print */
-@media screen {  #a1-doorlist .subscriber {  background-color: #9f9;  } }
-@media print  {  #a1-doorlist .subscriber {  font-style: italic;  } }
+#a1-doorlist .subscriber {
+    background-color: #9f9;
+}
 
-/* Don't underline links in printed door list */
-@media print { #a1-doorlist a { text-decoration: none; color: black; } }
+/*
+ Bootstrap forces '.table td' and '.table th' to have background-color: white in a
+ media-specific print section.  To override that and allow our table shading, we need
+ a CSS rule at least that specific, and also specific to print media.
+*/
+@media print  {
+    #a1-doorlist td {
+        /* override bootstrap's background-color setting */
+        background-color: inherit !important;
+        /* controversial: override browser's default setting too */
+        -webkit-print-color-adjust: exact !important;  /* Chrome/Safari/Edge/Opera */
+        color-adjust: exact !important;  /* Firefox */
+    }
+    #a1-doorlist a { text-decoration: none; color: black; }
+}
