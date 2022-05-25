@@ -15,7 +15,7 @@ class Store
           :card => order.purchase_args[:credit_card_token],
           :description => order.purchaser.inspect
         )
-        order.update_attribute(:authorization, result.id)
+        order.authorization = result.id
       rescue Stripe::StripeError => e
         order.errors.add :base, "Credit card payment error: #{e.message}"
         nil
