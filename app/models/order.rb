@@ -11,6 +11,13 @@ class Order < ActiveRecord::Base
   attr_accessor :comments
   attr_reader :donation
 
+  # pending and errored states of a CC order (pending = payment has occurred but order has not
+  #  yet been finalized; errored = payment has occurred and order NEVER got finalized, eg due
+  #  to server timeout or other event that happens during that step)
+  
+  PENDING = 'pending'        # string in authorization field that marks in-process CC order
+  ERRORED = 'errored'        # payment made, but timeout/something bad happened that prevented order finalization
+
   # errors
 
   class Order::CannotAddItemError < StandardError ; end
@@ -67,6 +74,7 @@ class Order < ActiveRecord::Base
 
   scope :completed, ->() { where('sold_on IS NOT NULL') }
   scope :abandoned_since, ->(since) { where('sold_on IS NULL').where('updated_at < ?', since) }
+  scope :pending_but_paid, ->() { where(:authorization => PROCESSING) }
   
   scope :for_customer_reporting, ->() {
     includes(:vouchers => [:customer, :showdate,:vouchertype]).
@@ -95,6 +103,7 @@ class Order < ActiveRecord::Base
     order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))
     order
   end
+
 
   def add_comment(arg)
     self.comments ||= ''
@@ -355,6 +364,20 @@ class Order < ActiveRecord::Base
 
   def finalize!(sold_on_date = Time.current)
     raise Order::NotReadyError unless ready_for_purchase?
+    # for credit card orders ONLY:
+    #  mark order as Pending, run the card and rescue any errors, then finalize order.
+    auth = nil
+    self.update_attributes!(:authorization => Order::PROCESSING) # this is a transaction, and also sets updated_at for StaleOrderSweeper
+    if purchase_medium == :credit_card
+      unless (auth = Store::Payment.pay_with_credit_card(self))
+        self.update_attributes!(:authorization => nil) # reset order to not-pending state
+        raise(Order::PaymentFailedError, self.errors.as_html)
+      end
+    end
+    # order is still pending, since CC has been charged but changes have not been made.
+    # make those changes transactionally, and mark as not-pending.
+    #  if timeout happens anywhere in here, we will know that there is a credit card charge
+    #  that may have happened without the corresponding order update.
     begin
       transaction do
         self.items += vouchers
@@ -375,14 +398,16 @@ class Order < ActiveRecord::Base
         customer.save!
         purchaser.save!
         self.sold_on = sold_on_date
-        self.save!
-        if purchase_medium == :credit_card
-          Store::Payment.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
-        end
+        self.authorization = auth # will be nil if non-credit-card purchase
+        self.save!              # trap any last errors before running credit card
       end
     rescue ValidVoucher::InvalidRedemptionError => e
+      # we are now outside the transaction
+      self.update_attributes!(:authorization => nil)
       raise Order::NotReadyError, e.message
     rescue Order::PaymentFailedError,RuntimeError => e
+      # we are now outside the transaction
+      self.update_attributes!(:authorization => nil)
       raise e
     end
   end
