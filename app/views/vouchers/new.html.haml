@@ -16,14 +16,15 @@
     %label.col-2.text-right.col-form-label{:for => 'comp_order_comments'}  Optional comments:
     = text_area 'comp_order', 'comments', :class => 'form-control col-4'
 
-  #reserve_for= render :partial => 'reserve_comps_for'
-    
-  = render :partial => 'components/seatmap'
-
   .form-row
     %label.col-2.text-right.col-form-label{:for => 'customer_email'} Send Email Confirmation
     .col-1= check_box_tag 'customer_email', 1, false, :disabled => @email_disabled, :class => 'form-control-sm'
 
-  .form-row  
+
+  #reserve_for= render :partial => 'reserve_comps_for'
+    
+  = render :partial => 'components/seatmap'
+
+  .form-row.clearfix
     = link_to  "Cancel", customer_path(@customer), :class => 'btn btn-secondary offset-2 col-2'
     = submit_tag "Add Vouchers", :class => 'confirm-seats btn btn-success col-2 mx-2'

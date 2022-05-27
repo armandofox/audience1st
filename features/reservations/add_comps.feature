@@ -63,9 +63,10 @@ Feature: add comps and reserve for a show
     When I visit the add comps page for customer "Armando Fox"
     When I select "Comp (2010)" from "What type:"
     And  I fill in "How many:" with "2"
+    And I check "Send Email Confirmation"
     And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"
     And  I fill in "Optional comments:" with "Courtesy Comp"
-    And I check "Send Email Confirmation"
+    Then show me a screenshot
     And  I press "Add Vouchers"
     Then an email should be sent to customer "Armando Fox" containing "Macbeth"
     

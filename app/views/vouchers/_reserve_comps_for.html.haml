@@ -1,4 +1,4 @@
-.form-row
+.form-row.my-2
   %label.col-2.text-right.col-form-label{:for => 'comp_order_showdate_id'}  Reserve for:
   - options = @valid_vouchers.empty? ? options_for_select(['(Select comp type first)']) : options_from_collection_for_select(@valid_vouchers, 'showdate_id', 'show_name_with_seats_of_type_remaining')
   = select 'comp_order','showdate_id', options, {:include_blank => "Leave Open"}, {:class => 'form-control col-4'}

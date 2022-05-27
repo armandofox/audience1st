@@ -6,8 +6,6 @@ A1.getSeatingOptionsForAddComps = function() {
     $('#comp_order_howmany').prop('readonly', false); // allow changing ticket count
     $('.seat-display').addClass('d-none');
     $('.confirm-seats').prop('disabled', false);
-    // reset the "reserve for..." menu to "Leave Open"
-    $('#comp_order_showdate_id').prop('selectedIndex', 0);
   };
   // if it's not a valid showdate, do nothing:
   if (showdateID == '' ||  isNaN(showdateID) )  {
@@ -20,7 +18,11 @@ A1.getSeatingOptionsForAddComps = function() {
     } else {
       $('.seat-display').removeClass('d-none');
       $('.confirm-seats').prop('disabled', true);
-      A1.seatmap.resetAfterCancel = resetAfter;
+      A1.seatmap.resetAfterCancel = function() {
+        // only if Cancel Seat Selection pressed: reset "reserve for..." menu to "Leave Open"
+        $('#comp_order_showdate_id').prop('selectedIndex', 0);
+        resetAfter;
+      };
       A1.seatmap.onSelect = function() {
         $('.confirm-seats').prop('disabled', true);
         $('.seat-display').val(A1.seatmap.selectedSeatsAsString);
