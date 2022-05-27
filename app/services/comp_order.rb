@@ -20,9 +20,10 @@ class CompOrder
       @order = Order.create!(order_params)
       @order.customer = @order.purchaser = customer
       if leave_open?
-        @order.add_open_vouchers_without_capacity_checks(@vv, howmany.to_i)
+        @order.add_open_vouchers_without_capacity_checks(@vouchertype, howmany.to_i)
         @confirmation_message = "Added #{howmany} '#{@vouchertype.name}' comps and customer can choose the show later."
       else
+        @vv = ValidVoucher.find_by!(:showdate_id => self.showdate_id, :vouchertype_id => self.vouchertype_id)
         @order.add_tickets_without_capacity_checks(@vv, howmany.to_i, seats)
         @confirmation_message = "Added #{howmany} '#{@vv.name}' comps for #{@vv.showdate.printable_name}."
       end
