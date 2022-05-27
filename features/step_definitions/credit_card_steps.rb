@@ -11,7 +11,7 @@ end
 When /^I place my order with a valid credit card$/ do
   # relies on stubbing Store.purchase_with_credit_card method
   steps %Q{When I press "Charge Credit Card"}
-  page.title.match(/confirmation of order (\d+)/i).should be_truthy
+  expect(page.title.match(/confirmation of order (\d+)/i)).to be_truthy
   @order = Order.find($1)
 end
 

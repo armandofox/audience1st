@@ -185,6 +185,7 @@ class Voucher < Item
     else
       s << name
     end
+    s << " (#{promo_code})" unless promo_code.blank?
     s
   end
 

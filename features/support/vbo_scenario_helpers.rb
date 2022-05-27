@@ -56,7 +56,9 @@ module VboScenarioHelpers
         create(:showdate, :thedate => Time.zone.parse(t[:showdate]), :show_name => t[:show])
       vt = Vouchertype.find_by_name(t[:type]) ||
         create(:revenue_vouchertype, :name => t[:type], :price => t[:price])
-      create(:valid_voucher, :vouchertype => vt, :showdate => sd, :max_sales_for_type => t[:qty].to_i)
+      unless ValidVoucher.find_by(:vouchertype => vt, :showdate => sd)
+        create(:valid_voucher, :vouchertype => vt, :showdate => sd, :max_sales_for_type => t[:qty].to_i)
+      end
       tickets_hashes["#{t[:type]} - #{number_to_currency t[:price].to_f}"] = t[:qty].to_i
       # show,qty,type,price,showdate = t.values_at(:show, :qty, :type,:price,:showdate)
       # steps %Q{Given a show "#{show}" with #{10+qty.to_i} "#{type}" tickets for $#{price} on "#{showdate}"}

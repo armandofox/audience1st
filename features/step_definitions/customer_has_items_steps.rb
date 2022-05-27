@@ -63,17 +63,13 @@ end
 Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,items|
   @customer = find_customer first,last
   items.hashes.each do |item|
-    conds_clause = 'type = ? AND amount BETWEEN ? AND ?  AND customer_id = ?'
-    conds_values = [item[:type], item[:amount].to_f-0.01, item[:amount].to_f+0.01, @customer.id]
-    if !item[:comments].blank?
-      conds_clause << ' AND comments = ?'
-      conds_values << item[:comments]
-    end 
-    if !item[:account_code].blank?
-      conds_clause << ' AND account_code_id = ?'
-      conds_values << AccountCode.find_by_code!(item[:account_code]).id
-    end
-    expect(Item.where(conds_clause,*conds_values).first).not_to be_nil
+    found = Item.where(:customer_id => @customer.id).
+              where(:type => item[:type]).
+              where(:amount => (item[:amount].to_f-0.01 .. item[:amount].to_f+0.01))
+    found = found.where(:comments => item[:comments]) if !item[:comments].blank?
+    found = found.where(:account_code_id => AccountCode.find_by_code!(item[:account_code]).id) if !item[:account_code].blank?
+    found = found.where(:promo_code => item[:promo_code]) if !item[:promo_code].blank?
+    expect(found).not_to be_empty
   end
 end
 

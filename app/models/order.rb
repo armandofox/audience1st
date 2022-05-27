@@ -147,16 +147,16 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def add_open_vouchers_without_capacity_checks(vouchertype, number)
+  def add_open_vouchers_without_capacity_checks(valid_voucher, number)
     raise Order::NotPersistedError unless persisted?
-    new_vouchers = VoucherInstantiator.new(vouchertype).from_vouchertype(number)
+    new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype, :promo_code => valid_voucher.promo_code).from_vouchertype(number)
     self.vouchers += new_vouchers
     self.save!
   end
 
   def add_tickets_without_capacity_checks(valid_voucher, number, seats=[])
     raise Order::NotPersistedError unless persisted?
-    new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
+    new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype, :promo_code => valid_voucher.promo_code).from_vouchertype(number)
     # reserve only if a specific showdate is indicated.  it seems like this method
     # should really take a vouchertype and showdate.
     if valid_voucher.showdate
