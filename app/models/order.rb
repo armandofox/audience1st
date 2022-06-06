@@ -22,6 +22,7 @@ class Order < ActiveRecord::Base
 
   class Order::CannotAddItemError < StandardError ; end
   class Order::NotPersistedError < StandardError ; end
+  class Order::StaleOrderError < StandardError ; end
 
   class Order::OrderFinalizeError < StandardError ; end
   class Order::NotReadyError < Order::OrderFinalizeError ; end
@@ -367,7 +368,7 @@ class Order < ActiveRecord::Base
     # for credit card orders ONLY:
     #  mark order as Pending, run the card and rescue any errors, then finalize order.
     auth = nil
-    self.update_attributes!(:authorization => Order::PROCESSING) # this is a transaction, and also sets updated_at for StaleOrderSweeper
+    self.update_attributes!(:authorization => Order::PENDING) # this is a transaction, and also sets updated_at for StaleOrderSweeper
     if purchase_medium == :credit_card
       unless (auth = Store::Payment.pay_with_credit_card(self))
         self.update_attributes!(:authorization => nil) # reset order to not-pending state
