@@ -24,7 +24,7 @@
   - if ! @store.sd.try(:long_description).blank?
     .form-group.form-row
       %label.col-form-label.text-right.align-top.col-sm-4 Notes
-      #showdate_long_description.col-sm-6.bg-light.my-2= @store.sd.long_description
+      #showdate_long_description.col-sm-6.my-2= @store.sd.long_description
 
   #ticket-types{:class => @store.classes_for_ticket_div, 'data-promo' => (@store.promo_code unless @store.promo_code.blank?)}
     - if @store.valid_vouchers.empty? && @store.sd
