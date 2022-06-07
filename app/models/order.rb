@@ -75,7 +75,7 @@ class Order < ActiveRecord::Base
 
   scope :completed, ->() { where('sold_on IS NOT NULL') }
   scope :abandoned_since, ->(since) { where('sold_on IS NULL').where('updated_at < ?', since) }
-  scope :pending_but_paid, ->() { where(:authorization => PROCESSING) }
+  scope :pending_but_paid, ->() { where(:authorization => PENDING) }
   
   scope :for_customer_reporting, ->() {
     includes(:vouchers => [:customer, :showdate,:vouchertype]).
