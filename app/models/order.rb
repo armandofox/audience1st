@@ -371,7 +371,7 @@ class Order < ActiveRecord::Base
     self.update_attributes!(:authorization => Order::PENDING) # this is a transaction, and also sets updated_at for StaleOrderSweeper
     if purchase_medium == :credit_card
       unless (auth = Store::Payment.pay_with_credit_card(self))
-        self.update_attributes!(:authorization => nil) # reset order to not-pending state
+        self.update_attribute(:authorization, nil) # reset order to not-pending state
         raise(Order::PaymentFailedError, self.errors.as_html)
       end
     end
