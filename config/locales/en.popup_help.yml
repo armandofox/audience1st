@@ -166,6 +166,12 @@ en:
       date in the dropdown menu when the customer is purchasing tickets for that
       show.
 
+    showdate_long_description: >
+
+      If an optional long description is added here (e.g. detailed
+      information about substitute performers), it will appear above the
+      ticket choices with the label "Notes" when this performance date is selected.
+
     max_advance_sales: >
 
       For in-theater performances, the maximum allowed advance sales/reservations,

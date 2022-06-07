@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20211223023645) do
+ActiveRecord::Schema.define(version: 20220607193725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -254,6 +254,7 @@ ActiveRecord::Schema.define(version: 20211223023645) do
     t.boolean  "live_stream",                     default: false, null: false
     t.boolean  "stream_anytime",                  default: false, null: false
     t.text     "access_instructions"
+    t.text     "long_description"
   end
 
   add_index "showdates", ["seatmap_id"], name: "index_showdates_on_seatmap_id", using: :btree

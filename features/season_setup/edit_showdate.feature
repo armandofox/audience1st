@@ -1,7 +1,7 @@
 Feature: boxoffice manager can edit showdate details
 
   As a boxoffice manager
-  So that I can control capacity and sales times
+  So that I can control capacity, sales times, and other details per-showdate
   I want to edit details for each showdate
 
   Background:
@@ -15,11 +15,13 @@ Feature: boxoffice manager can edit showdate details
 
     When I fill in "Max advance sales" with "96"
     And I fill in "Description (optional)" with "Special performance"
+    And I fill in "Long description (optional)" with "Understudies"
     And I press "Save Changes"
     Then the showdate should have the following attributes:
       | attribute         | value               |
       | max_advance_sales | 96                  |
       | description       | Special performance |
+      | long_description  | Understudies        |
 
   Scenario: cannot change performance date to be outside season
 
