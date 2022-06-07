@@ -55,3 +55,18 @@ information filled in on the Options screen.
 If this string is absent, the template is assumed to already include
 this information.
 
+# Specific elements on the main ticket sales page `#store_index`
+
+* `#show_description` styles the specific notes/description associated
+with the production
+
+* `#showdate_long_description` styles the block of text associated
+with the long description, if any, of the specific performance
+
+* `#ticket-types` is the container that contains all the dropdown
+menus for selecting the quantity of each ticket type to purchase
+
+* `#orderTotal` is the container displaying the total order amount as
+tickets get added to the order.  Within it, there is a `<label>`
+element that styles the phrase **Order Total** and a `#total` input
+field that styles the amount of the order.
