@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Setting Up Tickets and Subscriptions
+title: Setting Up Tickets, Subscriptions, and Nonticket Products
 category: SeasonSetup
 date: 2017-11-03T19:10:37.000+00:00
 order: "30"
@@ -15,7 +15,7 @@ sold during a specific season, and can be in one of five categories:
 * **Comp**: A single-ticket complimentary admission
 * **Voucher included in a bundle**: A voucher only available as part of a package, such as a subscription that includes one ticket to each of 4 shows; these vouchers have no dollar value because they can only be purchased as part of a bundle
 * **Bundle**: A collection of  vouchers that can be sold as a single product (like a subscription or two-fer)
-* **Nonticket item**: An item with a price that is not a ticket; use this type of voucher to sell products (wine, raffle tickets, etc.) and collect fees (ticket-exchange fees, etc.)
+* **Nonticket product**: An item with a price that is not a ticket; use this type of voucher to sell products (wine, raffle tickets, etc.) and collect fees (ticket-exchange fees, etc.)
 
 Each voucher type is valid only for the specific season associated with
 it, beginning on the season start date you specify in Admin > Options
@@ -48,3 +48,13 @@ Bundle vouchers have the special property that if a bundle is cancelled or trans
 constituent vouchers travel with it.  If you cancel and refund a subscription, that automatically cancels the vouchers included in it; if you transfer a subscription to another patron (maybe it had been intended as a gift), all the included vouchers go with it.
 
 To create a bundle, you must _first_ create all of the voucher types that will be part of the bundle, and they must have the category "Voucher included in a bundle". This type of voucher doesn't allow you to specify a price, because they will only be sold as part of a bundle.  Then you create a new Bundle voucher and associate any number of bundled vouchers with it, and set the price for the entire bundle.
+
+## Creating Voucher Types for Exchange Fees and Concessions
+
+Create voucher types with a category of "Nonticket product" in order to charge customers for items other than subscriptions or seats to a performance, such as wine, raffle tickets, or exchange fees. Typically these items are only sold by the box office, so be sure to set the availability to "Box office use only". If you would like the item to be sold in person at a performance, be sure to check the box for "Walkup sales allowed".
+
+As with single ticket voucher types, a redemption must be created for every performance at which the fee or concession can be sold. Typically, a redemption will be created for every performance of every show in the season for this type of voucher. 
+
+For example, if you plan to sell wine and snacks at all performances, then you might create a nonticket product voucher type for a glass of wine and another for a cookie. Set availability to box office use only, and check the box to allow walkup sales. Create redemptions for these voucher types for all performances. This will allow patrons to pay for concessions at each performance at the box office using cash or credit card, and the transactions will be recorded in Audience1st for future reporting.
+
+Exchange fees work in a similar way. If the theater charges a flat $5 fee to change a single ticket to an alternate performance, then the box office can "sell" the exchange fee to the patron using the Buy Tickets page while changing the patron's reservation to the alternate performance date.
