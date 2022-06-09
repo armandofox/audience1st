@@ -19,6 +19,7 @@ gem 'i18n'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', '= 4.0.5'
 gem 'jquery-ui-rails', '= 5.0.5'
+gem 'newrelic_rpm'
 gem 'nokogiri'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'responders', '~> 2.0'
@@ -34,7 +35,6 @@ gem 'uglifier'
 
 group :production do
   gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
-  gem 'newrelic_rpm'
   gem 'puma-heroku'
   gem 'puma', '>= 4.3.8'
   gem 'rails_12factor'
