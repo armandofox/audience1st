@@ -14,7 +14,7 @@ class StaleOrderSweeper
   def self.notice_failed_orders!
     # first check for 'pending' CC orders and raise an alarm if any are found, since no
     # order should ever be 'pending' for more than a few seconds
-    if (pending = Order.pending_but_paid.abandoned_since(2.minutes.ago))
+    unless (pending = Order.pending_but_paid.abandoned_since(2.minutes.ago)).empty?
       # raise a flare
       stale_order_err = Order::StaleOrderError.new("Stale order ids: #{pending.map(&:id).join(',')}")
       NewRelic::Agent.notice_error(stale_order_err)
