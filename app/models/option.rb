@@ -48,6 +48,8 @@ class Option < ActiveRecord::Base
                       :with => URI::MailTo::EMAIL_REGEXP, :allow_blank => false,
                       :allow_nil => false, :message => 'must be a valid email address'
 
+  validate :transactional_bcc_email_list
+
   validates_numericality_of :send_birthday_reminders
 
   validates_numericality_of :subscription_order_service_charge, :greater_than_or_equal_to => 0
@@ -69,6 +71,16 @@ class Option < ActiveRecord::Base
   
   def availability_levels_monotonically_increase
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
+  end
+
+  def transactional_bcc_email_list
+    return if transactional_bcc_email.blank?
+    emails = transactional_bcc_email.split(/\s*,\s*/)
+    emails.each do |email|
+      errors.add(:transactional_bcc_email, "does not appear to be a valid email address") if
+        (email.blank? ||
+         email !~ URI::MailTo::EMAIL_REGEXP)
+    end
   end
 
   def html_email_template_checks

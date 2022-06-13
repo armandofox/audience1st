@@ -5,6 +5,34 @@ describe Option do
     @t = Mailer::BODY_TAG
     @f = Mailer::FOOTER_TAG
   end
+  describe 'valid bcc email fields' do
+    cases = {
+      'can be a list of emails' => 'foo@bar.com, baz@foo.edu',
+      'can be a single email' => 'foo@bar.com',
+      'can be empty' => ''
+    }
+    cases.each_key do |example|
+      specify example do
+        @o.transactional_bcc_email = cases[example]
+        @o.valid?
+        expect(@o.errors[:transactional_bcc_email]).to be_empty
+      end
+    end
+    describe 'invalid bcc email field' do
+      cases = {
+        'contains invalid addresses' => 'foo, x@bar.com',
+        'contains blank addresses' => 'x@bar.com,,foo@bar.com'
+      }
+      cases.each_key do |example|
+        specify example do
+          @o.transactional_bcc_email = cases[example]
+          @o.valid?
+          expect(@o.errors[:transactional_bcc_email]).not_to be_empty
+        end
+      end
+    end
+  end
+
   describe "HTML email template" do
     it "must begin with DOCTYPE declaration" do
       @o.html_email_template = "<p>Hi #{@t}</p>"

@@ -4,10 +4,12 @@ class Mailer < ActionMailer::Base
 
   helper :customers, :application, :options
 
-  # the default :from needs to be wrapped in a callable because the dereferencing of Option may
-  #  cause an error at class-loading time.
+  # the defaults for these need to be wrapped in a callable because the dereferencing of Option may
+  #  cause an error at class-loading time, and also because Option needs to be reloaded for
+  #  each tenant.
   default :from => Proc.new { "AutoConfirm@#{Option.sender_domain}" }
   default :reply_to => Proc.new { Option.box_office_email }
+  default :bcc => Proc.new { Option.transactional_bcc_email.to_s.split(/\s*,\s*/) }
   # Prevent ActionMailer from constructing invalid message-IDs in which the domain doesn't match
   default "Message-ID" => Proc.new { "<#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Figaro.env.MAILGUN_DOMAIN}>" }
   # include to get past many spam filters

@@ -132,6 +132,15 @@ en:
       emails, and as the address where email is sent whenever Audience1st
       imports third-party ticket information.
 
+    transactional_bcc_email: >
+
+      A list of comma-separated email addresses that will receive a Bcc of every
+      transactional email (order confirmation, online donation, reservation, etc.) sent to
+      a patron, whether the transaction is done by the patron themselves or on their behalf
+      by theater staff.  Note that if a transaction does not generate an email (for example,
+      if the patron doesn't have a valid email address, or if the email confirmation
+      is suppressed by staff) then no Bcc will be sent.  If blank, no Bcc will be sent.
+
     help_email: >
 
       Email address where patrons can get help; shown in confirmation emails

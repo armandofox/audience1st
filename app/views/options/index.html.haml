@@ -1,6 +1,6 @@
 = form_for @o, :html => {:multipart => true, :id => 'edit_options_form'} do |f|
   .card.my-1
-    .card-header.h3 Your Venue Info As Seen By Customers
+    .card-header.h3 Your Venue Contact Info
     .card-body
       = render_collection_of_options f, |
        %w(venue |
@@ -11,6 +11,7 @@
           boxoffice_telephone |
           help_email |
           box_office_email  |
+          transactional_bcc_email |
           send_birthday_reminders!days  |
           top_level_banner_text |
           privacy_policy_url |

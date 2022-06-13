@@ -17,7 +17,7 @@ describe StaleOrderSweeper do
     end
   end
 
-  describe 'when an order has failed', focus: true do
+  describe 'when an order has failed' do
     before(:each) do
       @o = create(:order)
       @o.update_attribute(:authorization, Order::PENDING)
