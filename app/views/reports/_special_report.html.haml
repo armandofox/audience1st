@@ -1,4 +1,4 @@
-= form_tag run_special_reports_path, :method => 'get', 'data-remote' => true, 'data-method' => :get, 'data-type' => 'script', :id => 'special_report' do
+= form_tag run_special_reports_path, :method => 'get', 'data-remote' => true, 'data-method' => :get, 'data-type' => 'script', :id => 'special_report', :target => '_blank' do
   = hidden_field_tag :authenticity_token, form_authenticity_token
   .border.m-2.p-2{:id => name}
     = hidden_field_tag 'report_name', name
@@ -11,12 +11,17 @@
         = radio_button_tag 'what', 'download'
         %label{:for => 'what_download'} Download to Excel
         = popup_help_for 'download_to_excel'
-      .col-md-3
+      .col-md-4
         = radio_button_tag 'what', 'estimate'
         %label{:for => 'what_estimate'} Estimate number of matches
+    .form-row
       .col-md-3
         = radio_button_tag 'what', 'display', 1
         %label{:for => 'what_display'} Display list on screen
+      .col-md-4
+        = radio_button_tag 'what', 'display_new_window', 1
+        %label{:for => 'what_display_new_window'} Display list on screen in new window
+        = popup_help_for 'display_in_new_window'
     .form-row
       .col-md-6.h6 Sort spreadsheet by:
     .form-row
@@ -37,4 +42,11 @@
       %label{:for => 'what_create'} Create new mailing list named:
       = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
       %br
-    = submit_tag 'Run Report', 'data-disable-with' => 'Just a minute...', :class => 'btn btn-primary'
+    = submit_tag 'Run Report', :id => 'run_report', 'data-disable-with' => 'Just a minute...', :class => 'btn btn-primary'
+    :javascript
+      $('#special_report').submit(function() {
+        debugger;
+        if ($('#special_report input[name=what]:checked').val() == 'display_new_window') {
+          $('#special_report').prop('target', '_blank');
+        }
+      });

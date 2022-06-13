@@ -80,7 +80,11 @@ class ReportsController < ApplicationController
       # if we need a true redirect (for Download or Display On Screen),
       # serialize the form and use JS to force the redirect.  This means we end up
       # running the report twice, but whatever.
-      return render(:js => %Q{window.location.href = '#{full_report_url}';}) 
+      if action =~ /new/        # open in new window/tab
+        return render(:js => %Q{window.open("#{full_report_url}");})
+      else
+        return render(:js => %Q{window.location.href = '#{full_report_url}';})
+      end
     end
 
     case action

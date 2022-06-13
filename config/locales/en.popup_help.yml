@@ -14,6 +14,11 @@ en:
       be opened in Microsoft Excel, Google Sheets, or any spreadsheet app.
       Downloaded reports often contain more detail than the on-screen report shows.
 
+    display_in_new_window: >
+
+      Display the results in a new window, which preserves the filtering and other
+      options you have set in this window.
+
     # Logging in
 
     secret_question: >
