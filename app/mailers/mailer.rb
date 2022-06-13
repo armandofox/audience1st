@@ -95,7 +95,7 @@ class Mailer < ActionMailer::Base
     @subject = "#{@venue} - "
     if Rails.env.production? and Option.sender_domain.blank?
       ActionMailer::Base.perform_deliveries = false
-      Rails.logger.info "NOT sending email"
+      Rails.logger.info "NOT sending email since sender domain is blank"
     else
       ActionMailer::Base.perform_deliveries = true
       ActionMailer::Base.smtp_settings = {
