@@ -11,17 +11,21 @@ class AttendanceByShow < Report
   end
 
   def generate(params = {})
+    active_since = params[:num_years].to_i
     shows = Report.list_of_ints_from_multiselect(params[:shows])
     # do default search for OR. if it's AND, winnow the list afterward.
     shows_not = Report.list_of_ints_from_multiselect(params[:shows_not])
     vouchertypes = Report.list_of_ints_from_multiselect(params[:vouchertypes])
     add_error("Please specify one or more productions that have one or more performances.") and return if (shows.empty? && shows_not.empty?)
 
+    # Start by restricting to customers active in the given time window
+    @relation = Customer.active_as_of(active_since.years.ago)
+    
     # Start by restricting by vouchertype, if needed.
     if params[:restrict_by_vouchertype]
-      @relation = Customer.regular_customers.purchased_any_vouchertypes(vouchertypes)
+      @relation = @relation.regular_customers.purchased_any_vouchertypes(vouchertypes)
     else
-      @relation = Customer.regular_customers
+      @relation = @relation.regular_customers
     end
     # for efficiency, handle the 3 cases separately:
     #  1- customers who have seen X

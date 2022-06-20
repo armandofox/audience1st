@@ -1,19 +1,17 @@
-%table.a1-table
-  %tr
-    %td
-      List customers who attended
-      // = select_tag 'operator', options_for_select(['Any','All'])
-      <strong>ANY</strong>
-      of these:
-      %br
-      = select_tag 'shows', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true
-    %td 
-      But <strong>NONE</strong> of these:
-      %br
-      = select_tag 'shows_not', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true
-  %tr
-    %td
-      = check_box_tag 'restrict_by_vouchertype'
-      Only if they used any of these:
-      %br
-      = select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true
+.form-row.form-inline
+  %p
+    List customers active in the last
+    = select_tag 'num_years', options_for_select([['year',1], ['2 years',2], ['3 years',3], ['4 years',4], ['5 years',5]]), :class=> 'form-control form-control-sm form-inline'
+.form-row.form-inline
+  .col-6
+    %p who attended  <strong>ANY</strong> of these...
+    = select_tag 'shows', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true, :class => 'form-control form-inline'
+  .col-6
+    %p ...but <strong>NONE</strong> of these:
+    = select_tag 'shows_not', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true, :class => 'form-control form-inline'
+.form-row.form-inline
+  .col-12
+    = check_box_tag 'restrict_by_vouchertype', :class => 'form-control form-inline mx-2'
+    Only if they used any of these:
+.form-row.form-inline
+  .col-12= select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true, :class => 'form-control form-inline'

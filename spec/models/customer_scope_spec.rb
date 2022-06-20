@@ -1,6 +1,21 @@
 require 'rails_helper'
 
 describe 'scoping Customers' do
+  describe 'active', :focus => true do
+    before(:each) do
+      @c = create(:customer)
+      @c.update_attribute(:updated_at, 1.month.ago)
+    end
+    specify 'not' do
+      expect(Customer.active_as_of(1.week.ago)).not_to include(@c)
+    end
+    specify 'if they made a reservation' do
+      voucher = create(:revenue_voucher,:customer => @c)
+      showdate = create(:showdate)
+      voucher.reserve!(showdate)
+      expect(Customer.active_as_of(1.minute.ago)).to include(@c)
+    end
+  end
   describe 'who have' do
     before :each do
       @c1 = create(:customer)

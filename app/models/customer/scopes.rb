@@ -67,4 +67,17 @@ class Customer < ActiveRecord::Base
       amount, start_date, end_date)
   }
 
+  # a customer is "active during" a range of dates if they have any Item (voucher, donation,
+  # retail item) that has been updated during that range.
+
+  scope :active_during, ->(start_date, end_date) {
+    joins(:items).
+      where('items.customer_id = customers.id').
+      where('items.finalized' => true).
+      where('items.updated_at' => (start_date..end_date))
+  }
+  scope :active_as_of, ->(ago) {
+    active_during(ago, Time.current)
+  }
+
 end
