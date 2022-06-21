@@ -42,18 +42,13 @@ class Customer < ActiveRecord::Base
       'showdates.show_id' => show_ids)
   }
   
-  def self.seen_none_of(show_ids, prior_activity_window=1.year)
-    # Only consider customers active since customer_active_since prior to the earliest showdate
-    # of any of the shows specified.
-    earliest_show = Showdate.order('thedate ASC NULLS LAST').where(:show_id => show_ids).first
-    recently_active_customers = Customer.where(
-      :updated_at => ((earliest_show.thedate - prior_activity_window) .. Time.current))
+  def self.seen_none_of(show_ids)
     not_seen_these_shows =
-      recently_active_customers.
+      self.
       includes(:vouchers, :showdates).
       where.not(:showdates => {:show_id => show_ids})
     not_seen_any_shows = 
-      recently_active_customers.
+      self.
       includes(:vouchers, :showdates).
       where(:items => {:customer_id => nil})
     not_seen_these_shows.or(not_seen_any_shows).distinct

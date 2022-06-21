@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe 'scoping Customers' do
-  describe 'who have' do
+  describe 'based on' do
     before :each do
       @c1 = create(:customer)
       @c2 = create(:customer)
@@ -15,7 +15,7 @@ describe 'scoping Customers' do
       # customer @new has seen nothing
       @new = create(:customer)
     end
-    context 'seen a show' do
+    describe 'seeing a show' do
       it 'should select customer who has seen it' do
         expect(Customer.seen_any_of(@s1)).to include(@c1)
       end
@@ -31,15 +31,14 @@ describe 'scoping Customers' do
         expect(Customer.seen_any_of([@s1,@s2])).not_to include(@new)
       end
     end
-    context 'when selecting based on NOT having seen a show' do
-      it 'should select customer who has not seen it' do
+    describe 'NOT seeing a show' do
+      it 'should include customer who has not seen it' do
         expect(Customer.seen_none_of(@s1)).to include(@c2)
       end
       it 'should exclude customer who HAS seen it' do
         expect(Customer.seen_none_of(@s1)).not_to include(@c1)
       end
-      it 'should include customer who has seen nothing' do
-        puts "Created at #{@new.created_at}, time now #{Time.current}"
+      it 'should include customer who has seen nothing but been active recently' do
         expect(Customer.seen_none_of([@s1,@s2])).to include(@new)
       end
       it 'should include customer who has given donation but not seen show' do

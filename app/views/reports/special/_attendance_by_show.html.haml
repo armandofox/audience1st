@@ -1,8 +1,9 @@
 .form-row.form-inline
   %p
-    List customers active in the last
+    List customers active within
     = select_tag 'num_years', options_for_select([['year',1], ['2 years',2], ['3 years',3], ['4 years',4], ['5 years',5]]), :class=> 'form-control form-control-sm form-inline'
 .form-row.form-inline
+    preceding the earliest performance of any of the following shows,
   .col-6
     %p who attended  <strong>ANY</strong> of these...
     = select_tag 'shows', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true, :class => 'form-control form-inline'

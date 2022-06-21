@@ -18,14 +18,11 @@ class AttendanceByShow < Report
     vouchertypes = Report.list_of_ints_from_multiselect(params[:vouchertypes])
     add_error("Please specify one or more productions that have one or more performances.") and return if (shows.empty? && shows_not.empty?)
 
-    # Start by restricting to customers active in the given time window
-    @relation = Customer.active_as_of(active_since.years.ago)
-    
     # Start by restricting by vouchertype, if needed.
     if params[:restrict_by_vouchertype]
-      @relation = @relation.regular_customers.purchased_any_vouchertypes(vouchertypes)
+      @relation = Customer.regular_customers.purchased_any_vouchertypes(vouchertypes)
     else
-      @relation = @relation.regular_customers
+      @relation = Customer.regular_customers
     end
     # for efficiency, handle the 3 cases separately:
     #  1- customers who have seen X
@@ -35,7 +32,14 @@ class AttendanceByShow < Report
     if    ! shows.empty? && shows_not.empty? # case 1
       @relation = @relation.seen_any_of(shows)
     elsif shows.empty?   && ! shows_not.empty? # case 2
-      @relation = @relation.seen_none_of(shows_not, 1.year)
+      # filter customers who haven't been active for at least N years prior to the
+      # earliest showdate mentioned in either list.
+      earliest_showdate = Showdate.order('thedate ASC NULLS LAST').
+                            where(:show_id => shows+shows_not).
+                            first.thedate
+      @relation = @relation.
+                    where(:updated_at => earliest_showdate - (active_since.years)).
+                    seen_none_of(shows_not)
     else                        # case 3
       # make sure the same show hasn't been specified as both Seen and Not Seen
       unless (shows & shows_not).empty?

@@ -3,7 +3,7 @@ describe StaleOrderSweeper do
   describe 'abandoned orders'  do
     before(:each) do
       @old_order = create(:order)
-      @old_id = old_order.id
+      @old_id = @old_order.id
     end
     specify 'are swept if too old' do
       @old_order.update_attribute(:updated_at, 1.day.ago)
