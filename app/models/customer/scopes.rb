@@ -42,19 +42,18 @@ class Customer < ActiveRecord::Base
       'showdates.show_id' => show_ids)
   }
   
-  def self.seen_none_of(show_ids, customer_active_since=nil)
-    # if 'customer_active_since' isn't specified, we have to pin it to avoid gratuitously
-    # checking whether customers who've been inactive for 20 years haven't seen this show.
-    # In this case, only consider customers active since 1 year prior to the earliest showdate
+  def self.seen_none_of(show_ids, prior_activity_window=1.year)
+    # Only consider customers active since customer_active_since prior to the earliest showdate
     # of any of the shows specified.
-    unless customer_active_since
-      earliest_show = Showdate.order('thedate ASC NULLS LAST').where(:show_id => show_ids).first
-      customer_active_since = earliest_show.thedate - 1.year
-    end
-    not_seen_these_shows = Customer.active_as_of(customer_active_since).
+    earliest_show = Showdate.order('thedate ASC NULLS LAST').where(:show_id => show_ids).first
+    recently_active_customers = Customer.where(
+      :updated_at => ((earliest_show.thedate - prior_activity_window) .. Time.current))
+    not_seen_these_shows =
+      recently_active_customers.
       includes(:vouchers, :showdates).
       where.not(:showdates => {:show_id => show_ids})
-    not_seen_any_shows = Customer.active_as_of(customer_active_since).
+    not_seen_any_shows = 
+      recently_active_customers.
       includes(:vouchers, :showdates).
       where(:items => {:customer_id => nil})
     not_seen_these_shows.or(not_seen_any_shows).distinct
@@ -73,30 +72,5 @@ class Customer < ActiveRecord::Base
     where(%q{items.customer_id = customers.id AND items.amount >= ? AND items.type = 'Donation'
             AND orders.sold_on BETWEEN ? AND ?},
       amount, start_date, end_date)
-  }
-
-  # a customer is "active during" a range of dates if they have any Item (voucher, donation,
-  # retail item) that has been updated during that range, OR if they were first created during
-  # that range.
-
-  scope :active_during, ->(start_date, end_date) {
-    purchased_something_during(start_date, end_date).
-    or(created_during(start_date, end_date)).
-        distinct
-  }
-  scope :active_as_of, ->(ago) {
-    active_during(ago, Time.current)
-  }
-  scope :created_during, ->(start_date, end_date) {
-    joins('LEFT OUTER JOIN "items"').
-      where('items.customer_id = customers.id')               
-      where('customers.created_at' => (start_date..end_date))
-  }
-  scope :purchased_something_during, ->(start_date, end_date) {
-    # joins(:items).
-    joins('LEFT OUTER JOIN "items"').
-      where('items.customer_id = customers.id').
-      where('items.finalized' => true).
-      where('items.updated_at' => (start_date..end_date))
   }
 end

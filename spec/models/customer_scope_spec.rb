@@ -1,33 +1,6 @@
 require 'rails_helper'
 
 describe 'scoping Customers' do
-  specify 'created during' do
-    c1 = create(:customer)
-    c1.update_attribute(:created_at, 1.day.ago)
-    c2 = create(:customer)
-    expect(Customer.created_during(2.days.ago,1.hour.ago)).to include(c1)
-    expect(Customer.created_during(2.days.ago,1.hour.ago)).not_to include(c2)
-    expect(Customer.created_during(2.days.ago,Time.current)).to include(c2)
-    expect(Customer.created_during(2.days.ago,Time.current)).to include(c1)
-  end
-  describe 'active' do
-    before(:each) do
-      @c = create(:customer)
-      @c.update_attribute(:updated_at, 1.month.ago)
-    end
-    specify 'if they were created recently', focus: true do
-      expect(Customer.active_as_of(2.months.ago)).to include(@c)
-    end
-    specify 'not if they were created long ago and have bought nothing' do
-      expect(Customer.active_as_of(1.week.ago)).not_to include(@c)
-    end
-    specify 'if they made a reservation' do
-      voucher = create(:revenue_voucher,:customer => @c)
-      showdate = create(:showdate)
-      voucher.reserve!(showdate)
-      expect(Customer.active_as_of(1.minute.ago)).to include(@c)
-    end
-  end
   describe 'who have' do
     before :each do
       @c1 = create(:customer)
