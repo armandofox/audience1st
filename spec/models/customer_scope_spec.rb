@@ -1,12 +1,24 @@
 require 'rails_helper'
 
 describe 'scoping Customers' do
-  describe 'active', :focus => true do
+  specify 'created during' do
+    c1 = create(:customer)
+    c1.update_attribute(:created_at, 1.day.ago)
+    c2 = create(:customer)
+    expect(Customer.created_during(2.days.ago,1.hour.ago)).to include(c1)
+    expect(Customer.created_during(2.days.ago,1.hour.ago)).not_to include(c2)
+    expect(Customer.created_during(2.days.ago,Time.current)).to include(c2)
+    expect(Customer.created_during(2.days.ago,Time.current)).to include(c1)
+  end
+  describe 'active' do
     before(:each) do
       @c = create(:customer)
       @c.update_attribute(:updated_at, 1.month.ago)
     end
-    specify 'not' do
+    specify 'if they were created recently', focus: true do
+      expect(Customer.active_as_of(2.months.ago)).to include(@c)
+    end
+    specify 'not if they were created long ago and have bought nothing' do
       expect(Customer.active_as_of(1.week.ago)).not_to include(@c)
     end
     specify 'if they made a reservation' do
@@ -54,6 +66,7 @@ describe 'scoping Customers' do
         expect(Customer.seen_none_of(@s1)).not_to include(@c1)
       end
       it 'should include customer who has seen nothing' do
+        puts "Created at #{@new.created_at}, time now #{Time.current}"
         expect(Customer.seen_none_of([@s1,@s2])).to include(@new)
       end
       it 'should include customer who has given donation but not seen show' do

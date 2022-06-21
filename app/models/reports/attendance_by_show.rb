@@ -35,14 +35,14 @@ class AttendanceByShow < Report
     if    ! shows.empty? && shows_not.empty? # case 1
       @relation = @relation.seen_any_of(shows)
     elsif shows.empty?   && ! shows_not.empty? # case 2
-      @relation = @relation.seen_none_of(shows_not)
+      @relation = @relation.seen_none_of(shows_not, active_since.years.ago)
     else                        # case 3
       # make sure the same show hasn't been specified as both Seen and Not Seen
       unless (shows & shows_not).empty?
         @relation = Customer.none
         add_error "You cannot select the same show as both 'Seen' and 'Not Seen'."
       else
-        @relation = @relation.seen_any_of(shows).seen_none_of(shows_not)
+        @relation = @relation.seen_any_of(shows).seen_none_of(shows_not, active_since.years.ago)
       end
     end
   end
