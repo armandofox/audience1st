@@ -51,10 +51,10 @@ class RevenueByPaymentMethodReport
       self.errors.add(:base, 'You must specify a date range, production, or performance.')
       return nil
     end
-    payment_types = {:credit_card => :web_cc, :cash => :box_cash, :check => :box_chk}
-    payment_types.each_pair do |payment_type, purchasemethod|
+    payment_type_map = {:credit_card => [:web_cc,:ext], :cash => [:box_cash,:none,:bundle], :check => [:box_chk]}
+    payment_type_map.each_pair do |payment_type, purchasemethod_list|
       results = 
-        items.where('orders.purchasemethod' => Purchasemethod.get_type_by_name(purchasemethod))
+        items.where('orders.purchasemethod' => purchasemethod_list.map { |pm| Purchasemethod.get_type_by_name(pm) })
       @payment_types[payment_type] = results.group_by(&:account_code).sort
       @totals[payment_type] = results.map(&:amount).sum
     end

@@ -27,10 +27,22 @@ FactoryBot.define do
       end
     end
 
+    factory :order_from_vouchers do
+      sold_on { Time.current }
+      transient do
+        vouchers []
+      end
+      after(:create) do |order,evaluator|
+        evaluator.vouchers.each do |v|
+          order.items << v
+        end
+      end
+    end
+
     factory :completed_order do
       sold_on { Time.current }
     end
-    
+      
   end
 
 end

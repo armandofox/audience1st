@@ -25,10 +25,10 @@ class AccountCode < ActiveRecord::Base
   end
 
   def <=>(other)
-    if self.code && other.code
+    if self.try(:code) && other.try(:code)
       self.code <=> other.code
     else
-      self.name <=> other.name
+      self.try(:name).to_s <=> other.try(:name).to_s
     end
   end
 
