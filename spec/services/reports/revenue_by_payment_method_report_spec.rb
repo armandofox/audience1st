@@ -12,9 +12,12 @@ describe RevenueByPaymentMethodReport, focus: true do
       @r = RevenueByPaymentMethodReport.new.by_dates(1.day.ago, 1.day.from_now)
       @r.run
     end
-    it 'includes comps' do
-      byebug
-      expect(@r.payment_types[:cash].first[1]).to include(@comp1)
+    def all_items(category)
+      @r.payment_types[category].map { |arr| arr[1] }.flatten
     end
+    it 'includes comps' do ;  expect(all_items(:cash)).to include(@comp1) ; end
+    it 'includes revenue' do ;expect(all_items(:cash)).to include(@rev1) ; end
+    it 'includes subs' do ;expect(all_items(:cash)).to include(@sub1) ; end
+    it 'includes bundles' do ;expect(all_items(:cash)).to include(@bun1) ; end
   end
 end
