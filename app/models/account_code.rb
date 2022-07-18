@@ -1,5 +1,14 @@
 class AccountCode < ActiveRecord::Base
 
+  class NullAccountCode
+    include Singleton
+    def id ; 0 ; end
+    def code ; '' ; end
+    def name ;        '[No account code]' ; end
+    def description ; '[No account code]' ; end
+    def donation_prompt ; '' ; end
+  end
+
   default_scope { order('code') }
 
   has_many :donations

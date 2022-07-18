@@ -91,7 +91,7 @@ FactoryBot.define do
     end
 
     factory :comp_voucher do
-      association :vouchertype, :factory => :revenue_vouchertype
+      association :vouchertype, :factory => :comp_vouchertype
       amount 0
       account_code { vouchertype.account_code }
     end

@@ -13,6 +13,7 @@ describe RevenueByPaymentMethodReport, focus: true do
       @r.run
     end
     it 'includes comps' do
+      byebug
       expect(@r.payment_types[:cash].first[1]).to include(@comp1)
     end
   end

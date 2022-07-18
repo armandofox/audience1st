@@ -56,6 +56,11 @@ class RevenueByPaymentMethodReport
       results = 
         items.where('orders.purchasemethod' => purchasemethod_list.map { |pm| Purchasemethod.get_type_by_name(pm) })
       @payment_types[payment_type] = results.group_by(&:account_code).sort
+      # items that have no AccountCode will get assigned to the NullAccountCode (null object
+      # pattern) to keep the reporting code clean.
+      unless @payment_types[payment_type].empty?
+        @payment_types[payment_type][0][0] ||= AccountCode::NullAccountCode.instance
+      end
       @totals[payment_type] = results.map(&:amount).sum
     end
     self
