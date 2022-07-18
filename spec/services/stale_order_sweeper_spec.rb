@@ -1,9 +1,10 @@
+require 'rails_helper'
 describe StaleOrderSweeper do
 
   describe 'abandoned orders'  do
     before(:each) do
       @old_order = create(:order)
-      @old_id = old_order.id
+      @old_id = @old_order.id
     end
     specify 'are swept if too old' do
       @old_order.update_attribute(:updated_at, 1.day.ago)
@@ -11,7 +12,7 @@ describe StaleOrderSweeper do
       expect(Order.find_by(:id => @old_id)).to be_nil
     end
     specify 'are not swept if within abandon threshold' do
-      Option.first.update_attribute(:stale_order_timeout, 10) # minutes
+      Option.first.update_attribute(:order_timeout, 10) # minutes
       StaleOrderSweeper.sweep_abandoned_orders_and_imports
       expect(Order.find_by(:id => @old_id)).to eq(@old_order)
     end
