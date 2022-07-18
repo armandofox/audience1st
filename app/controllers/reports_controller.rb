@@ -153,7 +153,7 @@ class ReportsController < ApplicationController
       @report = RevenueByPaymentMethodReport.new.by_dates(from,to)
     when 'showdate'
       @report = RevenueByPaymentMethodReport.new.by_showdate_id(params[:txn_report_showdate_id])
-    when 'show_id'
+    when 'production'
       @report = RevenueByPaymentMethodReport.new.by_show_id(params[:txn_report_show_id])
     else
       return redirect_to(reports_path, :alert => "Invalid report type: #{params[:txn_report_by]}")
