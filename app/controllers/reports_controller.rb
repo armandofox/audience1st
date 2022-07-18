@@ -3,8 +3,8 @@ class ReportsController < ApplicationController
   before_filter :is_staff_filter
 
   def index
-    # all showdates
-    @all_showdates = Showdate.all.order(:thedate)
+    season = Time.at_beginning_of_season
+    @recent_showdates = Showdate.where(:thedate => (season - 1.years .. season + 1.year)).order(:thedate)
     # next showdate
     @next_showdate = Showdate.current_or_next
     # all show names
@@ -146,12 +146,17 @@ class ReportsController < ApplicationController
 
   def revenue_by_payment_method
     # report may be by date range or by production
-    if params[:txn_report_by] == 'date'
+    case params[:txn_report_by]
+    when 'date'
       from,to = Time.range_from_params(params[:txn_report_dates])
       return redirect_to(reports_path, :alert => 'Please select a date range of 3 months or less for the Revenue Details report.') if (to - from > 93.days)
       @report = RevenueByPaymentMethodReport.new.by_dates(from,to)
-    else
+    when 'showdate'
+      @report = RevenueByPaymentMethodReport.new.by_showdate_id(params[:txn_report_showdate_id])
+    when 'show_id'
       @report = RevenueByPaymentMethodReport.new.by_show_id(params[:txn_report_show_id])
+    else
+      return redirect_to(reports_path, :alert => "Invalid report type: #{params[:txn_report_by]}")
     end
     return redirect_to(reports_path, :alert => @report.errors.as_html) unless @report.run
     if params[:commit] =~ /download/i # fall thru to screen display

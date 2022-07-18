@@ -6,6 +6,7 @@ class RevenueByPaymentMethodReport
   def initialize
     @errors = ActiveModel::Errors.new(self)
     @show_id = nil
+    @showdate_id = nil
     @from = @to = nil
     @header = ''
     @payment_types = {:credit_card => {}, :cash => {}, :check => {}}
@@ -18,6 +19,12 @@ class RevenueByPaymentMethodReport
     self
   end
 
+  def by_showdate_id(showdate_id)
+    @showdate = Showdate.includes(:show).find(showdate_id)
+    @title = @showdate.printable_name
+    self
+  end
+  
   def by_show_id(show_id)
     @show_id = show_id
     show = Show.find(show_id)
@@ -35,12 +42,14 @@ class RevenueByPaymentMethodReport
       where('amount != 0').
       where(:finalized => true).
       order(:sold_on)
-    if show_id
+    if @show_id
       items = items.where('shows.id' => @show_id)
+    elsif @showdate
+      items = items.where('showdates.id' => @showdate.id)
     elsif from
       items = items.where(:sold_on => @from..@to)
     else
-      self.errors.add(:base, 'You must specify either a date range or a production.')
+      self.errors.add(:base, 'You must specify a date range, production, or performance.')
       return nil
     end
     payment_types = {:credit_card => :web_cc, :cash => :box_cash, :check => :box_chk}

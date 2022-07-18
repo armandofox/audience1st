@@ -23,6 +23,13 @@
     %label.h5 Revenue Details
   .col-md-8
     = form_tag revenue_by_payment_method_reports_path, :method => :get, :class => 'form' do
+      - if ! @recent_showdates.empty?
+        .form-row
+          .col-md-4
+            = radio_button_tag 'txn_report_by', 'showdate', false, :class => 'form-check-input'
+            %label.form-check-label{:for => 'txn_report_by_showdate'} By performance
+          .col-md-8
+            = select_tag 'txn_report_showdate_id', options_from_collection_for_select(@recent_showdates, :id, :printable_name), :class => 'form-control'
       - if @current_show
         .form-row
           .col-md-4
