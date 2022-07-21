@@ -54,9 +54,11 @@ class Seatmap < ActiveRecord::Base
     # if any preselected seats, show them as selected not occupied
     occupied = showdate.occupied_seats - selected
     if !restrict_to_zone.blank?
-      occupied = (occupied + sm.excluded_from_zone(restrict_to_zone)).sort.uniq
+      occupied += sm.excluded_from_zone(restrict_to_zone)
     end
-    sm.emit_json(occupied, selected)
+    # remove any seats that are held back by boxoffice
+    occupied += showdate.holdback_seats
+    sm.emit_json(occupied.sort.uniq, selected)
   end
 
   # Return JSON hash of ids to seat counts
