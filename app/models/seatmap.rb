@@ -49,15 +49,13 @@ class Seatmap < ActiveRecord::Base
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
-  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: nil, selected: [])
+  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: nil, selected: [], is_boxoffice: false)
     return EMPTY_SEATMAP_AS_JSON unless (sm = showdate.seatmap)
     # if any preselected seats, show them as selected not occupied
     occupied = showdate.occupied_seats - selected
-    if !restrict_to_zone.blank?
-      occupied += sm.excluded_from_zone(restrict_to_zone)
-    end
+    occupied += sm.excluded_from_zone(restrict_to_zone) unless restrict_to_zone.blank?
     # remove any seats that are held back by boxoffice
-    occupied += showdate.holdback_seats
+    occupied += showdate.holdback_seats unless is_boxoffice
     sm.emit_json(occupied.sort.uniq, selected)
   end
 
