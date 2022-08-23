@@ -42,9 +42,7 @@ When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, 
     steps %Q{Then I should see the seatmap}
   end
   seat_list.split(/\s*,\s*/).each do |seat|
-    # messy: if seat is accessible, a modal will appear that we have to click thru.
-    # but trying to click thru a modal that DOESN'T appear causes an error...
-    accept_alert { page.find("##{seat}").click }
+    page.find("##{seat}").click
   end
   sleep 2
 end
