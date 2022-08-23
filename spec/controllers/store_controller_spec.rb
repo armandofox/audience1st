@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'rails_helper'
 
 describe StoreController do
@@ -197,6 +198,27 @@ describe StoreController do
 
   end
 
+  specify 'cannot add tickets without seats if reserved seating' do
+    @vv = create(:valid_voucher, :showdate => (@sd = create(:reserved_seating_showdate)))
+    @customer = create(:customer)
+    @params = {
+      'seats' => '',
+      "utf8"=>"✓",
+      "showdate_id"=>@sd.id.to_s,
+      "what"=>"", "referer"=>"index", "promo_code"=>"",
+      "show"=>@sd.show_id.to_s,
+      "showdate"=>@sd.id.to_s,
+      "valid_voucher"=>{@vv.id.to_s=>"2"},
+      "price"=>{@vv.id.to_s=>@vv.vouchertype.price.to_s}, "donation"=>"", "zone"=>"",
+      "commit"=>"Continue to Billing Information",
+      "customer_id"=>@customer.id.to_s
+    }
+    allow(controller).to receive(:add_retail_items_to_cart)
+    allow(controller).to receive(:add_donation_to_cart)
+    allow(controller).to receive(:current_user).and_return(@customer)
+    post :process_cart, @params
+    expect(flash[:alert]).to match(/seat can't be blank/i)
+  end
 
   describe 'redirect if error adding to cart' do
     before(:each) do
