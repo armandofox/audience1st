@@ -67,7 +67,7 @@ class Option < ActiveRecord::Base
   validates_presence_of :html_email_template
   validate :html_email_template_checks
 
-  validates_format_of :stylesheet_url, :if => Proc.new { Rails.env.production? }, :allow_blank => true, :with => URI.regexp(['https']), :message => 'must be a valid URI beginning with "https://"'
+  validates_format_of :stylesheet_url, :if => Proc.new { Rails.env.production? }, :allow_blank => true, :with => /\A#{URI::DEFAULT_PARSER.regexp[:ABS_URI]}\z/, :message => 'must be a valid URI beginning with "https://"'
   
   def availability_levels_monotonically_increase
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
