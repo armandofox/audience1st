@@ -176,7 +176,12 @@ class ValidVoucher < ActiveRecord::Base
       self.explanation = "No limit"
       return INFINITE unless showdate
     end
-    total_empty = showdate.saleable_seats_left
+    if (map = showdate.seatmap)  &&  (zone = vouchertype.seating_zone)  #  zone limits?
+      available_in_zone = map.seats_in_zone(zone) - showdate.occupied_seats
+      total_empty = available_in_zone.length
+    else                        # general adm, or no zone limit on vouchertype
+      total_empty = showdate.saleable_seats_left
+    end
     remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
              then total_empty
              else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
@@ -216,6 +221,7 @@ class ValidVoucher < ActiveRecord::Base
     result.adjust_for_visibility ||
       result.adjust_for_showdate ||
       result.adjust_for_sales_dates ||
+      result.adjust_for_seating_zone ||
       result.adjust_for_capacity # this one must be called last
     result.freeze
   end

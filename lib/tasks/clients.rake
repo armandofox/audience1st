@@ -47,7 +47,7 @@ a1client = namespace :a1client  do
     puts "Sender domain configured, venue full name/help email/boxoffice email set up (educated guesses), admin password randomized, and staff-only access enabled for #{ENV['VENUE_FULLNAME']} (#{tenant})"
   end
 
-  desc "Use `heroku run -e \"TENANT=tenantname;VENUE_FULLNAME=name with spaces\" rake a1:provision` to set up new client TENANT as VENUE_FULLNAME."
+  desc "Use `heroku run -e \"TENANT=tenantname;VENUE_FULLNAME=name with spaces\" rake a1client:provision` to set up new client TENANT as VENUE_FULLNAME."
   task :provision => :environment do
     Audience1stRakeTasks.check_vars!
     a1client['create'].invoke
@@ -60,7 +60,7 @@ a1client = namespace :a1client  do
     raise 'FROM is required' unless (from = ENV["FROM"])
     raise 'TO is required' unless (to = ENV["TO"])
     raise 'APP is required' unless (app = ENV["APP"])
-    sed = %Q{perl -pe 's/#{from};/#{to};/g, s/#{from}\./#{to}./g, s/"#{from}"\./"#{to}"./g'}
+    sed = %Q{perl -pe 's/#{from};/"#{to}";/g, s/#{from}\./"#{to}"./g, s/"#{from}"\./"#{to}"./g'}
     cmd = %Q{heroku run pg_dump -Fp --inserts --no-privileges --no-owner '$DATABASE_URL' --schema=#{from} -a #{app} } <<
           %Q{ | #{sed}  > #{to}.pgdump } 
     puts cmd
