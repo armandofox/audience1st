@@ -35,6 +35,12 @@ class Mailer < ActionMailer::Base
     render_and_send_email(customer.email, "#{@subject} #{customer.full_name}'s account", :confirm_account_change)
   end
 
+  def confirm_add_comps(customer, comp_order)
+    @customer = customer
+    @comp_order = comp_order
+    render_and_send_email(customer.email, "#{@subject} complimentary tickets", :confirm_order)
+  end
+
   def confirm_order(purchaser,order)
     @order = order
     # show-specific notes

@@ -67,8 +67,8 @@ class VouchersController < ApplicationController
         :showdate_id => add_comps_order.showdate_id,
         :voucher_id => add_comps_order.order.vouchers.first.id,
         :purchasemethod => Purchasemethod.get_type_by_name('none'))
-      if !add_comps_order.showdate_id.blank? && params[:customer_email]
-        email_confirmation(:confirm_reservation, @customer, add_comps_order.showdate, add_comps_order.order.vouchers)
+      if params[:customer_email]
+        email_confirmation(:confirm_add_comps, @customer, add_comps_order)
       end
       redirect_to customer_path(@customer), :notice => add_comps_order.confirmation_message
     end
