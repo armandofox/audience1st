@@ -1,0 +1,8 @@
+.a1-confirm-reservation
+  %p Dear #{greet(@customer)},
+  %p Complimentary tickets have been added to your #{@venue} account.
+
+  - if @comp_order.leave_open?
+    %p Please visit your account to make a reservation for a specific performance.
+
+%pre= @comp_order.order.summary("\n\n")
