@@ -38,7 +38,7 @@ class Mailer < ActionMailer::Base
   def confirm_add_comps(customer, comp_order)
     @customer = customer
     @comp_order = comp_order
-    render_and_send_email(customer.email, "#{@subject} complimentary tickets", :confirm_order)
+    render_and_send_email(customer.email, "#{@subject} complimentary tickets", :confirm_add_comps)
   end
 
   def confirm_order(purchaser,order)

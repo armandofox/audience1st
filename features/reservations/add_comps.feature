@@ -8,6 +8,7 @@ Feature: add comps and reserve for a show
   Background: logged in as admin and shows are available
 
     Given I am logged in as boxoffice manager
+    And customer "Armando Fox" exists with email "armando@fox.com"
     And 2 "Comp" comps are available for "Macbeth" on "April 20, 2010, 8pm"
 
   Scenario Outline: add comps to performance
@@ -64,10 +65,10 @@ Feature: add comps and reserve for a show
     When I select "Comp (2010)" from "What type:"
     And  I fill in "How many:" with "2"
     And I check "Send Email Confirmation"
-    And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"
+    And  I select "Leave Open" from "Reserve for:"
     And  I fill in "Optional comments:" with "Courtesy Comp"
     And  I press "Add Vouchers"
-    Then an email should be sent to customer "Armando Fox" containing "Macbeth"
+    Then an email should be sent to customer "Armando Fox" containing "Please visit your account to make a reservation"
     
   Scenario: email should not be sent if customer_email is unchecked
 
