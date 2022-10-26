@@ -221,7 +221,6 @@ class ValidVoucher < ActiveRecord::Base
     result.adjust_for_visibility ||
       result.adjust_for_showdate ||
       result.adjust_for_sales_dates ||
-      result.adjust_for_seating_zone ||
       result.adjust_for_capacity # this one must be called last
     result.freeze
   end
