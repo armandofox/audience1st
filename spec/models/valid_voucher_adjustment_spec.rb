@@ -121,7 +121,7 @@ describe 'ValidVoucher adjusting' do
     end
   end
 
-  describe 'seats of type remaining', focus: true do
+  describe 'seats of type remaining' do
     describe 'when seating zones are used' do
       before(:each) do
         z1 = (s1 = FactoryBot.create(:seating_zone)).short_name

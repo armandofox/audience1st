@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe RevenueByPaymentMethodReport, focus: true do
+describe RevenueByPaymentMethodReport do
   before(:each) do
     @rev1 = create(:revenue_voucher) ; create(:order_from_vouchers, :vouchers => [@rev1])
     @comp1 = create(:comp_voucher)   ; create(:order_from_vouchers, :vouchers => [@comp1])
