@@ -73,6 +73,16 @@ class Seatmap < ActiveRecord::Base
     "#{name} (#{seat_count})"
   end
 
+  # Enumerate the associated zones, as SeatingZone instances
+  def seating_zones
+    self.zones.keys.map { |short_name| SeatingZone.find_by!(:short_name => short_name) }
+  end
+  
+  # Enumerate the seat numbers in a particular zone
+  def seats_in_zone(zone)
+    self.zones[zone.short_name]
+  end
+  
   # Seats excluded from a zone (ie, any seats NOT in that zone
   def excluded_from_zone(restrict_to_zone)
     excluded = []
