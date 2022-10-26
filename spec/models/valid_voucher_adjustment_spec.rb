@@ -121,4 +121,29 @@ describe 'ValidVoucher adjusting' do
     end
   end
 
+  describe 'seats of type remaining', focus: true do
+    describe 'when seating zones are used' do
+      before(:each) do
+        z1 = (s1 = FactoryBot.create(:seating_zone)).short_name
+        z2 = (s2 = FactoryBot.create(:seating_zone)).short_name
+        @sm = create(:seatmap, :csv => "#{z1}:A1,,#{z2}:A2\r\n,#{z1}:B1+,,#{z2}:B2\r\n")
+        @showdate = create(:reserved_seating_showdate, :sm => @sm)
+        @vv1 = create(:valid_voucher,
+                     :showdate => @showdate,
+                     :vouchertype => create(:revenue_vouchertype,
+                                            :seating_zone => s1))
+        @vv2 = create(:valid_voucher,
+                     :showdate => @showdate,
+                     :vouchertype => create(:revenue_vouchertype,
+                                            :seating_zone => s2))
+        # mark seats in zone z2 (A2,B2) as occupied
+        allow(@showdate).to receive(:occupied_seats).and_return(['A2','B2'])
+      end
+      specify 'shows zero seats remaining for zone-restricted vouchertype if zone sold out' do
+        expect(@vv2.seats_of_type_remaining).to eq(0)
+        expect(@vv1.seats_of_type_remaining).to eq(2)
+      end
+    end
+  end
+
 end

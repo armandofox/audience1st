@@ -80,7 +80,7 @@ class Seatmap < ActiveRecord::Base
   
   # Enumerate the seat numbers in a particular zone
   def seats_in_zone(zone)
-    self.zones[zone.shortname]
+    self.zones[zone.short_name]
   end
   
   # Seats excluded from a zone (ie, any seats NOT in that zone

@@ -11,13 +11,14 @@ FactoryBot.define do
     sequence(:short_name) { |n| "z#{n}" }
   end
 
+  # Seatmap with 4 seats (1 is accessible) all in zone 'res'
   factory :seatmap do
     # default one looks like this:
-    #   A1 - A2 -
-    #     B1 -  B2     (B1 is an accessible seat)
+    #   A1 -   A2  -
+    #      B1+  -  B2     (B1 is an accessible seat)
     sequence(:name) { |n| "Seatmap #{n}" }
-    csv "res:A1,,res:A2\r\n,res:B1+,,res:B2\r\n"
     image_url 'http://foo.com/seatmap.png'
+    csv "res:A1,,res:A2\r\n,res:B1+,,res:B2\r\n"
     after(:build) do |s,ev|
       Seatmap::Parser.new(s).parse_csv
     end

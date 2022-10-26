@@ -174,7 +174,7 @@ class ValidVoucher < ActiveRecord::Base
   def seats_of_type_remaining
     unless showdate
       self.explanation = "No limit"
-      return INFINITE unless showdate
+      return INFINITE
     end
     if (map = showdate.seatmap)  &&  (zone = vouchertype.seating_zone)  #  zone limits?
       available_in_zone = map.seats_in_zone(zone) - showdate.occupied_seats
