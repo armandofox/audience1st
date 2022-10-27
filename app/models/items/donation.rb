@@ -58,14 +58,14 @@ class Donation < Item
     if opts[:suppress_price]
       "Donation to #{account_code.name}"
     else
-      sprintf("$%6.2f  Donation to #{account_code.name}", amount)
+      sprintf("$%6.2f  Donation to %s", amount, account_code.name)
     end
   end
 
   def description_for_report ; 'Donation' ; end
 
   def description_for_audit_txn
-    sprintf("%.2f #{account_code.name} donation [#{id}]", amount)
+    sprintf("%.2f %s donation [%d]", amount, account_code.name, id)
   end
 
   def self.walkup_donation(amount)

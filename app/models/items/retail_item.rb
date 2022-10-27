@@ -44,14 +44,14 @@ class RetailItem < Item
     if opts[:suppress_price]
       comments
     else
-      sprintf("$%6.2f  #{comments}", amount)
+      sprintf("$%6.2f  %s", amount, comments)
     end
   end
 
   def description_for_report ; comments.to_s.gsub("\n", "; ") ; end
 
   def description_for_audit_txn
-    sprintf("%.2f #{comments} [#{id}]", amount)
+    sprintf("%.2f %s [%d]", amount, comments, id)
 
   end
 

@@ -14,8 +14,8 @@ Scenario: download CSV of existing seatmap
 
   When I follow "Download CSV" for the "Default" seatmap
   Then a CSV file should be downloaded containing:
-    | res:A1 |         | res:A2 |        |
-    |        | res:B1+ |        | res:B2 |
+    ||||||||||||||||| res:A1 |         | res:A2 |        |
+    |||||||||||||||||        | res:B1+ |        | res:B2 |
 
 @javascript
 Scenario: edit existing seatmap image URL and name

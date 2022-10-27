@@ -219,7 +219,7 @@ class CustomersController < ApplicationController
         @customer.errors.as_html
       # for special case of duplicate (existing) email, offer login
       if @customer.unique_email_error
-        flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email)).html_safe
+        flash[:alert] << sprintf("<a href=\"%s\">Sign in as %s</a>", login_path(:email => @customer.email), @customer.email).html_safe
       end
       render :action => 'new'
     end

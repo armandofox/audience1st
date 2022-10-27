@@ -18,7 +18,7 @@ FactoryBot.define do
     #      B1+  -  B2     (B1 is an accessible seat)
     sequence(:name) { |n| "Seatmap #{n}" }
     image_url 'http://foo.com/seatmap.png'
-    csv "res:A1,,res:A2\r\n,res:B1+,,res:B2\r\n"
+    csv ",,,,,,,,,,,,,,,,res:A1,,res:A2\r\n,,,,,,,,,,,,,,,,,res:B1+,,res:B2\r\n"
     after(:build) do |s,ev|
       Seatmap::Parser.new(s).parse_csv
     end

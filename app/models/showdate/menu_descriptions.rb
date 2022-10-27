@@ -50,7 +50,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def name_and_date_with_capacity_stats
-    sprintf "#{printable_name} (%d)", advance_sales_vouchers.size
+    sprintf "%s (%d)", printable_name, advance_sales_vouchers.size
   end
   
   def menu_selection_name

@@ -13,9 +13,11 @@ describe ValidVoucher do
   describe "seats remaining" do 
     subject do
       ValidVoucher.new(
-        :showdate => mock_model(Showdate, :valid? => true,
-          :saleable_seats_left => showdate_seats,
-          :sales_by_type => existing_sales),
+        :showdate => mock_model(Showdate,
+                                :valid? => true,
+                                :seatmap => nil,
+                                :saleable_seats_left => showdate_seats,
+                                :sales_by_type => existing_sales),
         :vouchertype => mock_model(Vouchertype),
         :start_sales => 3.days.ago,
         :end_sales => 1.day.from_now,

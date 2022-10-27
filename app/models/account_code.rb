@@ -46,7 +46,7 @@ class AccountCode < ActiveRecord::Base
   # convenience accessors
 
   def name_or_code ;    name.blank? ? code : name        ; end
-  def name_with_code ;  sprintf("%-6.6s #{name}", code)  ; end
+  def name_with_code ;  sprintf("%-6.6s %s", code, name)  ; end
   
   # cannot delete the last account code or the one associated as any
   # of the defaults
