@@ -194,15 +194,18 @@ class Voucher < Item
   end
 
   def description_for_audit_txn
-    sprintf("%.2f #{vouchertype.name} (%s) [#{id}]", amount,
-      (reserved? ? showdate.printable_name : 'open'))
+    sprintf("%.2f %s (%s) [%s]",
+            amount,
+            vouchertype.name,
+            (reserved? ? showdate.printable_name : 'open'),
+            id.to_s)
   end
   
   def inspect
     if vouchertype_id.nil?
       sprintf("%d (No vouchertype)", (new_record? ? object_id : id))
     else
-      s = sprintf("%d #{vouchertype.name}", (new_record? ? object_id : id))
+      s = sprintf("%d %s", (new_record? ? object_id : id), vouchertype.name)
       if bundle?
         s += sprintf("\n  <%s>,\n", bundled_vouchers.map(&:to_s).join("\n   "))
       end
