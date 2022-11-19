@@ -25,8 +25,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def num_checked_in
-    advance_sales_vouchers.count -
-      advance_sales_vouchers.checked_in.count
+    advance_sales_vouchers.checked_in.count
   end
   
   def num_waiting_for
