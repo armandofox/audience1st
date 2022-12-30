@@ -51,7 +51,7 @@ group :test do
   gem 'email_spec'
   gem 'faker'
   gem 'fake_stripe'
-  gem 'poltergeist'
+  gem 'webdrivers','~> 5.0', require: false
   gem 'rspec-json_expectations'
   gem 'simplecov', '= 0.17', :require => false # version is for github actions to work
   gem 'spring'                  # for 'guard'

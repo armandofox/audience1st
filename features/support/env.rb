@@ -14,7 +14,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 TEST_FILES_DIR = File.join(Rails.root, 'spec', 'test_files') unless defined?(TEST_FILES_DIR)
 
 require 'cucumber/rails'
-require 'webmock/cucumber'
+require 'webdrivers'
 
 # This is email_spec
 require 'email_spec/cucumber'
@@ -25,14 +25,17 @@ require 'email_spec/cucumber'
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 Capybara.server = :webrick
-require 'capybara/poltergeist'
-Capybara.register_driver :poltergeist do |app|
-  options = {
-    :js_errors => true
-  }
-  Capybara::Poltergeist::Driver.new(app, options)
+Capybara.register_driver :selenium do |app|
+  options = Selenium::WebDriver::Chrome::Options.new(
+    args: %w[headless no-sandbox disable-gpu --window-size=1024,1024]
+  )
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    capabilities: options,
+    clear_session_storage: true,
+    clear_local_storage: true)
 end
-Capybara.javascript_driver = :poltergeist
 
 # If you set this to false, any error raised from within your app will bubble 
 # up to your step definition and out to cucumber unless you catch it somewhere
@@ -80,9 +83,6 @@ Before do
   #require 'cucumber/rspec/doubles'
   RSpec::Mocks::setup
 
-  WebMock.enable!
-  WebMock.disable_net_connect!(:allow_localhost => true)
-
   # stub the client (JS) calls to Stripe
   FakeStripe.stub_stripe
 
@@ -90,6 +90,7 @@ Before do
   ActionMailer::Base.delivery_method = :test
   ActionMailer::Base.perform_deliveries = true
   ActionMailer::Base.deliveries.clear
+
 end
 
 After do

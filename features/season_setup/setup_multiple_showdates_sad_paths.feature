@@ -1,4 +1,3 @@
-@javascript
 Feature: setup multiple showdates - sad paths
 
   As a box office manager
@@ -22,7 +21,6 @@ Feature: setup multiple showdates - sad paths
     And I check "<day2>"
     And I fill in "House capacity" with "<house>"
     And I fill in "Max advance sales" with "<max>"
-
     And I press "Save & Back to List of Shows"
     Then I should see "<result_message>"
     And "Macbeth" should have <num> showdates
@@ -33,4 +31,4 @@ Feature: setup multiple showdates - sad paths
       | "2010-05-07" to "2010-05-07" | Fri  | Fri  |    20 |   0 |   4 | You've added performance(s) whose max advance sales are set to zero, meaning no tickets can be purchased. If this isn't what you intended, you can click on the performance date in the Show Details view to edit it. |
       | "2010-03-10" to "2010-03-31" | Sat  | Sat  |    20 |  20 |   3 | The following performances were not created because they already exist: Saturday, Mar 13, 8:00 PM, Saturday, Mar 20, 8:00 PM, Saturday, Mar 27, 8:00 PM                                                               |
       | "2010-03-10" to "2010-03-31" | Fri  | Fri  |     0 |  20 |   3 | No performances were added, because the Friday, Mar 12, 8:00 PM performance had errors: House capacity must be greater than 0                                                                                         |
-      | "2010-03-20" to "2010-04-04" | Fri  | Sat  |    20 |  20 |   6 | 3 performances were successfully added. The following performances were not created because they already exist: Saturday, Mar 20, 8:00 PM, Saturday, Mar 27, 8:00 PM                                                  |
+      | "2010-03-20" to "2010-04-04" | Fri  | Sat  |    20 |  20 |   6 | 3 performances were successfully added.The following performances were not created because they already exist: Saturday, Mar 20, 8:00 PM, Saturday, Mar 27, 8:00 PM                                                  |
