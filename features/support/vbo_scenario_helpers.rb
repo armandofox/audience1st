@@ -44,6 +44,25 @@ module VboScenarioHelpers
     sub_vouchers
   end
 
+  def sell_tickets(vtype, dt, order, args={})
+    # args must include either :quantity => n  or :seats => ['A1','A2'] but not both
+    msg = RuntimeError.new("Must specify either :qty or :seats but not both")
+    raise msg unless args.has_key?(:qty) ^ args.has_key?(:seats)
+    if args.has_key?(:qty)
+      qty,seats = args[:qty].to_i, []
+    else
+      seats = args[:seats]
+      qty = seats.length
+    end
+    showdate = Showdate.find_by_thedate!(Time.zone.parse(dt))
+    offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
+      Vouchertype.find_by_name!(vtype).id,
+      showdate.id)
+    order.add_tickets_without_capacity_checks(offer, qty, seats)
+    order.finalize!
+    order
+  end
+
   def create_tickets(hashes, customer=nil)
     tickets_hashes = {}
     show = nil

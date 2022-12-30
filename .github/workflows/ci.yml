@@ -23,10 +23,6 @@ jobs:
         ruby-version: 2.6.6
         bundler-cache: true
         
-    - name: confirm PhantomJS installed version
-      run: |
-        phantomjs --version
-
     - name: create test database and secrets file
       run: |
         gpg --pinentry-mode loopback --batch --passphrase "${{ secrets.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc

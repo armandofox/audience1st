@@ -26,8 +26,8 @@ Scenario: GA walkup tickets can transfer only to another GA performance
 Scenario: RS walkup tickets can be transferred only to a GA performance  
 
   Given the following walkup tickets have been sold for "April 8, 2012, 8:00pm":
-    | qty | type    | seat | payment  |
-    |   1 | General | A1   | box_cash |
+    | qty | type    | seats | payment  |
+    |   1 | General | A1    | box_cash |
   And I am on the walkup report page for "April 8, 2012, 8:00pm"
   Then the "Transfer checked vouchers to a different performance:" menu should have options: Monday, Apr 9, 8:00 PM; Saturday, Apr 7, 8:00 PM
   And I check "voucher_1"

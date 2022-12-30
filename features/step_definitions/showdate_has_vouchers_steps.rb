@@ -42,21 +42,20 @@ Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_typ
 end
 
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
+  order = create(:order, :walkup => true, :processed_by => Customer.boxoffice_daemon)
   tickets.hashes.each do |t|
-    qty = t[:qty].to_i
-    steps %Q{Given #{t[:qty]} "#{t[:type]}" tickets have been sold for "#{dt}"}
+    if t.has_key?('seats')
+      sell_tickets(t['type'], dt, order, :seats => t['seats'].split(/\s*,\s*/))
+    else
+      sell_tickets(t['type'], dt, order, :qty => t['qty'].to_i)
+    end
   end
 end
 
 Given /^(\d+) "(.*)" tickets? have been sold for "(.*)"$/ do |qty,vtype,dt|
   order = create(:order, :walkup => true, :processed_by => Customer.boxoffice_daemon)
   qty = qty.to_i
-  showdate = Showdate.find_by_thedate!(Time.zone.parse(dt))
-  offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
-    Vouchertype.find_by_name!(vtype).id,
-    showdate.id)
-  order.add_tickets_without_capacity_checks(offer, qty)
-  order.finalize!
+  finalized_order = sell_tickets(vtype,dt,order,:qty => qty)
 end
 
 Given /"(.*)" for \$?([0-9.]+) is available (at checkin )?for all performances of "(.*)"/ do |item,price,walkup,show|
