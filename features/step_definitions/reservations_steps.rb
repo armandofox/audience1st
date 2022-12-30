@@ -28,11 +28,10 @@ When /I update the comment for "(.*)" with "(.*)"/ do |selector,text|
 end
 
 # On the home page, cancel one or more existing voucher reservations.
-# Requires accepting a confirmation modal.
 
 When /I cancel (\d+) "(.*)" reservations?/ do |num,selector|
-  steps %Q{And I select "#{num}" from "cancelnumber" within "#{selector}"}
-  accept_confirm do
-    steps %Q{And I press "Cancel" within "#{selector}"}
-  end
+  steps %Q{
+    And I select "#{num}" from "cancelnumber" within "#{selector}"
+    And I press "Cancel" within "#{selector}"
+  }           
 end

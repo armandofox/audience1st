@@ -41,10 +41,8 @@ When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, 
     within(find_import_row_for name) { find('.select-seats').click }
     steps %Q{Then I should see the seatmap}
   end
-  seat_list.split(/\s*,\s*/).each do |seat|
-    page.find("##{seat}").click
-  end
-  sleep 2
+  seat_list.split(/\s*,\s*/).map { |seat|  page.find("##{seat}").click }
+  #sleep 2
 end
 
 When /I (fail to )?confirm seats? "(.*)" for import customer "(.*)"/ do |should_fail, seat_list, name|

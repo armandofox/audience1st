@@ -29,6 +29,9 @@ Capybara.register_driver :selenium do |app|
   options = Selenium::WebDriver::Chrome::Options.new(
     args: %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
   )
+  # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
+  # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
+  options.add_option(:unhandled_prompt_behavior, :accept)
   Capybara::Selenium::Driver.new(
     app,
     browser: :chrome,

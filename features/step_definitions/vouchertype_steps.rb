@@ -23,10 +23,7 @@ end
 
 When /I click the delete icon for the "(.*)" vouchertype/ do |vtype|
   vouchertype = Vouchertype.find_by!(:name => vtype)
-  accept_confirm do
-    # this results in an "OK/cancel" alert box, which we must accept
-    page.find(:css, "#delete_#{vouchertype.id}").click
-  end
+  page.find(:css, "#delete_#{vouchertype.id}").click
 end
 
 When /I try to clone the "(.*)" vouchertype/ do |vtype|
