@@ -1,3 +1,4 @@
+# coding: utf-8
 
 Given /^customer "(.*) (.*)" has the following (subscriber )?reservations:/ do |first,last,sub,table|
   customer = find_or_create_customer(first,last)
@@ -17,4 +18,21 @@ When /I select the "(.*)" performance of "(.*)" from "(.*)"/ do |thedate, show,m
     showdates.find_by!(:thedate => Time.zone.parse(thedate)).
     id
   page.find_field(menu_selector).find("option[value='#{showdate_id}']").select_option
+end
+
+When /I update the comment for "(.*)" with "(.*)"/ do |selector,text|
+  steps %Q{When I fill in "comments" with "#{text}" within "#{selector}"}
+  accept_alert do
+    steps %Q{And I press "✔" within "#{selector}"}
+  end
+end
+
+# On the home page, cancel one or more existing voucher reservations.
+# Requires accepting a confirmation modal.
+
+When /I cancel (\d+) "(.*)" reservations?/ do |num,selector|
+  steps %Q{And I select "#{num}" from "cancelnumber" within "#{selector}"}
+  accept_confirm do
+    steps %Q{And I press "Cancel" within "#{selector}"}
+  end
 end

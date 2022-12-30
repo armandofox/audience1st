@@ -18,8 +18,7 @@ Background: customer's redeemed tickets' comments for the show "Hairspray" are u
   And I press "Confirm"
   And I am logged in as boxoffice manager
   And I visit the home page for customer "Tom Foolery"
-  And I fill in "comments" with "2 wheelchairs needed" within "#voucher_1"
-  And I press "✔" within "#voucher_1"
+  And I update the comment for "#voucher_1" with "2 wheelchairs needed"
 
 Scenario: door list correctly reflects updated comments of redeemed ticekts 
 
@@ -32,8 +31,7 @@ Scenario: door list correctly reflects updated comments of redeemed ticekts
 
 Scenario: door list shouldn't contain the comments from deleted redeemed ticekts 
 
-  And I visit the home page for customer "Tom Foolery"
-  And I select "2" from "cancelnumber" within "#voucher_1"
-  And I press "Cancel" within "#voucher_1"
-  When I go to the door list page for May 3, 2010, 8:00pm
+  When I visit the home page for customer "Tom Foolery"
+  And I cancel 2 "#voucher_1" reservations
+  And I go to the door list page for May 3, 2010, 8:00pm
   Then I should not see "2 wheelchairs needed"

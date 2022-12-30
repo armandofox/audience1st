@@ -27,7 +27,7 @@ Capybara.default_selector = :css
 Capybara.server = :webrick
 Capybara.register_driver :selenium do |app|
   options = Selenium::WebDriver::Chrome::Options.new(
-    args: %w[headless no-sandbox disable-gpu --window-size=1024,1024]
+    args: %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
   )
   Capybara::Selenium::Driver.new(
     app,

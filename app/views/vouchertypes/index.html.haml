@@ -53,15 +53,15 @@
         %tr[vouchertype]{:class => [(vouchertype.subscription? ? 'subscriberVouchertype' : ''),css_class_for_vouchertype(vouchertype)] }
           %td
             - if @superadmin && vouchertype.vouchers.count == 0
-              = link_to(image_tag('delete.png',:border => 0, :id => "delete_#{vouchertype.id}", :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:delete, 'data-confirm' => "Deleting the '#{h vouchertype.name}' voucher type cannot be undone. Continue?" })
+              = link_to(image_tag('delete.png', :alt => '[Delete]'), vouchertype_path(vouchertype), {:method =>:delete, 'data-confirm' => "Deleting the '#{vouchertype.name}' voucher type cannot be undone. Continue?", :id => "delete_#{vouchertype.id}"})
           %td= vouchertype.display_order
-          %td= link_to h(vouchertype.name), edit_vouchertype_path(vouchertype)
+          %td= link_to vouchertype.name, edit_vouchertype_path(vouchertype)
           %td.text-right= number_to_currency(vouchertype.price)   
           %td.text-right
             - unless vouchertype.zero_cost?
               = account_code_with_popup_link(vouchertype.account_code)
           %td.text-center= vouchertype.subscription? ? "Yes" : ""
-          %td= h(vouchertype.visibility)  
+          %td= vouchertype.visibility  
           %td.text-center= purchase_link_popup(link_icon, link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
           %td 
             -if vouchertype.bundle? 
