@@ -26,7 +26,7 @@ describe Seatmap do
                      )
     end
     it 'includes empty list of unavailable seats if called for preview' do
-      res = @s.emit_json
+      res = Seatmap::AsJson.new(@s).emit_json
       expect(res).to include_json(
         unavailable: [],
         image_url: @s.image_url,
