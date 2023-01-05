@@ -67,7 +67,7 @@ class Seatmap < ActiveRecord::Base
     return Seatmap::AsJson.empty unless (sm = showdate.seatmap)
     map = Seatmap::AsJson.new(sm)
     map.selected = selected
-    map.holdback = showdate.holdback_seats.sort
+    map.holdback = showdate.house_seats.sort
     # if any preselected seats, show them as selected not occupied
     occupied = showdate.occupied_seats - selected
     occupied += sm.excluded_from_zone(restrict_to_zone) unless restrict_to_zone.blank?
@@ -77,6 +77,14 @@ class Seatmap < ActiveRecord::Base
     map.emit_json
   end
 
+  # As above, but ignore any notion of occupied or house seats - just return seatmap showing
+  # all seats as available
+  def self.raw_seatmap_as_json(seatmap)
+    map = Seatmap::AsJson.new(seatmap)
+    map.selected = map.holdback = map_unavailable = []
+    map.emit_json
+  end
+  
   # Return JSON hash of ids to seat counts
   def self.capacities_as_json
     Hash[Seatmap.all.map { |s| [s.id.to_s, s.seat_count.to_s] }].to_json

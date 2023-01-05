@@ -64,6 +64,11 @@ class SeatmapsController < ApplicationController
     end
   end
 
+  def raw_seatmap
+    # empty seatmap, without considering occupied/house seats
+    render :json => Seatmap.raw_seatmap_as_json(Seatmap.find params[:id])
+  end
+
   def assign_seats
     # XHR call with params['seats'] = JSON array of selected seats, params['vouchers'] =
     #  comma-separated IDs of vouchers

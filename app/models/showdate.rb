@@ -27,7 +27,7 @@ class Showdate < ActiveRecord::Base
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy
 
-  serialize :holdback_seats, Array
+  serialize :house_seats, Array
   
   validates :max_advance_sales, :numericality => { :greater_than_or_equal_to => 0, :only_integer => true }
   validates :house_capacity, :numericality => { :greater_than => 0, :only_integer => true }, :unless => :has_reserved_seating?

@@ -43,15 +43,23 @@ A1.adjustShowdateType = function() {
   }
 };
 
-A1.adjustHouseCap = function() {
+A1.seatmapChanged = function() {
   var chosenSeatmap = $(this);
+  // always clear out previously-chosen house seats.
+  $('.showdate-house-seats').val('');
   if (chosenSeatmap.val() == '') {  // general admission
+    $('.house-seats-row').addClass('d-none');
+    $('#seating-charts-wrapper').addClass('d-none');
     if (!A1.firstTrigger)    { 
       $('.showdate-house-capacity').val('').removeClass('.a1-passive-text-input').prop('readonly',false);
     }
-  } else {                      // reserved seating: determine house cap from seatmap
+  } else {
+    // reserved seating: determine house cap from seatmap
     var capacity = chosenSeatmap.find('option:selected').text().match( /\(([0-9]+)\)$/ )[1];
     $('.showdate-house-capacity').val(capacity).addClass('.a1-passive-text-input').prop('readonly',true);
+    $('.house-seats-row').removeClass('d-none');
+    // display seatmap for house seats selection
+    A1.showSeatmapForHouseSeats();
   }
   A1.firstTrigger = false;
 };
@@ -60,7 +68,7 @@ A1.adjustHouseCap = function() {
 // will be the menu that triggers it
 A1.showdateSetup = function() {
   A1.firstTrigger = true;
-  $('.showdate-seating-choices').change(A1.adjustHouseCap).trigger('change');
+  $('.showdate-seating-choices').change(A1.seatmapChanged).trigger('change');
   $('.showdate-type').change(A1.adjustShowdateType).trigger('change');
   $('form.showdate-form').submit(A1.warnZeroMaxSales);
 };

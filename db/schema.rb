@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20220721011429) do
+ActiveRecord::Schema.define(version: 20230105055939) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -256,7 +256,7 @@ ActiveRecord::Schema.define(version: 20220721011429) do
     t.boolean  "stream_anytime",                   default: false, null: false
     t.text     "access_instructions"
     t.text     "long_description"
-    t.string   "holdback_seats",      limit: 8192
+    t.string   "house_seats",         limit: 8192
   end
 
   add_index "showdates", ["seatmap_id"], name: "index_showdates_on_seatmap_id", using: :btree

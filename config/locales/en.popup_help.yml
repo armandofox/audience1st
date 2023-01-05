@@ -204,6 +204,12 @@ en:
       A reserved seating performance can be changed to use a different seat map
       if all existing patrons' seats can be accommodated in the new seat map.
 
+    house_seats: >
+
+      Use the seatmap to select "house seats" that can be assigned by the box office only.
+      Regular patrons will see these seats as "unavailable" when making their own
+      reservations.  Each performance of a show can have its own list of house seats.
+
     seating_zones: >
 
       Full name appears when you hover over a seat in a seating chart.
