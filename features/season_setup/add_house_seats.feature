@@ -27,4 +27,4 @@ Feature: designate house seats when adding performances
     Then I should see "One performance was successfully added"
     And the "Jan 1, 2010, 7pm" performance should have house seats "B1,B2"
     When I visit the edit showdate page for Jan 1, 2010, 7pm
-    Then the "House seats" field should contain "B1, B2"
+    Then the "House seats" field should contain "B1,B2"

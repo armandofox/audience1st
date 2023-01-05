@@ -45,8 +45,12 @@ A1.adjustShowdateType = function() {
 
 A1.seatmapChanged = function() {
   var chosenSeatmap = $(this);
-  // always clear out previously-chosen house seats.
-  $('.showdate-house-seats').val('');
+  // always clear out previously-chosen house seats (except when page is first loaded, as
+  // it might be the Edit Showdate page; if it's the New Showdates page, the field
+  // will be blank anyway).
+  if (!A1.firstTrigger) {
+    $('.showdate-house-seats').val('');
+  }
   if (chosenSeatmap.val() == '') {  // general admission
     $('.house-seats-row').addClass('d-none');
     $('#seating-charts-wrapper').addClass('d-none');
