@@ -84,7 +84,7 @@ class ShowdatesController < ApplicationController
                                      :live_stream, :stream_anytime, :access_instructions,
                                      :house_seats
     # convert house seats to an array if needed
-    p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort
+    p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort if p.has_key?(:house_seats)
     p
   end
 
