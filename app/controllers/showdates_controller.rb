@@ -79,9 +79,13 @@ class ShowdatesController < ApplicationController
   private
   
   def showdate_params
-    params.require(:showdate).permit :thedate, :house_capacity, :max_advance_sales,
+    p = params.require(:showdate).permit :thedate, :house_capacity, :max_advance_sales,
                                      :description, :long_description, :show_id, :seatmap_id,
-                                     :live_stream, :stream_anytime, :access_instructions
+                                     :live_stream, :stream_anytime, :access_instructions,
+                                     :house_seats
+    # convert house seats to an array if needed
+    p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort
+    p
   end
 
 end

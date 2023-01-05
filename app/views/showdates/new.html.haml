@@ -40,9 +40,7 @@
     .col-md-3.text-right
       %label.col-form-label House seats
       = popup_help_for :house_seats
-    .col-md-3
-      = display_seats_field(field_name: 'showdate_house_seats', extra_classes: 'showdate-house-seats')
-      // = text_field 'showdate', 'house_seats', :class => 'form-control showdate-house-seats a1-passive-text-input'
+    = display_seats_field(field_name: 'showdate[house_seats]', extra_classes: 'showdate-house-seats col-md-8 text-left form-control')
 
   = render :partial => 'components/seatmap'
 
