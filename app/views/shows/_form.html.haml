@@ -29,7 +29,7 @@
     .col-md-6.form-group
       = popup_help_for :show_description
       %label.col-form-label{:for => :show_description} Description (optional)
-      = f.text_area 'description', :maxlength => 255, :class => 'form-control'
+      = f.text_area 'description', :class => 'form-control'
     .col-md-6.form-group
       %label.col-form-label{:for=>:show_patron_notes} Special notes to patron (in confirmation email); blank if none
       = f.text_area 'patron_notes', :maxlength => 255, :class => 'form-control'
