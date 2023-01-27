@@ -18,7 +18,7 @@ gem 'gibbon'
 gem 'i18n'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', '= 4.0.5'
-gem 'jquery-ui-rails', '= 5.0.5'
+gem 'jquery-ui-rails', '6.0.0'
 gem 'newrelic_rpm'
 gem 'nokogiri'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
