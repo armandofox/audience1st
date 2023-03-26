@@ -36,9 +36,10 @@ class Store
     attr_reader :order
     attr_reader :customer       # customer doing the shopping (even if on-behalf'd)
     attr_reader :logged_in      # if non-nil, id of the actually logged in user
-    attr_reader :what, :all_shows, :all_showdates, :sh, :sd, :valid_vouchers, :promo_code
+    attr_reader :all_shows, :all_showdates, :sh, :sd, :valid_vouchers, :promo_code
     attr_reader :show_url, :showdate_url, :reload_url
-
+    attr_accessor :what
+    
     def initialize(current_user, customer, admin_display, params)
       @logged_in = current_user
       @customer = customer
@@ -52,6 +53,7 @@ class Store
 
       @what = Show.type(params[:what])
       @promo_code = params[:promo_code]
+
     end
 
     def nothing_to_buy?

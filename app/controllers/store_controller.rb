@@ -91,8 +91,7 @@ class StoreController < ApplicationController
     @store = Store::Flow.new(current_user(), @customer, @gAdminDisplay, params)
     @page_title = "#{Option.venue} - Subscriptions"
     @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
-    @what = 'Subscription'
-
+    @store.what = 'Subscription'
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
     if @gAdminDisplay
