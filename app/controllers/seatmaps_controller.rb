@@ -65,8 +65,13 @@ class SeatmapsController < ApplicationController
   end
 
   def raw_seatmap
-    # empty seatmap, without considering occupied/house seats
     render :json => Seatmap.raw_seatmap_as_json(Seatmap.find params[:id])
+  end
+  
+  def house_seats_seatmap
+    # seatmap for a particular show id showing House Seats as 'selected', reserved
+    # seats as 'unavailable', and unreserved seats as 'available'
+    render :json => Seatmap.house_seats_seatmap_as_json(Showdate.find params[:id])
   end
 
   def assign_seats

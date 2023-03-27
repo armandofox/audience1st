@@ -5,6 +5,8 @@
 = form_tag show_showdate_path(@show,@showdate), :method => :put, :class => 'showdate-form' do 
   - args = {:start_year => Time.at_beginning_of_season(@show.season).year, :end_year => Time.at_end_of_season(@show.season).year, :minute_step => 15, :date => @showdate.thedate }
 
+  = hidden_field_tag 'showdate_id', @showdate.id
+
   .form-row.py-1
     .col-md-3.text-right
       %label.col-form-label Performance type
@@ -28,12 +30,16 @@
         = link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary mx-1'
 
   - if @showdate.has_reserved_seating?
-    .form-row.py-1.d-none.house-seats-row
-      .col-md-3.text-right
-        %label.col-form-label{:for => 'showdate_house_seats'} House seats
-        = popup_help_for :house_seats
-      .col-md-2= button_tag 'Change...', :class => 'btn btn-primary edit-house-seats'
-      .col-md-5= text_field_tag 'showdate[house_seats]', display_seats(@showdate.house_seats), :class => 'showdate-house-seats a1-passive-text-input text-left form-control'
+    .house-seats-row
+      .form-row.py-1
+        .col-md-3.text-right
+          %label.col-form-label{:for => 'showdate_house_seats'} House seats
+          = popup_help_for :house_seats
+        .col-md-9
+          = text_field_tag 'showdate[house_seats]', display_seats(@showdate.house_seats), :class => 'showdate-house-seats a1-passive-text-input text-left form-control'
+      .form-row.py-1
+        .col-md-9.offset-3
+          = render :partial => 'components/seatmap'
 
   - unless @showdate.stream?
     .form-row

@@ -67,6 +67,7 @@ Rails.application.routes.draw do
 
     # AJAX responders for seatmap functions
     get '/ajax/seatmap/:id'           => 'seatmaps#seatmap'
+    get '/ajax/house_seats_seatmap/:id' => 'seatmaps#house_seats_seatmap'
     get '/ajax/raw_seatmap/:id'       => 'seatmaps#raw_seatmap'
     post '/ajax/import_assign_seats'  => 'seatmaps#assign_seats', :as => 'import_assign_seats'
 

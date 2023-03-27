@@ -18,7 +18,7 @@ class ShowdatesController < ApplicationController
     # determine date list from EITHER the date range, or for stream-anytime, single date
     if params[:showdate][:stream_anytime].blank?
       start_date,end_date = Time.range_from_params(params[:show_run_dates])
-      all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
+g      all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
     else
       all_dates = [ Time.from_hash(params[:stream_until]) ]

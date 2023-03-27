@@ -1,7 +1,12 @@
+
 A1.showSeatmapForHouseSeats = function() {
-  // triggered when seatmap displayed for house seat selection in create/edit perf view
-  // get the seatmap based on the ID selected in the dropdown
-  var seatmapUrl = '/ajax/raw_seatmap/' + $('#showdate_seatmap_id').val();
+  var seatmapUrl;
+  if ($('body#showdates_new').length > 0) {
+    // if CREATING new perf(s), show raw seatmap for choosing house seats
+    seatmapUrl = '/ajax/raw_seatmap/' + $('#showdate_seatmap_id').val();
+  } else {
+    seatmapUrl = '/ajax/house_seats_seatmap/' + $('#showdate_id').val();
+  }
   $.getJSON(seatmapUrl, A1.setupSeatmapForHouseSeats);
 };
 
@@ -17,3 +22,4 @@ A1.setupSeatmapForHouseSeats = function(jsonData) {
   };
   A1.seatmap.setupMap();
 }
+

@@ -69,7 +69,8 @@ A1.seatmapChanged = function() {
 };
 
 // On pages that have a .showdate-house-capacity auto-updatable field, .showdate-seating-choices 
-// will be the menu that triggers it
+// will be the menu that triggers it.  The following function therefore just affects the
+// "add new performances" or "edit an existing performance" page.
 A1.showdateSetup = function() {
   A1.firstTrigger = true;
   $('.showdate-seating-choices').change(A1.seatmapChanged).trigger('change');

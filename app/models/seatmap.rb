@@ -84,7 +84,17 @@ class Seatmap < ActiveRecord::Base
     map.selected = map.holdback = map_unavailable = []
     map.emit_json
   end
-  
+
+  # As above, but show House Seats as 'selected', reserved
+  # seats as 'unavailable', and unreserved seats as 'available'
+  def self.house_seats_seatmap_as_json(showdate)
+    byebug
+    map = Seatmap::AsJson.new(showdate.seatmap)
+    map.selected = showdate.house_seats.sort
+    map.unavailable = showdate.occupied_seats.sort
+    map.emit_json
+  end
+
   # Return JSON hash of ids to seat counts
   def self.capacities_as_json
     Hash[Seatmap.all.map { |s| [s.id.to_s, s.seat_count.to_s] }].to_json
