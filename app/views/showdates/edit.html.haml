@@ -30,6 +30,10 @@
         = link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary mx-1'
 
   - if @showdate.has_reserved_seating?
+    .house-seats-seatmap-changed.d-none
+      .form-row.py-1
+        .col-md-9.offset-3
+          = t('showdates.seatmap_changing')
     .house-seats-row
       .form-row.py-1
         .col-md-3.text-right
@@ -80,5 +84,5 @@
 
 
   = link_to  "Don't Save Changes", edit_show_path(@showdate.show), :class => 'btn btn-secondary'
-  = submit_tag 'Save Changes', :class => 'btn btn-success'
+  = submit_tag 'Save Changes', :class => 'btn btn-success submit'
 

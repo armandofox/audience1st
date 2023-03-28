@@ -43,7 +43,16 @@ A1.adjustShowdateType = function() {
   }
 };
 
-A1.seatmapChanged = function() {
+A1.seatmapChangedForExistingPerformance = function() {
+  $('.showdate-house-seats').val('');
+  $('.house-seats-row').addClass('d-none');
+  $('#seating-charts-wrapper').addClass('d-none');
+  $('.house-seats-seatmap-changed').removeClass('d-none');
+  $('.form-control').prop('disabled', true);
+  $('.submit').prop('disabled', false);
+};
+
+A1.seatmapChangedForNewPerformance = function() {
   var chosenSeatmap = $(this);
   // always clear out previously-chosen house seats (except when page is first loaded, as
   // it might be the Edit Showdate page; if it's the New Showdates page, the field
@@ -68,6 +77,7 @@ A1.seatmapChanged = function() {
     A1.showSeatmapForHouseSeats();
   }
   A1.firstTrigger = false;
+    
 };
 
 // On pages that have a .showdate-house-capacity auto-updatable field, .showdate-seating-choices 
@@ -75,7 +85,12 @@ A1.seatmapChanged = function() {
 // "add new performances" or "edit an existing performance" page.
 A1.showdateSetup = function() {
   A1.firstTrigger = true;
-  $('.showdate-seating-choices').change(A1.seatmapChanged).trigger('change');
+  if  ($('body#showdates_edit').length > 0) {
+    // edit showdates page: changing seatmap freezes the UI until seatmap change confirmed
+    $('.showdate-seating-choices').change(A1.seatmapChangedForExistingPerformance);
+  } else {
+    $('.showdate-seating-choices').change(A1.seatmapChangedForNewPerformance).trigger('change');
+  }
   $('.showdate-type').change(A1.adjustShowdateType).trigger('change');
   $('form.showdate-form').submit(A1.warnZeroMaxSales);
 };
