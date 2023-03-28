@@ -45,7 +45,7 @@ jobs:
         
     - name: run Cucumber tests and capture coverage
       run: |
-        bundle exec cucumber --retry 2
+        bundle exec cucumber --retry 2  2>/dev/null
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
   
     - name: Publish code coverage

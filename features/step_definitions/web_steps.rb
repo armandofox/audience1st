@@ -34,6 +34,7 @@ When /^(?:|I )press( and confirm)? "([^\"]*)"(?: within "([^\"]*)")?$/ do |confi
     rescue Capybara::ElementNotFound
       confirm ?  accept_confirm { click_button(button, :disabled => true) } : click_button(button, :disabled => true)
     end
+    sleep 0.5
   end
 end
 
