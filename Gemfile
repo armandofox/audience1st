@@ -9,7 +9,7 @@ gem 'rails', '4.2.11.1'
 
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
-gem 'bigdecimal', '1.3.5'       # see https://stackoverflow.com/questions/60226893/rails-nomethoderror-undefined-method-new-for-bigdecimalclass - this can be removed for Rails 5
+gem 'bigdecimal', '1.3.5'       # @see https://stackoverflow.com/questions/60226893/rails-nomethoderror-undefined-method-new-for-bigdecimalclass - this can be removed for Rails 5
 gem 'builder'
 gem 'bundler', '1.17.3'
 gem 'figaro'
