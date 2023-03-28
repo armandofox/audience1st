@@ -20,8 +20,8 @@ jobs:
     - name: Install Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6.6
-        bundler-cache: true
+        ruby-version: 2.7.7
+        bundler-cache: false
         
     - name: create test database and secrets file
       run: |
@@ -34,6 +34,10 @@ jobs:
         chmod +x $CCTR
         $CCTR before-build
 
+    - name: install gems
+      run: |
+        bundle install --without production
+        
     - name: run RSpec tests and capture coverage
       run: |
         bundle exec rspec
@@ -41,7 +45,7 @@ jobs:
         
     - name: run Cucumber tests and capture coverage
       run: |
-        bundle exec cucumber --retry 2
+        bundle exec cucumber --retry 2  2>/dev/null
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
   
     - name: Publish code coverage

@@ -27,13 +27,14 @@ When /^(?:|I )visit (.+)$/ do |page_name|
   visit path_to(page_name)
 end
 
-When /^(?:|I )press "([^\"]*)"(?: within "([^\"]*)")?$/ do |button, selector|
+When /^(?:|I )press( and confirm)? "([^\"]*)"(?: within "([^\"]*)")?$/ do |confirm,button, selector|
   with_scope(selector) do
     begin
-      click_button(button)
+      confirm ?  accept_confirm { click_button(button) } : click_button(button)
     rescue Capybara::ElementNotFound
-      click_button(button, :disabled => true)
+      confirm ?  accept_confirm { click_button(button, :disabled => true) } : click_button(button, :disabled => true)
     end
+    sleep 0.5
   end
 end
 

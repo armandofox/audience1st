@@ -27,7 +27,7 @@
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
       .col-2 Staff comments
       .col-10
-        .input-group
+        .input-group.staff-comments
           = text_field_tag 'comments', Voucher.combined_comments(group.vouchers), :id => nil, :class => 'form-control form-control-sm'
           = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => nil, 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'
       
