@@ -36,7 +36,7 @@ en:
       If you change the seatmap for this performance, the current house seats will
       be cleared and you must confirm the seatmap change by clicking "Save Changes" below.
       You can then select house seats in the new seatmap.  If you don't wish to do this,
-      click "Don't Save Changes" below.
+      you can leave things as they are by clicking "Don't Save Changes" below.
 
     validations:
       cannot_exceed_house_cap: >
