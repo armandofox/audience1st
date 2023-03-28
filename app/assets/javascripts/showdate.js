@@ -62,6 +62,8 @@ A1.seatmapChanged = function() {
     var capacity = chosenSeatmap.find('option:selected').text().match( /\(([0-9]+)\)$/ )[1];
     $('.showdate-house-capacity').val(capacity).addClass('.a1-passive-text-input').prop('readonly',true);
     $('.house-seats-row').removeClass('d-none');
+    // blank out any current choices for house seats
+    $('.showdate-house-seats').val('');
     // display seatmap for house seats selection
     A1.showSeatmapForHouseSeats();
   }

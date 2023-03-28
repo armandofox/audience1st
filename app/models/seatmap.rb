@@ -88,7 +88,6 @@ class Seatmap < ActiveRecord::Base
   # As above, but show House Seats as 'selected', reserved
   # seats as 'unavailable', and unreserved seats as 'available'
   def self.house_seats_seatmap_as_json(showdate)
-    byebug
     map = Seatmap::AsJson.new(showdate.seatmap)
     map.selected = showdate.house_seats.sort
     map.unavailable = showdate.occupied_seats.sort
