@@ -55,7 +55,6 @@ group :test do
   gem 'fake_stripe'
   gem 'webdrivers','~> 5.0', require: false
   gem 'rspec-json_expectations'
-  #gem 'simplecov', '= 0.17', :require => false # version is for github actions to work
   gem 'simplecov'
   gem 'timecop'
   gem 'webmock'
