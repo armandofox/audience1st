@@ -77,7 +77,6 @@ group :development, :test do
   gem 'byebug'                  # 4
   gem 'pry'
   gem 'listen', '~> 2.2'
-  gem 'minitest'
   gem 'faye-websocket'
   #gem 'rb-readline'
   gem 'rspec', '~> 3.0'

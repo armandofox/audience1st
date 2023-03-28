@@ -18,6 +18,7 @@ Scenario: delete tickets to some revenue reservations and keep comments
   And I fill in "comments" with "Will be late" within "#voucher_1"
   And I press "✔" within "#voucher_1"
   And I select "5" from "cancelnumber" within "#voucher_1"
-  And I press "Cancel" within "#voucher_1"
+  And I press and confirm "Cancel" within "#voucher_1"
   And I visit the home page for customer "Tom Foolery"
-  Then the "comments" field within "#voucher_6" should contain "Will be late"
+  Then show me the page
+  Then the "comments" field within "#voucher_6" should equal "Will be late"

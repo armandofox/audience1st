@@ -363,7 +363,6 @@ DEPENDENCIES
   json (>= 2.0)
   launchy
   listen (~> 2.2)
-  minitest
   newrelic_rpm
   nokogiri
   pg (= 0.20)
