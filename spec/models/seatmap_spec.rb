@@ -33,6 +33,17 @@ describe Seatmap do
         seats: {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}
         )
     end
+    describe 'seatmap for house seat selection' do
+      before(:each) do
+        @sd.house_seats = ['A1','B1']
+        @res = Seatmap.house_seats_seatmap_as_json(@sd)
+      end
+      it 'shows house seat as unavailable if occupied' do
+        expect(@res).to include_json(
+                          unavailable: %w(Reserved-A1),
+                          selected: %w(P-B1))
+      end
+    end
   end
   describe 'seatmap' do
     describe 'is invalid with duplicate seats' do
