@@ -82,9 +82,14 @@ class ShowdatesController < ApplicationController
     p = params.require(:showdate).permit :thedate, :house_capacity, :max_advance_sales,
                                      :description, :long_description, :show_id, :seatmap_id,
                                      :live_stream, :stream_anytime, :access_instructions,
-                                     :house_seats
-    # convert house seats to an array if needed
-    p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort if p.has_key?(:house_seats)
+                                     :open_house_seats, :occupied_house_seats, :house_seats
+    # if house_seats is provided, convert to an array...
+    if p.has_key?(:house_seats)
+      p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort if p.has_key?(:house_seats)
+    elsif (p.has_key?(:open_house_seats) || p.has_key?(:occupied_house_seats))
+      p[:house_seats] = (p.delete(:open_house_seats) + "," + p.delete(:occupied_house_seats)).
+                          split(/\s*,\s*/).sort
+    end
     p
   end
 

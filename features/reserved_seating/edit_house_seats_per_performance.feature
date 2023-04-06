@@ -20,6 +20,6 @@ Feature: edit house seats per performance
     Then the "House seats" field should contain "A2, B1"
     And the "Occupied house seats" field should contain "B2"
     When I press "Save Changes"
-    Then that performance's house seats should be: A1, B1, B2
+    Then that performance's house seats should be: A2, B1, B2
 
     

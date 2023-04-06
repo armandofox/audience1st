@@ -43,7 +43,7 @@ end
 
 Then /that performance's house seats should be: (.*)/ do |seats|
   seat_list = seats.split(/\s*,\s*/)
-  expect(@showdate.house_seats.sort).to eq(seat_list.sort)
+  expect(@showdate.reload.house_seats.sort).to eq(seat_list.sort)
 end
 
 Then /I should (not )?see the seatmap/ do |no|
