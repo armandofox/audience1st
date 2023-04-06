@@ -210,6 +210,11 @@ en:
       Regular patrons will see these seats as "unavailable" when making their own
       reservations.  Each performance of a show can have its own list of house seats.
 
+    occupied_house_seats: >
+
+      These seats have been designated as house seats for this performance, but are
+      occupied by patron reservations.
+
     seating_zones: >
 
       Full name appears when you hover over a seat in a seating chart.

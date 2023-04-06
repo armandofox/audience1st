@@ -60,6 +60,14 @@ class Showdate < ActiveRecord::Base
 
   def has_reserved_seating? ; !stream?  &&  !!seatmap ; end
 
+  def open_house_seats
+    house_seats - occupied_seats
+  end
+
+  def occupied_house_seats
+    house_seats & occupied_seats
+  end
+  
   private
 
   def truncate_showdate_to_nearest_minute

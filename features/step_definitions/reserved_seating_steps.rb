@@ -10,6 +10,19 @@ Given /that performance has reserved seating/ do
   @showdate.save!
 end
 
+Given /the following seats are occupied for that performance: (.*)/ do |seats|
+  seat_list = seats.split(/\s*,\s*/)
+  buy!(create(:customer),
+       create(:revenue_vouchertype),
+       seat_list.length,
+       showdate: @showdate,
+       seats: seat_list)
+end
+
+Given /the following are house seats for that performance: (.*)/ do |seats|
+  @showdate.update_attributes!(:house_seats => seats.split(/\s*,\s*/))
+end
+
 Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl|
   @showdate ||= create(:reserved_seating_showdate, :date => Time.zone.parse(time))
   tbl.hashes.each do |h|
@@ -26,6 +39,11 @@ When I press "Choose Seats..."
 Then I should see the seatmap
 When I choose seats "#{seats}"
 }
+end
+
+Then /that performance's house seats should be: (.*)/ do |seats|
+  seat_list = seats.split(/\s*,\s*/)
+  expect(@showdate.house_seats.sort).to eq(seat_list.sort)
 end
 
 Then /I should (not )?see the seatmap/ do |no|

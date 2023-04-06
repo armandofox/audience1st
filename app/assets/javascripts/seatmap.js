@@ -40,7 +40,7 @@ A1.seatmap = {
             alert($('#accessibility_advisory_for_reserved_seating').val());
           }
           if (A1.seatmap.holdback.includes(clickedSeat)) { // held back seat
-            alert('Note: Seat ' + seatNum + ' is a designated holdback seat for this performance.');
+            alert('Note: Seat ' + seatNum + ' is a house seat for this performance.');
           }
           A1.seatmap.selectThisSeat(seatNum);
           return('selected');
