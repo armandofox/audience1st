@@ -43,6 +43,7 @@ GEM
       public_suffix (>= 2)
       rack (>= 1.3.6)
     arel (6.0.4)
+    ast (2.4.2)
     attr_encrypted (3.1.0)
       encryptor (~> 3.0.0)
     backports (3.15.0)
@@ -96,7 +97,6 @@ GEM
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.4.0)
-    elif (0.1.0)
     email_spec (2.2.0)
       htmlentities (~> 4.3.3)
       launchy (~> 2.1)
@@ -175,6 +175,8 @@ GEM
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     parallel (1.12.1)
+    parser (3.2.2.0)
+      ast (~> 2.4.1)
     pg (0.20.0)
     protected_attributes (1.1.4)
       activemodel (>= 4.0.1, < 5.0)
@@ -275,14 +277,12 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    scout (5.9.13)
-      elif
-      server_metrics (>= 1.2.18)
+    scout_apm (5.3.3)
+      parser
     selenium-webdriver (4.1.0)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2)
-    server_metrics (1.2.18)
     simplecov (0.17.0)
       docile (~> 1.1)
       json (>= 1.8, < 3)
@@ -391,7 +391,7 @@ DEPENDENCIES
   rspec-json_expectations
   rspec-rails
   sassc-rails
-  scout
+  scout_apm
   simplecov
   sprockets-rails
   sqlite3 (= 1.3.13)
