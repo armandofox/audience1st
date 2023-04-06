@@ -27,6 +27,7 @@ gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'responders', '~> 2.0'
 gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
 gem 'rake'
+gem 'scout'
 gem 'stripe'
 gem 'will_paginate'
 
