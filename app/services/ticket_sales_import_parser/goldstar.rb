@@ -57,7 +57,15 @@ module TicketSalesImportParser
               end
               redemption = @redemptions[offer_id]
               description << "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
-              order.add_tickets_without_capacity_checks(redemption, num_seats)
+              # HACK. If this is a reserved seating performance, we have to provide "placeholder"
+              # seat numbers or else the order won't pass validation, since you can't add
+              # vouchers for RS performance if they don't have associated seats. Yuck.
+              if redemption.showdate.has_reserved_seating?
+                order.add_tickets_without_capacity_checks(
+                  redemption, num_seats, (Array.new(num_seats) { Voucher::PLACEHOLDER }))
+              else
+                order.add_tickets_without_capacity_checks(redemption, num_seats)
+              end
             end
             order.from_import.description = description.join('<br/>').html_safe
             order.save!
