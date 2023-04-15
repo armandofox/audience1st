@@ -1,3 +1,0 @@
-require 'prairielearn-formatters'
-path = File.expand_path(__dir__)
-Dir.glob("#{path}/tasks/**/*.rake").each { |f| import f }
