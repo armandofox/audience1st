@@ -21,6 +21,5 @@ a1 = namespace :a1 do
         puts "\n"
       end
     end
-    NewRelic::Agent.notice_error(ex)
   end
 end
