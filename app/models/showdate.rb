@@ -27,6 +27,8 @@ class Showdate < ActiveRecord::Base
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy
 
+  serialize :house_seats, Array
+  
   validates :max_advance_sales, :numericality => { :greater_than_or_equal_to => 0, :only_integer => true }
   validates :house_capacity, :numericality => { :greater_than => 0, :only_integer => true }, :unless => :has_reserved_seating?
   validate :max_sales_cannot_exceed_house_cap, :unless => :stream?
@@ -58,6 +60,14 @@ class Showdate < ActiveRecord::Base
 
   def has_reserved_seating? ; !stream?  &&  !!seatmap ; end
 
+  def open_house_seats
+    house_seats - occupied_seats
+  end
+
+  def occupied_house_seats
+    house_seats & occupied_seats
+  end
+  
   private
 
   def truncate_showdate_to_nearest_minute

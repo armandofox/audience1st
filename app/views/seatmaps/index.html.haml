@@ -10,7 +10,7 @@
     A1.seatmaps = {};
   - @seatmaps.each do |sm|
     :javascript
-      A1.seatmaps["#{sm.id}"] = #{sm.emit_json.html_safe};
+      A1.seatmaps["#{sm.id}"] = #{Seatmap::AsJson.new(sm).emit_json.html_safe};
     = form_for sm do |f|
       .form-row.py-2{:id => "sm-#{sm.id}"}
         .col-md-3= f.text_field :name, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true

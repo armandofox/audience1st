@@ -6,7 +6,7 @@ class WalkupSalesController < ApplicationController
     @showdate = Showdate.in_theater.find params[:id]
     @page_title = "Walkups: #{@showdate.thedate.to_formatted_s(:foh)}"
     if @showdate.has_reserved_seating?
-      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate, is_boxoffice: true)
     end
   end
   

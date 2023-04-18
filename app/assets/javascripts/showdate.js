@@ -43,24 +43,54 @@ A1.adjustShowdateType = function() {
   }
 };
 
-A1.adjustHouseCap = function() {
+A1.seatmapChangedForExistingPerformance = function() {
+  $('.showdate-house-seats').val('');
+  $('#showdate_max_advance_sales').val($('.showdate-house-capacity').val());
+  $('.house-seats-row').addClass('d-none');
+  $('#seating-charts-wrapper').addClass('d-none');
+  $('.house-seats-seatmap-changed').removeClass('d-none');
+  $('.form-control').prop('readonly', true);
+  $('.submit').prop('disabled', false);
+};
+
+A1.seatmapChangedForNewPerformance = function() {
   var chosenSeatmap = $(this);
+  // always clear out previously-chosen house seats (except when page is first loaded, as
+  // it might be the Edit Showdate page; if it's the New Showdates page, the field
+  // will be blank anyway).
+  if (!A1.firstTrigger) {
+    $('.showdate-house-seats').val('');
+  }
   if (chosenSeatmap.val() == '') {  // general admission
+    $('.house-seats-row').addClass('d-none');
+    $('#seating-charts-wrapper').addClass('d-none');
     if (!A1.firstTrigger)    { 
       $('.showdate-house-capacity').val('').removeClass('.a1-passive-text-input').prop('readonly',false);
     }
-  } else {                      // reserved seating: determine house cap from seatmap
+  } else {
+    // reserved seating: determine house cap from seatmap
     var capacity = chosenSeatmap.find('option:selected').text().match( /\(([0-9]+)\)$/ )[1];
     $('.showdate-house-capacity').val(capacity).addClass('.a1-passive-text-input').prop('readonly',true);
+    $('.house-seats-row').removeClass('d-none');
+    // blank out any current choices for house seats
+    $('.showdate-house-seats').val('');
+    // display seatmap for house seats selection
+    A1.showSeatmapForHouseSeats();
   }
   A1.firstTrigger = false;
+    
 };
 
 // On pages that have a .showdate-house-capacity auto-updatable field, .showdate-seating-choices 
-// will be the menu that triggers it
+// will be the menu that triggers it.  The following function therefore just affects the
+// "add new performances" or "edit an existing performance" page.
 A1.showdateSetup = function() {
   A1.firstTrigger = true;
-  $('.showdate-seating-choices').change(A1.adjustHouseCap).trigger('change');
+  $('.showdate-seating-choices').change(A1.seatmapChangedForNewPerformance).trigger('change');
+  if  ($('body#showdates_edit').length > 0) {
+    // edit showdates page: changing seatmap freezes the UI until seatmap change confirmed
+    $('.showdate-seating-choices').change(A1.seatmapChangedForExistingPerformance);
+  } 
   $('.showdate-type').change(A1.adjustShowdateType).trigger('change');
   $('form.showdate-form').submit(A1.warnZeroMaxSales);
 };

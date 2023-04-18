@@ -5,6 +5,8 @@
 = form_tag show_showdate_path(@show,@showdate), :method => :put, :class => 'showdate-form' do 
   - args = {:start_year => Time.at_beginning_of_season(@show.season).year, :end_year => Time.at_end_of_season(@show.season).year, :minute_step => 15, :date => @showdate.thedate }
 
+  = hidden_field_tag 'showdate_id', @showdate.id
+
   .form-row.py-1
     .col-md-3.text-right
       %label.col-form-label Performance type
@@ -26,6 +28,26 @@
       .col-md-6
         = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
         = link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary mx-1'
+
+  - if @showdate.has_reserved_seating?
+    .house-seats-seatmap-changed.d-none
+      .form-row.py-1
+        .col-md-9.offset-3
+          = t('showdates.seatmap_changing')
+    .house-seats-row
+      .form-row.py-1
+        .col-md-3.text-right
+          %label.col-form-label{:for => 'showdate_open_house_seats'} House seats
+          = popup_help_for :house_seats_when_editing_performances
+        .col-md-9= text_field_tag 'showdate[open_house_seats]', display_seats(@showdate.open_house_seats), :class => 'showdate-house-seats a1-passive-text-input text-left form-control'
+      .form-row.py-1
+        .col-md-3.text-right
+          %label.col-form-label{:for => 'showdate_occupied_house_seats'} Occupied house seats
+          = popup_help_for :occupied_house_seats
+        .col-md-9= text_field_tag 'showdate[occupied_house_seats]', display_seats(@showdate.occupied_house_seats), :class => 'a1-passive-text-input text-left form-control'
+      .form-row.py-1
+        .col-md-9.offset-3
+          = render :partial => 'components/seatmap'
 
   - unless @showdate.stream?
     .form-row
@@ -66,5 +88,5 @@
 
 
   = link_to  "Don't Save Changes", edit_show_path(@showdate.show), :class => 'btn btn-secondary'
-  = submit_tag 'Save Changes', :class => 'btn btn-success'
+  = submit_tag 'Save Changes', :class => 'btn btn-success submit'
 

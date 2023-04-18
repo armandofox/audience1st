@@ -3,6 +3,7 @@ A1.seatmap = {
   ,hideZoneName: false
   ,enclosingSelector: ''
   ,unavailable: []
+  ,holdback: []
   ,max: 0
   ,seats: null
   ,onSelect: null
@@ -12,7 +13,6 @@ A1.seatmap = {
     return(str.substr(str.lastIndexOf("-") + 1));
   }
   ,selectThisSeat: function(seatNum) {
-    // console.log("======= setup select " + seatNum);
     A1.seatmap.selectedSeats.push(seatNum);
     A1.seatmap.selectedSeatsAsString = A1.seatmap.selectedSeats.sort().join(', ');
     A1.seatmap.onSelect.call(seatNum);
@@ -38,6 +38,9 @@ A1.seatmap = {
         if (A1.seatmap.selectedSeats.length < A1.seatmap.max) { // ...if still seats to select
           if (this.settings.character == "a") { // accessible seat: show warning
             alert($('#accessibility_advisory_for_reserved_seating').val());
+          }
+          if (A1.seatmap.holdback.includes(clickedSeat)) { // held back seat
+            alert('Note: Seat ' + seatNum + ' is a house seat for this performance.');
           }
           A1.seatmap.selectThisSeat(seatNum);
           return('selected');
@@ -68,6 +71,7 @@ A1.seatmap = {
     A1.seatmap.hideZoneName = j.hideZoneName;
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
     A1.seatmap.selected = j.selected;  // pre-selected seats
+    A1.seatmap.holdback = j.holdback;  // held back, available to boxoffice only
     A1.seatmap.columns = j.columns;         // determines minimum displaywidth
     // set background image
     $('img.seating-charts-overlay').attr('src', j.image_url);
