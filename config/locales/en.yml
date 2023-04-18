@@ -33,10 +33,13 @@ en:
       Details view to edit it.
 
     seatmap_changing: >
-      If you change the seatmap for this performance, the current house seats will
-      be cleared and you must confirm the seatmap change by clicking "Save Changes" below.
-      You can then select house seats in the new seatmap.  If you don't wish to do this,
-      you can leave things as they are by clicking "Don't Save Changes" below.
+      If you change the seat map for this performance, any seats you
+      had designated as house seats in the old seat map will no longer
+      be house seats in the new seating configuration. Please confirm
+      that you wish to change the seat map by clicking "Save Changes"
+      below. You can then select house seats in the new seating
+      configuration. If you don't wish to change the seat map, you can
+      leave things as they are by clicking "Don't Save Changes" below.  
 
     validations:
       cannot_exceed_house_cap: >

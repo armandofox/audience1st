@@ -45,11 +45,11 @@ A1.adjustShowdateType = function() {
 
 A1.seatmapChangedForExistingPerformance = function() {
   $('.showdate-house-seats').val('');
+  $('#showdate_max_advance_sales').val($('.showdate-house-capacity').val());
   $('.house-seats-row').addClass('d-none');
   $('#seating-charts-wrapper').addClass('d-none');
   $('.house-seats-seatmap-changed').removeClass('d-none');
   $('.form-control').prop('readonly', true);
-  $('.showdate-seating-choices').prop('disabled', true);
   $('.submit').prop('disabled', false);
 };
 

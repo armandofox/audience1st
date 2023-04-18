@@ -67,12 +67,16 @@ class ShowdatesController < ApplicationController
 
   def update
     @showdate = Showdate.find(params[:id])
+    show = @showdate.show
+    seatmap_changed = (@showdate.seatmap_id.to_i != showdate_params[:seatmap_id].to_i)
     if @showdate.update_attributes(showdate_params)
       flash[:notice] = 'Changes saved.'
-      redirect_to edit_show_path(@showdate.show)
+      redirect_to (seatmap_changed ?
+                     edit_show_showdate_path(show,@showdate) :
+                     edit_show_path(show))
     else
       flash[:alert] = @showdate.errors.as_html
-      redirect_to edit_show_showdate_path(@showdate.show,@showdate)
+      redirect_to edit_show_showdate_path(show,@showdate)
     end
   end
 

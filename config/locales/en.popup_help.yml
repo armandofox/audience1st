@@ -204,16 +204,22 @@ en:
       A reserved seating performance can be changed to use a different seat map
       if all existing patrons' seats can be accommodated in the new seat map.
 
-    house_seats: >
+    house_seats_when_creating_performances: >
 
       Use the seatmap to select "house seats" that can be assigned by the box office only.
       Regular patrons will see these seats as "unavailable" when making their own
-      reservations.  Each performance of a show can have its own list of house seats.
+      reservations.
+
+    house_seats_when_editing_performances: >
+
+      Use the seatmap to select "house seats" that can be assigned by the box office only.
+      Regular patrons will see these seats as "unavailable" when making their own
+      reservations.  Each performance of a show can have a different set of house seats.
 
     occupied_house_seats: >
 
       These seats have been designated as house seats for this performance, but are
-      occupied by patron reservations.
+      currently occupied by patron reservations.
 
     seating_zones: >
 
