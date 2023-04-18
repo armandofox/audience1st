@@ -35,7 +35,7 @@ Feature: import third party ticket sales for a reserved seating performance
 
     When I confirm seat "Reserved-A1" for import customer "Newcustomer, Cynthia"
     And I confirm seats "Reserved-A2,Reserved-B1" for import customer "Albrecht, Bob"
-    And I press "Cancel Import"
+    And I cancel the ticket sales import
     Then seats A1,A2,B1 should be available for the Jan 12,2010,8pm performance
 
   Scenario: if patron has seats assigned and then you re-assign, current seats show as selected
@@ -47,6 +47,3 @@ Feature: import third party ticket sales for a reserved seating performance
     When I fail to confirm seat "Reserved-A1" for import customer "Newcustomer, Cynthia"
     Then the "Import Orders" button should be disabled
     And import customer "Newcustomer, Cynthia" should not have any seat assignment
-    
-
-    
