@@ -44,12 +44,25 @@ A1.adjustShowdateType = function() {
 };
 
 A1.seatmapChangedForExistingPerformance = function() {
+  var changingToNewSeatmap = ($(this).val() != '');
   $('.showdate-house-seats').val('');
   $('#showdate_max_advance_sales').val($('.showdate-house-capacity').val());
   $('.house-seats-row').addClass('d-none');
   $('#seating-charts-wrapper').addClass('d-none');
-  $('.house-seats-seatmap-changed').removeClass('d-none');
   $('.form-control').prop('readonly', true);
+  // disable everything so that basically the only choices are 'Save' or 'Dont Save'
+  $('.showdate-seating-choices').find(':not(:selected)').prop('disabled',true);
+  $('#showdate_thedate').find(':not(:selected)').prop('disabled',true);
+  if (changingToNewSeatmap) {
+    $('.house-seats-seatmap-changed').removeClass('d-none');
+    $('.house-seats-changing-to-general-admission').addClass('d-none');
+    $('#showdate_house_capacity, #showdate_max_advance_sales').prop('readonly', true);
+  } else {
+    // enable the House cap and Max advance sales fields if changing to Gen Adm
+    $('#showdate_house_capacity, #showdate_max_advance_sales').prop('readonly', false);
+    $('.house-seats-seatmap-changed').addClass('d-none');
+    $('.house-seats-changing-to-general-admission').removeClass('d-none');
+  }
   $('.submit').prop('disabled', false);
 };
 

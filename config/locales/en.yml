@@ -33,13 +33,16 @@ en:
       Details view to edit it.
 
     seatmap_changing: >
-      If you change the seat map for this performance, any seats you
-      had designated as house seats in the old seat map will no longer
-      be house seats in the new seating configuration. Please confirm
-      that you wish to change the seat map by clicking "Save Changes"
-      below. You can then select house seats in the new seating
-      configuration. If you don't wish to change the seat map, you can
-      leave things as they are by clicking "Don't Save Changes" below.  
+      If you change the seat map for this performance, any house seats
+      selection will be lost.  You can then select house seats if changing
+      to a new seat map.  To confirm this change, click "Save Changes"
+      below.  To leave things as they are, click "Don't Save Changes".
+
+    seatmap_changing_to_general_admission: >
+      If you change this performance to general admission, any house seats
+      selections will be lost.  To confirm this change, enter the House Capacity
+      and Max Advance Sales below and click "Save Changes".  To leave things as
+      they are, click "Don't Save Changes".
 
     validations:
       cannot_exceed_house_cap: >
