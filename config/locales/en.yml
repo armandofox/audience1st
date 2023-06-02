@@ -33,9 +33,8 @@ en:
       Details view to edit it.
 
     seatmap_changing: >
-      If you change the seat map for this performance, any house seats
-      selection will be lost.  You can then select house seats if changing
-      to a new seat map.  To confirm this change, click "Save Changes"
+      If you change the seating configuration for this performance, any house seats
+      selection will be lost.  To confirm this change, click "Save Changes"
       below.  To leave things as they are, click "Don't Save Changes".
 
     seatmap_changing_to_general_admission: >

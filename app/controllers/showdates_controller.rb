@@ -67,9 +67,10 @@ class ShowdatesController < ApplicationController
 
   def update
     @showdate = Showdate.find(params[:id])
+    seatmap_changed = (@showdate.seatmap_id.to_i != params[:showdate][:seatmap_id].to_i)
     show = @showdate.show
-    seatmap_changed = (@showdate.seatmap_id.to_i != showdate_params[:seatmap_id].to_i)
-    if @showdate.update_attributes(showdate_params)
+    parms = showdate_params()
+    if @showdate.update_attributes(parms)
       flash[:notice] = 'Changes saved.'
       redirect_to (seatmap_changed ?
                      edit_show_showdate_path(show,@showdate) :
@@ -89,7 +90,7 @@ class ShowdatesController < ApplicationController
                                      :open_house_seats, :occupied_house_seats, :house_seats
     # if house_seats is provided, convert to an array...
     if p.has_key?(:house_seats)
-      p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort if p.has_key?(:house_seats)
+      p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort
     elsif (p.has_key?(:open_house_seats) || p.has_key?(:occupied_house_seats))
       p[:house_seats] = (p.delete(:open_house_seats) + "," + p.delete(:occupied_house_seats)).
                           split(/\s*,\s*/).sort

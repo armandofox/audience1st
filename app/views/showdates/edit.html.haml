@@ -92,6 +92,6 @@
       .col-md-9= text_area 'showdate', 'access_instructions', :rows => 8, :class => 'form-control'
 
 
-  = link_to  "Don't Save Changes", edit_show_path(@showdate.show), :class => 'btn btn-secondary'
+  = link_to  "Don't Save Changes", edit_show_path(@showdate.show), :class => 'btn btn-secondary', :id => 'dont_save_changes'
   = submit_tag 'Save Changes', :class => 'btn btn-success submit'
 

@@ -50,6 +50,8 @@ class Showdate < ActiveRecord::Base
   # round off all showdates to the nearest minute
   before_save :truncate_showdate_to_nearest_minute
 
+  before_save :clear_house_seats_if_seatmap_changed, :on => :update
+  
   # virtually every dereference of a Showdate also accesses its Show,
   #  so set that up here to avoid n+1 query problems
   default_scope { includes(:show) }
@@ -72,6 +74,10 @@ class Showdate < ActiveRecord::Base
 
   def truncate_showdate_to_nearest_minute
     self.thedate.change(:sec => 0)
+  end
+
+  def clear_house_seats_if_seatmap_changed
+    self.house_seats = [] if self.seatmap_id_changed?
   end
 
   #  validations
