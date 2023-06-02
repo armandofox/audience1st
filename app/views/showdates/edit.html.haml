@@ -16,7 +16,7 @@
     .col-md-3.text-right
       %label.col-form-label{:for => :showdate_thedate}
         = @showdate.stream_anytime? ? 'Stream available until' : 'Date and time'
-    .col-md-8.form-inline
+    .col-md-8.form-inline#showdate_thedate
       = datetime_select 'showdate', 'thedate', args, {:class => 'form-control'}
 
   - unless @showdate.stream?
@@ -29,11 +29,16 @@
         = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
         = link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary mx-1'
 
+  .house-seats-seatmap-changed.d-none
+    .form-row.py-1
+      .col-md-9.offset-3
+        = t('showdates.seatmap_changing')
+  .house-seats-changing-to-general-admission.d-none
+    .form-row.py-1
+      .col-md-9.offset-3
+        = t('showdates.seatmap_changing_to_general_admission')
+        
   - if @showdate.has_reserved_seating?
-    .house-seats-seatmap-changed.d-none
-      .form-row.py-1
-        .col-md-9.offset-3
-          = t('showdates.seatmap_changing')
     .house-seats-row
       .form-row.py-1
         .col-md-3.text-right
