@@ -144,6 +144,8 @@ describe 'ValidVoucher adjusting' do
         expect(@vv1.seats_of_type_remaining).to eq(2)
       end
     end
+    describe 'with house seats and seating zones'
+    describe 'with house seats and no seating zones'
   end
 
 end
