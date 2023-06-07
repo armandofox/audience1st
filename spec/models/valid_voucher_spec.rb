@@ -17,6 +17,7 @@ describe ValidVoucher do
                                 :valid? => true,
                                 :seatmap => nil,
                                 :saleable_seats_left => showdate_seats,
+                                :open_house_seats => [],
                                 :sales_by_type => existing_sales),
         :vouchertype => mock_model(Vouchertype),
         :start_sales => 3.days.ago,
