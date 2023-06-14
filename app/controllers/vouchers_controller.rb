@@ -82,9 +82,9 @@ class VouchersController < ApplicationController
   end
 
   def confirm_multiple
+    @params = params.permit(:number, :showdate_id, :customer_id, :seats, :comments, :voucher_ids => [])
     the_showdate = Showdate.find_by(:id => params[:showdate_id])
-    @params = params.permit(:number, :voucher_ids, :seats, :comments)
-    num = @params[:number].to_i
+      num = @params[:number].to_i
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_showdate")) unless the_showdate
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_vouchers")) unless num > 0
     vouchers = Voucher.find(@params[:voucher_ids].split(",")).slice(0,num)
