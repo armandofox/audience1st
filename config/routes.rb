@@ -58,7 +58,7 @@ Rails.application.routes.draw do
     get '/rss/availability.rss'       => 'info#availability', :defaults => { :format => 'rss' }
 
     # AJAX responders
-    get '/ajax/update_shows'          => 'vouchers#update_shows', :as => 'update_shows'
+    get '/ajax/update_shows'          => 'reservations#update_shows', :as => 'update_shows'
     get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer', :as => 'customer_autocomplete'
     get '/ajax/customer_lookup'       => 'customers#lookup', :as => 'customer_lookup'
 
