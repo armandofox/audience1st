@@ -1,7 +1,5 @@
 class Item < ActiveRecord::Base
 
-  attr_protected :checked_in
-
   belongs_to :customer
   belongs_to :order
   belongs_to :account_code
