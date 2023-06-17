@@ -42,7 +42,8 @@ class VouchersController < ApplicationController
   end
 
   def create
-    @params = params.permit(:comp_order, :customer_email)
+    # rails5: @params = params.permit(:customer_email, :seats, :customer_id, :comp_order => {})
+    @params = params.permit!
     # post: add the actual comps, and possibly reserve
     comp_order = @params[:comp_order].merge({:seats => view_context.seats_from_params(@params),
         :processed_by => current_user, :customer => @customer})
@@ -82,9 +83,9 @@ class VouchersController < ApplicationController
   end
 
   def confirm_multiple
-    @params = params.permit(:number, :showdate_id, :customer_id, :seats, :comments, :voucher_ids => [])
+    @params = params.permit(:number, :showdate_id, :customer_id, :seats, :comments, :voucher_ids, :zone)
     the_showdate = Showdate.find_by(:id => params[:showdate_id])
-      num = @params[:number].to_i
+    num = @params[:number].to_i
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_showdate")) unless the_showdate
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_vouchers")) unless num > 0
     vouchers = Voucher.find(@params[:voucher_ids].split(",")).slice(0,num)

@@ -9,7 +9,7 @@ class ReservationsController < ApplicationController
       where(:vouchertype_id => params[:vouchertype_id]).
       includes(:showdate => :show).
       order('showdates.thedate')
-    render :partial => 'reserve_comps_for'
+    render :partial => 'vouchers/reserve_comps_for'
   end
 
 end
