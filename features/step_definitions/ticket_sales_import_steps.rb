@@ -57,3 +57,10 @@ Then /there should be no import with filename "(.*)"/ do |filename|
   expect(TicketSalesImport.where(:filename => filename)).to be_empty
 end
 
+# Cancelling an import - requires dismissing a popup dialog, which invariably takes a bit of time
+
+When /I cancel the ticket sales import/ do
+  accept_confirm { click_button 'Cancel Import' }
+  sleep 1
+end
+

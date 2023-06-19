@@ -18,7 +18,7 @@ Scenario: All existing patrons can be accommodated in new seatmap
 
   Given a seatmap "Alternate" with seats B2,B1,A2,A1,C2,C3
   When I try to change the seatmap for that performance to "Alternate"
-  Then I should be on the show details page for "Show"
+  Then I should be on the edit showdate page for that performance
   And I should see "Changes saved"
   And that performance should use the "Alternate" seatmap
 

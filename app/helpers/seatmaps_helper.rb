@@ -1,6 +1,6 @@
 module SeatmapsHelper
-  def display_seats_field(extra_classes: '', seats: '')
-    text_field_tag 'seats', seats, :readonly => 'readonly', :id => nil, :class => "seat-display a1-passive-text-input #{extra_classes}"
+  def display_seats_field(extra_classes: '', seats: '', field_name: 'seats')
+    text_field_tag field_name, seats, :readonly => 'readonly', :id => nil, :class => "seat-display a1-passive-text-input #{extra_classes}"
   end
   def seats_from_params(p)
     (if p.respond_to?(:[]) then p[:seats] else p end).to_s.split( /\s*,\s*/ )

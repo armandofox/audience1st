@@ -122,28 +122,57 @@ describe 'ValidVoucher adjusting' do
   end
 
   describe 'seats of type remaining' do
+    before(:each) do
+      z1 = (s1 = FactoryBot.create(:seating_zone)).short_name
+      z2 = (s2 = FactoryBot.create(:seating_zone)).short_name
+      @sm = create(:seatmap, :csv => "#{z1}:A1,,#{z2}:A2\r\n,#{z1}:B1+,,#{z2}:B2\r\n")
+      @showdate = create(:reserved_seating_showdate, :sm => @sm)
+      @vv1 = create(:valid_voucher,
+                    :showdate => @showdate,
+                    :vouchertype => create(:revenue_vouchertype,
+                                           :seating_zone => s1))
+      @vv2 = create(:valid_voucher,
+                    :showdate => @showdate,
+                    :vouchertype => create(:revenue_vouchertype,
+                                           :seating_zone => s2))
+      # mark seats in zone z2 (A2,B2) as occupied
+      allow(@showdate).to receive(:occupied_seats).and_return(['A2','B2'])
+    end
     describe 'when seating zones are used' do
-      before(:each) do
-        z1 = (s1 = FactoryBot.create(:seating_zone)).short_name
-        z2 = (s2 = FactoryBot.create(:seating_zone)).short_name
-        @sm = create(:seatmap, :csv => "#{z1}:A1,,#{z2}:A2\r\n,#{z1}:B1+,,#{z2}:B2\r\n")
-        @showdate = create(:reserved_seating_showdate, :sm => @sm)
-        @vv1 = create(:valid_voucher,
-                     :showdate => @showdate,
-                     :vouchertype => create(:revenue_vouchertype,
-                                            :seating_zone => s1))
-        @vv2 = create(:valid_voucher,
-                     :showdate => @showdate,
-                     :vouchertype => create(:revenue_vouchertype,
-                                            :seating_zone => s2))
-        # mark seats in zone z2 (A2,B2) as occupied
-        allow(@showdate).to receive(:occupied_seats).and_return(['A2','B2'])
-      end
       specify 'shows zero seats remaining for zone-restricted vouchertype if zone sold out' do
         expect(@vv2.seats_of_type_remaining).to eq(0)
         expect(@vv1.seats_of_type_remaining).to eq(2)
       end
+      specify 'and open house seats in zone, adjusts count of available seats' do
+        # A2 is already occupied - designate it as a house seat.
+        # A1 is NOT occupied - designate it as a house seat.
+        # the number of seats in zone 1 should be 1, since [A1,B1] are free but A1 is house
+        allow(@showdate).to receive(:open_house_seats).and_return(['A1'])
+        expect(@vv1.seats_of_type_remaining).to eq(1)
+        expect(@vv2.seats_of_type_remaining).to eq(0)
+      end
+      specify 'and open house seats outside of zone, does not change available seat count' do
+        # A2 is an open seat outside of zone 1; designate it as a house seat.
+        # this should not change the available seat count for zone 1.
+        allow(@showdate).to receive(:open_house_seats).and_return(['A2'])
+        expect(@vv1.seats_of_type_remaining).to eq(2)
+      end
+    end
+    describe 'with house seats and no seating zones' do
+      before(:each) do
+        @vv3 = create(:valid_voucher,
+                      :showdate => @showdate,
+                      :vouchertype => create(:revenue_vouchertype))
+      end
+      it 'adjusts for open house seats' do
+        allow(@showdate).to receive(:open_house_seats).and_return(['B1'])
+        # B1 is an open house seat, so available seat count should be adjusted by 1 (but not by 2)
+        expect(@vv1.seats_of_type_remaining).to eq(1)
+      end
+      it 'shows sold out if the only open seats are house seats' do
+        allow(@showdate).to receive(:open_house_seats).and_return(['A1','B1'])
+        expect(@vv1.seats_of_type_remaining).to eq(0)
+      end
     end
   end
-
 end

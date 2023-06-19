@@ -6,8 +6,46 @@ class Seatmap < ActiveRecord::Base
   
   serialize :zones, Hash
 
-  EMPTY_SEATMAP_AS_JSON =
-    {'map' => [], 'seats' => {}, 'unavailable' => [], 'rows' => 0, 'columns' => 0}.to_json
+  class AsJson
+    attr_reader :seatmap
+    attr_accessor :seats, :selected, :unavailable, :holdback
+    def initialize(seatmap)
+      # initialize to empty
+      @seatmap = seatmap
+      @seats = {}
+      @selected = []
+      @unavailable = []
+      @holdback = []
+    end
+    def self.empty
+      {'map' => [], 'seats' => {}, 'unavailable' => [], 'rows' => 0, 'columns' => 0}.to_json
+    end
+
+    # Return JSON object with fields 'map' (JSON representation of actual seatmap),
+    # 'seats' (types of seats to display), 'image_url' (background image)
+    def emit_json
+      _seatmap = seatmap.json
+      image_url = seatmap.image_url.to_json
+      # if seatmap has only one zone, hide zone name during seat selection
+      hide_zone_name = (!!(seatmap.zones.keys.length == 1)).to_json
+      # since the 'unavailable' and 'selected' values are used by the actual
+      # seatmap JS code to identify seats, labels must include the full seating zone display name.
+      _unavailable = @unavailable.compact.map { |num| seatmap.hover_label_with_zone(num) }.to_json
+      _selected = @selected.compact.map { |num| seatmap.hover_label_with_zone(num) }.to_json
+      _holdback = @holdback.compact.map { |num| seatmap.hover_label_with_zone(num) }.to_json
+      # seat classes: 'r' = regular, 'a' = accessible
+      seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
+      %Q{ {"map": #{_seatmap},
+"rows": #{seatmap.rows},
+"columns": #{seatmap.columns},
+"seats": #{seats},
+"unavailable": #{_unavailable},
+"selected": #{_selected},
+"holdback": #{_holdback},
+"hideZoneName": #{hide_zone_name},
+"image_url": #{image_url} }}
+    end
+  end
 
   validates :name, :presence => true, :uniqueness => true
   validates :csv, :presence => true
@@ -23,40 +61,38 @@ class Seatmap < ActiveRecord::Base
   public
   
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
-  # 'seats' (types of seats to display), 'image_url' (background image)
-
-  def emit_json(unavailable = [], selected = [])
-    seatmap = self.json
-    image_url = self.image_url.to_json
-    # if seatmap has only one zone, hide zone name during seat selection
-    hide_zone_name = (!!(zones.keys.length == 1)).to_json
-    # since the 'unavailable' and 'selected' values are used by the actual
-    # seatmap JS code to identify seats, labels must include the full seating zone display name.
-    unavailable = unavailable.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
-    selected = selected.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
-    # seat classes: 'r' = regular, 'a' = accessible
-    seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
-    %Q{ {"map": #{seatmap},
-"rows": #{rows},
-"columns": #{columns},
-"seats": #{seats},
-"unavailable": #{unavailable},
-"selected": #{selected},
-"hideZoneName": #{hide_zone_name},
-"image_url": #{image_url} }}
-  end
-
-  # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
-  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: nil, selected: [])
-    return EMPTY_SEATMAP_AS_JSON unless (sm = showdate.seatmap)
+  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone: nil, selected: [], is_boxoffice: false)
+    return Seatmap::AsJson.empty unless (sm = showdate.seatmap)
+    map = Seatmap::AsJson.new(sm)
+    map.selected = selected
+    map.holdback = showdate.house_seats.sort
     # if any preselected seats, show them as selected not occupied
     occupied = showdate.occupied_seats - selected
-    if !restrict_to_zone.blank?
-      occupied = (occupied + sm.excluded_from_zone(restrict_to_zone)).sort.uniq
-    end
-    sm.emit_json(occupied, selected)
+    occupied += sm.excluded_from_zone(restrict_to_zone) unless restrict_to_zone.blank?
+    # remove any seats that are held back by boxoffice
+    occupied += map.holdback unless is_boxoffice
+    map.unavailable = occupied.sort.uniq
+    map.emit_json
+  end
+
+  # As above, but ignore any notion of occupied or house seats - just return seatmap showing
+  # all seats as available
+  def self.raw_seatmap_as_json(seatmap)
+    map = Seatmap::AsJson.new(seatmap)
+    map.selected = map.holdback = map_unavailable = []
+    map.emit_json
+  end
+
+  # As above, but show House Seats as 'selected', reserved
+  # seats as 'unavailable', and unreserved seats as 'available'.
+  # A seat that is BOTH a house seat and occupied just shows as 'unavailable'.
+  def self.house_seats_seatmap_as_json(showdate)
+    map = Seatmap::AsJson.new(showdate.seatmap)
+    map.selected = showdate.open_house_seats
+    map.unavailable = showdate.occupied_seats
+    map.emit_json
   end
 
   # Return JSON hash of ids to seat counts
@@ -98,6 +134,11 @@ class Seatmap < ActiveRecord::Base
     SeatingZone.find_by!(:short_name => key).name
   end
 
+  # hover label including zone
+  def hover_label_with_zone(seat)
+    "#{self.zone_displayed_for(seat)}-#{seat}"
+  end
+  
   # Does this seatmap reference a particular zone or not ?
   def references_zone?(zone)
     csv =~ /\b#{zone.short_name}:/

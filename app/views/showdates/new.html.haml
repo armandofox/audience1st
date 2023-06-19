@@ -5,8 +5,8 @@
 .alert.alert-info.Tt.Tl
   The following options will be used for
   %strong all
-  dates created at the same time.  If you want some performances to have different 
-  options, you can either edit them after they're created, or create them 
+  performances created at the same time.  If you want some performances to have different 
+  options, you can either edit them after they're created, or create those performances 
   separately instead of all at once.
 
 = form_tag show_showdates_path(@show), :class => 'showdate-form' do
@@ -35,6 +35,16 @@
     .col-md-6
       = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
       = link_to "Add/Edit Seating Zones...", seating_zones_path, :class => 'btn btn-primary mx-1'
+
+  .form-row.py-1.d-none.house-seats-row
+    .col-md-3.text-right
+      %label.col-form-label House seats
+      = popup_help_for :house_seats_when_creating_performances
+    = display_seats_field(field_name: 'showdate[house_seats]', extra_classes: 'showdate-house-seats col-md-8 text-left form-control')
+
+  = render :partial => 'components/seatmap'
+
+  .form-row.py-1.d-none
 
   .form-row.py-1.Tt
     .col-md-3.text-right

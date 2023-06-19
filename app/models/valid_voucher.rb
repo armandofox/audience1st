@@ -177,10 +177,12 @@ class ValidVoucher < ActiveRecord::Base
       return INFINITE
     end
     if (map = showdate.seatmap)  &&  (zone = vouchertype.seating_zone)  #  zone limits?
-      available_in_zone = map.seats_in_zone(zone) - showdate.occupied_seats
+      available_in_zone = map.seats_in_zone(zone) -
+                          showdate.occupied_seats -
+                          showdate.open_house_seats
       total_empty = available_in_zone.length
     else                        # general adm, or no zone limit on vouchertype
-      total_empty = showdate.saleable_seats_left
+      total_empty = showdate.saleable_seats_left - showdate.open_house_seats.length
     end
     remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
              then total_empty

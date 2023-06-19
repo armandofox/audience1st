@@ -49,15 +49,29 @@ class SeatmapsController < ApplicationController
     # return the seatmap for this production, and array of UNAVAILABLE seats for this performance.
     # if 'selected' is passed, it is a comma-separated list of full seat labels to show as
     # already-selected seats (if the seatmap workflow in question respects it).
+    # if this is an 'admin' level user, make sure "holdback" restrictions are ignored.
     showdate = Showdate.find(params[:id]) 
     restrict_to_zone = params[:zone]
     already_selected = params[:selected].to_s.split(/\s*,\s*/)
     if showdate.has_reserved_seating?
       render :json => Seatmap.seatmap_and_unavailable_seats_as_json(
-               showdate, restrict_to_zone: restrict_to_zone, selected: already_selected)
+               showdate,
+               restrict_to_zone: restrict_to_zone,
+               selected: already_selected,
+               is_boxoffice: @gAdminDisplay)
     else
       render :json => {'map' => nil}
     end
+  end
+
+  def raw_seatmap
+    render :json => Seatmap.raw_seatmap_as_json(Seatmap.find params[:id])
+  end
+  
+  def house_seats_seatmap
+    # seatmap for a particular show id showing House Seats as 'selected', reserved
+    # seats as 'unavailable', and unreserved seats as 'available'
+    render :json => Seatmap.house_seats_seatmap_as_json(Showdate.find params[:id])
   end
 
   def assign_seats

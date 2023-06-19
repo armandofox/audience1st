@@ -177,6 +177,11 @@ Then /the "(.*)" performance should be General Admission/ do |thedate|
   expect(@showdate.seatmap).to be_blank
 end
 
+Then /the "(.*)" performance should have house seats "(.*)"/ do |thedate,seats|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  expect(@showdate.house_seats.sort).to eq(seats.split(/\s*,\s*/).sort)
+end
+
 Then /that performance should be General Admission/ do
   expect(@showdate.reload.seatmap).to be_blank
 end

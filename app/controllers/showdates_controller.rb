@@ -67,21 +67,35 @@ class ShowdatesController < ApplicationController
 
   def update
     @showdate = Showdate.find(params[:id])
-    if @showdate.update_attributes(showdate_params)
+    seatmap_changed = (@showdate.seatmap_id.to_i != params[:showdate][:seatmap_id].to_i)
+    show = @showdate.show
+    parms = showdate_params()
+    if @showdate.update_attributes(parms)
       flash[:notice] = 'Changes saved.'
-      redirect_to edit_show_path(@showdate.show)
+      redirect_to (seatmap_changed ?
+                     edit_show_showdate_path(show,@showdate) :
+                     edit_show_path(show))
     else
       flash[:alert] = @showdate.errors.as_html
-      redirect_to edit_show_showdate_path(@showdate.show,@showdate)
+      redirect_to edit_show_showdate_path(show,@showdate)
     end
   end
 
   private
   
   def showdate_params
-    params.require(:showdate).permit :thedate, :house_capacity, :max_advance_sales,
+    p = params.require(:showdate).permit :thedate, :house_capacity, :max_advance_sales,
                                      :description, :long_description, :show_id, :seatmap_id,
-                                     :live_stream, :stream_anytime, :access_instructions
+                                     :live_stream, :stream_anytime, :access_instructions,
+                                     :open_house_seats, :occupied_house_seats, :house_seats
+    # if house_seats is provided, convert to an array...
+    if p.has_key?(:house_seats)
+      p[:house_seats] = p[:house_seats].split(/\s*,\s*/).sort
+    elsif (p.has_key?(:open_house_seats) || p.has_key?(:occupied_house_seats))
+      p[:house_seats] = (p.delete(:open_house_seats) + "," + p.delete(:occupied_house_seats)).
+                          split(/\s*,\s*/).sort
+    end
+    p
   end
 
 end
