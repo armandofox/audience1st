@@ -1,6 +1,6 @@
 = themed
 
-= hidden_field_tag 'checkout_message', j(@checkout_message);
+= hidden_field_tag 'checkout_message', @checkout_message
 
 - if @gOrderInProgress.gift?
   #gift_recipient
