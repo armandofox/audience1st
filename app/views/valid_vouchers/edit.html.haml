@@ -20,6 +20,18 @@
 
   .form-group.form-row
     .col-md-5.text-right
+      = popup_help_for :valid_voucher_min_sales_per_txn
+      %label.col-form-label{:for=>:valid_voucher_min_sales_per_txn} Min purchase per transaction
+    = number_field_tag 'valid_voucher_min_sales_per_txn', @valid_voucher.min_sales_per_txn, :name => 'valid_voucher[min_sales_per_txn]', :class => 'form-control col-md-2'
+
+  .form-group.form-row
+    .col-md-5.text-right
+      = popup_help_for :valid_voucher_max_sales_per_txn
+      %label.col-form-label{:for=>:valid_voucher_max_sales_per_txn} Max purchase per transaction
+    = number_field_tag 'valid_voucher_max_sales_per_txn', (@valid_voucher.max_sales_per_txn unless @valid_voucher.max_sales_per_txn == ValidVoucher::INFINITE), :name => 'valid_voucher[max_sales_per_txn]', :class => 'form-control col-md-2'
+
+  .form-group.form-row
+    .col-md-5.text-right
       = popup_help_for :valid_voucher_promo_code
       %label.col-form-label{:for=>:valid_voucher_promo_code} Redemption (promo) code, if any
     = text_field 'valid_voucher', 'promo_code', :class => 'form-control col-md-3'
