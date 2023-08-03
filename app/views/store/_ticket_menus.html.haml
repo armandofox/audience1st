@@ -33,7 +33,8 @@
       - @store.valid_vouchers.each do |v|
         %div{:id => "vouchertype_#{v.vouchertype_id}",:class => ['form-group', 'form-row', (v.promo_code.blank? ? 'no-promo' : 'promo')]}
           - fieldname = "valid_voucher[#{v.id}]"
-          - max_sales = [30, v.max_sales_for_this_patron].min
+          - max_sales = [30, v.max_sales_for_this_patron,v.max_sales_per_txn].min
+          - min_sales = v.min_sales_per_txn
           %label.col-form-label.text-right.col-sm-4{:for => "valid_voucher_#{v.id}"}= v.name_with_price
           - ticket_class = if v.vouchertype.reservable? then 'ticket' else '' end
           - if @gAdminDisplay
