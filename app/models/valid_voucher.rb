@@ -75,6 +75,18 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
+  # min and max dropdown menu options, plus an option to purchase zero tickets,
+  # that respects min and max sales per txn as well as max of remaining seats etc
+  def min_and_max_sales_for_this_txn
+    max_sales = [30, self.max_sales_for_this_patron, self.max_sales_per_txn].min
+    min_sales = [self.min_sales_per_txn, max_sales].min # in case max_sales is zero too!
+    if max_sales.zero?
+      [0]
+    else
+      [0] + (min_sales..max_sales).to_a
+    end
+  end
+
   private
 
   # A zero-price vouchertype that is marked as "available to public"
