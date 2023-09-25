@@ -87,6 +87,18 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
+  def display_min_and_max_sales_per_txn
+    if min_sales_per_txn == 1
+      max_sales_per_txn == INFINITE ? '' : "(max #{max_sales_per_txn}/order)"
+    else                        # minimum order
+      case max_sales_per_txn
+      when min_sales_per_txn then "(#{min_sales_per_txn} per order)"
+      when INFINITE then "(#{min_sales_per_txn}+ per order)"
+      else "(#{min_sales_per_txn}-#{max_sales_per_txn} per order)"
+      end
+    end
+  end
+
   private
 
   # A zero-price vouchertype that is marked as "available to public"
