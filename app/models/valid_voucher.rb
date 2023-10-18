@@ -25,8 +25,8 @@ class ValidVoucher < ActiveRecord::Base
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type, :allow_nil => true, :greater_than_or_equal_to => 0
-  validates_numericality_of :min_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE
-  validates_numericality_of :max_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE
+  validates_numericality_of :min_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE, :message => "must be blank, or greater than or equal to 1"
+  validates_numericality_of :max_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE, :message => "must be blank, or greater than or equal to 1"
   validate :min_max_sales_do_not_conflict
   validates_presence_of :start_sales
   validates_presence_of :end_sales
@@ -89,7 +89,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def display_min_and_max_sales_per_txn
     if min_sales_per_txn == 1
-      max_sales_per_txn == INFINITE ? '' : "(max #{max_sales_per_txn}/order)"
+      max_sales_per_txn == INFINITE ? '' : "(max #{max_sales_per_txn} per order)"
     else                        # minimum order
       case max_sales_per_txn
       when min_sales_per_txn then "(#{min_sales_per_txn} per order)"
@@ -114,6 +114,8 @@ class ValidVoucher < ActiveRecord::Base
   def min_max_sales_do_not_conflict
     errors.add :min_sales_per_txn, "cannot be greater than max allowed sales of this type"  if
       min_sales_per_txn > max_sales_for_type
+    errors.add :min_sales_per_txn, "cannot be greater than minimum purchase per transaction" if
+      min_sales_per_txn > max_sales_per_txn
     errors.empty?
   end
 
