@@ -12,7 +12,7 @@ class ValidVoucher < ActiveRecord::Base
 
   # Capacity is infinite if it is left blank
   INFINITE = 100_000
-
+  
   class InvalidRedemptionError < RuntimeError ;  end
   class InvalidProcessedByError < RuntimeError ; end
 
@@ -76,14 +76,16 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   # min and max dropdown menu options, plus an option to purchase zero tickets,
-  # that respects min and max sales per txn as well as max of remaining seats etc
-  def min_and_max_sales_for_this_txn
-    max_sales = [30, self.max_sales_for_this_patron, self.max_sales_per_txn].min
+  # that respects min and max sales per txn as well as max of remaining seats etc.
+  # Make the menu contain at most max choices.
+  def min_and_max_sales_for_this_txn(max_choices = INFINITE)
+    max_sales = [self.max_sales_for_this_patron, self.max_sales_per_txn].min
     min_sales = [self.min_sales_per_txn, max_sales].min # in case max_sales is zero too!
+    range = [max_sales - min_sales + 1, max_choices].min
     if max_sales.zero?
       [0]
     else
-      [0] + (min_sales..max_sales).to_a
+      [0] + (min_sales .. min_sales+range-1).to_a
     end
   end
 
