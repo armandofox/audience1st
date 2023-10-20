@@ -85,7 +85,7 @@ class ValidVouchersController < ApplicationController
     # this should be done with strong params
     # supply defaults for min/max_sales_for_type and max_sales_per_txn if blank
     args[:min_sales_per_txn] = 1 if args[:min_sales_per_txn].blank?
-    args[:max_sales_for_type, :max_sales_per_txn].each do |attrib|
+    [:max_sales_for_type, :max_sales_per_txn].each do |attrib|
       args[attrib] = ValidVoucher::INFINITE if args[attrib].blank?
     end
   end

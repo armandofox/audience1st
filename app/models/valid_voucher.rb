@@ -116,7 +116,7 @@ class ValidVoucher < ActiveRecord::Base
   def min_max_sales_constraints
     errors.add :min_sales_per_txn, "cannot be greater than max allowed sales of this type"  if
       min_sales_per_txn > max_sales_for_type
-    errors.add :min_sales_per_txn, "cannot be greater than minimum purchase per transaction" if
+    errors.add :min_sales_per_txn, "cannot be greater than maximum purchase per transaction" if
       min_sales_per_txn > max_sales_per_txn
     errors.empty?
   end
