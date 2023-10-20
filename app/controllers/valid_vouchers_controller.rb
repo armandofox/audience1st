@@ -32,10 +32,7 @@ class ValidVouchersController < ApplicationController
   def update
     @valid_voucher = ValidVoucher.find(params[:id])
     args = params[:valid_voucher]
-    # max_sales_for_type and max_purchase_per_txn if blank should be "infinity"
-    [:max_sales_for_type, :max_sales_per_txn].each do |attrib|
-      args[attrib] = ValidVoucher::INFINITE if args[attrib].blank?
-    end
+    set_arg_defaults_if_blank!(args)
     if @valid_voucher.update_attributes(args)
       redirect_to edit_show_path(@valid_voucher.showdate.show), :notice => 'Update successful.'
     else
@@ -53,10 +50,7 @@ class ValidVouchersController < ApplicationController
     return redirect_to(back, :alert => t('season_setup.must_select_vouchertypes')) if vt.blank?
     vouchertypes = Vouchertype.find vt
     showdates = Showdate.find sd
-    # max_sales_for_type and max_purchase_per_txn if blank should be "infinity"
-    [:max_sales_for_type, :max_sales_per_txn].each do |attrib|
-      args[attrib] = ValidVoucher::INFINITE if args[attrib].blank?
-    end
+    set_arg_defaults_if_blank!(args)
     # min_sales_for_type if blank should default to 1
     args[:min_sales_per_txn] = 1 if args[:min_sales_per_txn].blank?
     # params[:before_or_after] is either '+1' or '-1' to possibly negate minutes_before_curtain
@@ -82,6 +76,17 @@ class ValidVouchersController < ApplicationController
       render :js => %Q{alert("Deletion failed: valid voucher not found");}
     rescue RuntimeError => e
       render :js => %Q{alert("Deletion failed: #{e.message}");}
+    end
+  end
+
+  private
+
+  def set_arg_defaults_if_blank!(args)
+    # this should be done with strong params
+    # supply defaults for min/max_sales_for_type and max_sales_per_txn if blank
+    args[:min_sales_per_txn] = 1 if args[:min_sales_per_txn].blank?
+    args[:max_sales_for_type, :max_sales_per_txn].each do |attrib|
+      args[attrib] = ValidVoucher::INFINITE if args[attrib].blank?
     end
   end
 

@@ -27,7 +27,7 @@ class ValidVoucher < ActiveRecord::Base
   validates_numericality_of :max_sales_for_type, :allow_nil => true, :greater_than_or_equal_to => 0
   validates_numericality_of :min_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE, :message => "must be blank, or greater than or equal to 1"
   validates_numericality_of :max_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE, :message => "must be blank, or greater than or equal to 1"
-  validate :min_max_sales_do_not_conflict
+  validate :min_max_sales_constraints
   validates_presence_of :start_sales
   validates_presence_of :end_sales
 
@@ -111,7 +111,7 @@ class ValidVoucher < ActiveRecord::Base
 
   # Min/max sales per transaction cannot contradict min/max sales for type.
   # This is checked *after* each attribute is individually range-checked
-  def min_max_sales_do_not_conflict
+  def min_max_sales_constraints
     errors.add :min_sales_per_txn, "cannot be greater than max allowed sales of this type"  if
       min_sales_per_txn > max_sales_for_type
     errors.add :min_sales_per_txn, "cannot be greater than minimum purchase per transaction" if
