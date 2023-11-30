@@ -6,6 +6,28 @@ Feature: enforce minimum and maximum sales per transaction for a particular vouc
 
   Background: performance with minimum and maximum purchase limits on a promotional ticket
 
+    Given a show "The Nerd" with 5 "General" tickets for $10.00 on "Oct 1, 2010, 7pm"
+    And "General" tickets for that performance must be purchased at least 3 and at most 4 at a time
+
   Scenario: cannot add fewer than minimum tickets per transaction to cart
 
-  Scenario: cannot add more than maximum tickets per transaction to cart, even if seats available
+    Given 1 "General" tickets have been sold for "Oct 1, 2010, 7pm"
+    When I go to the store page
+    Then the "General - $10.00" menu should have options: 0;3;4
+    Then show me the page
+
+  Scenario: cannot add fewer than minimum tickets per transaction to cart, nor more than available
+
+    Given 2 "General" tickets have been sold for "Oct 1, 2010, 7pm"
+    When I go to the store page
+    Then the "General - $10.00" menu should have options: 0;3
+    Then show me the page
+
+  Scenario: when minimum purchase per txn exceeds number of tickets of that type remaining, should show as sold out
+
+    Given 3 "General" tickets have been sold for "Oct 1, 2010, 7pm"
+    When I go to the store page
+    Then the "General - $10.00" menu should have options: 0
+
+
+      

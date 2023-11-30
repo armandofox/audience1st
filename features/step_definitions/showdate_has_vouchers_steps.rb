@@ -14,11 +14,11 @@ end
 Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
   tickets.hashes.each do |t|
     steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
+    @showdate = Showdate.find_by!(:thedate => Time.parse(t[:showdate]))
     # if sales cutoff time is specified, modify the valid-voucher once created
     if (cutoff = t[:sales_cutoff])
-      sd = Showdate.find_by!(:thedate => Time.parse(t[:showdate]))
-      vv = ValidVoucher.find_by!(:showdate => sd, :vouchertype => Vouchertype.find_by!(:name => t[:type]))
-      vv.update_attributes(:end_sales => sd.thedate - cutoff.to_i.minutes)
+      vv = ValidVoucher.find_by!(:showdate => @showdate, :vouchertype => Vouchertype.find_by!(:name => t[:type]))
+      vv.update_attributes(:end_sales => @showdate.thedate - cutoff.to_i.minutes)
     end
   end
 end
@@ -32,6 +32,12 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that)
   @showdate.should be_an_instance_of(Showdate)
   steps %Q{Given a "#{vouchertype}" vouchertype costing $#{price} for the #{@showdate.season} season}
   make_valid_tickets(@showdate, @vouchertype, n.to_i)
+end
+
+Given /"(.*)" tickets for that performance must be purchased at least (\d+) and at most (\d+) at a time/ do |vtype,min,max|
+  expect(@showdate).to be_a_kind_of Showdate
+  vv = ValidVoucher.find_by!(:showdate => @showdate, :vouchertype => Vouchertype.find_by!(:name => vtype))
+  vv.update_attributes!(:min_sales_per_txn => min.to_i, :max_sales_per_txn => max.to_i)
 end
 
 Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
