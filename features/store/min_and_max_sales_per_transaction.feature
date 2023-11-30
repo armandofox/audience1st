@@ -14,14 +14,12 @@ Feature: enforce minimum and maximum sales per transaction for a particular vouc
     Given 1 "General" tickets have been sold for "Oct 1, 2010, 7pm"
     When I go to the store page
     Then the "General - $10.00" menu should have options: 0;3;4
-    Then show me the page
 
   Scenario: cannot add fewer than minimum tickets per transaction to cart, nor more than available
 
     Given 2 "General" tickets have been sold for "Oct 1, 2010, 7pm"
     When I go to the store page
     Then the "General - $10.00" menu should have options: 0;3
-    Then show me the page
 
   Scenario: when minimum purchase per txn exceeds number of tickets of that type remaining, should show as sold out
 
