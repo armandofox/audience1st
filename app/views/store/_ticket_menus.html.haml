@@ -42,9 +42,10 @@
               %label.col-form-label.form-control-sm.alert-warning.s-explain= v.explanation
           - else
             - num_allowed = v.min_and_max_sales_for_this_txn(max_choices = 20)
-            = select_tag(fieldname, options_for_select(num_allowed), 'data-price' => v.price, 'data-zone' => v.zone_short_name, :class => "itemQty #{ticket_class} form-control form-control-sm col-sm-1")
             - if num_allowed.last.zero?
-              %span.text-info.col-sm-7.border.border-danger.s-explain No seats remaining for tickets of this type
+              %span.text-info.col-sm-4.border.border-danger.s-explain No seats remaining for tickets of this type
+            - else
+              = select_tag(fieldname, options_for_select(num_allowed), 'data-price' => v.price, 'data-zone' => v.zone_short_name, :class => "itemQty #{ticket_class} form-control form-control-sm col-sm-1")
           = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 
     - if ! @store.valid_vouchers.empty? && !@store.sd.stream?
