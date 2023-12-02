@@ -10,15 +10,13 @@ describe ValidVoucher do
     end
   end
 
-  describe "has a friendly error message for min_sales_per_txn" do
-    specify "for min_sales_per_txn" do
-      @v = build(:valid_voucher)
-      @v.min_sales_per_txn = -1
-      expect(@v).not_to be_valid
-      expect(@v.errors.full_messages).to include_match_for /^Minimum purchase per transaction must be blank, or greater than or equal to 1$/
-    end
+  it "has a friendly error message for min/max_sales_per_txn" do
+    @v = build(:valid_voucher)
+    @v.min_sales_per_txn = @v.max_sales_per_txn = -1
+    expect(@v).not_to be_valid
+    expect(@v.errors.full_messages).to include_match_for /^Minimum purchase per transaction must be blank, or greater than or equal to 1$/
+    expect(@v.errors.full_messages).to include_match_for /^Maximum purchase per transaction must be blank, or greater than or equal to 1$/
   end
-
 
   describe "seats remaining" do 
     subject do

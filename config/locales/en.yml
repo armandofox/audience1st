@@ -3,6 +3,7 @@ en:
     attributes:
       valid_voucher:
         min_sales_per_txn: "Minimum purchase per transaction"
+        max_sales_per_txn: "Maximum purchase per transaction"
 
   reports:
     revenue_details:

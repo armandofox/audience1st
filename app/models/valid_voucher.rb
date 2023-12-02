@@ -200,6 +200,7 @@ class ValidVoucher < ActiveRecord::Base
       when INFINITE then "No performance-specific limit applies"
       else "#{max_sales_for_this_patron} remaining"
       end
+    self.explanation << " " << display_min_and_max_sales_per_txn
     self.visible = true
   end
 
