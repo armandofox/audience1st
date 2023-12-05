@@ -10,10 +10,13 @@ is accepted", and encodes additional information such as the capacity limit for 
 
 class ValidVoucher < ActiveRecord::Base
 
+  # Capacity is infinite if it is left blank
+  INFINITE = 100_000
+  
   class InvalidRedemptionError < RuntimeError ;  end
   class InvalidProcessedByError < RuntimeError ; end
 
-  attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type
+  attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type, :min_sales_per_txn, :max_sales_per_txn
   # auxiliary attributes that aren't persisted
   attr_accessible :explanation, :visible, :supplied_promo_code, :customer, :max_sales_for_this_patron
   belongs_to :showdate
@@ -22,14 +25,15 @@ class ValidVoucher < ActiveRecord::Base
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type, :allow_nil => true, :greater_than_or_equal_to => 0
+  validates_numericality_of :min_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE, :message => "must be blank, or greater than or equal to 1"
+  validates_numericality_of :max_sales_per_txn, :greater_than_or_equal_to => 1, :less_than_or_equal_to => INFINITE, :message => "must be blank, or greater than or equal to 1"
+  validate :min_max_sales_constraints
   validates_presence_of :start_sales
   validates_presence_of :end_sales
 
   scope :for_ticket_products, -> { joins(:vouchertype).where('vouchertypes.category != ?', 'nonticket') }
   scope :sorted, -> { joins(:vouchertype).order('vouchertypes.display_order,vouchertypes.name') }
 
-  # Capacity is infinite if it is left blank
-  INFINITE = 100_000
   def max_sales_for_type ; self[:max_sales_for_type] || INFINITE ; end
   def sales_unlimited?   ; max_sales_for_type >= INFINITE ; end
 
@@ -71,6 +75,36 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
+  # min and max dropdown menu options, plus an option to purchase zero tickets,
+  # that respects min and max sales per txn as well as max of remaining seats etc.
+  # Make the menu contain at most max choices.
+  def min_and_max_sales_for_this_txn(max_choices = INFINITE)
+    max_sales = [self.max_sales_for_this_patron,
+                 self.max_sales_per_txn,
+                 self.seats_of_type_remaining].
+                  min
+    min_sales = self.min_sales_per_txn
+    if (max_sales.zero? ||   # maybe no seats of this type remaining
+        max_sales < min_sales) # or just not enough
+      [0]
+    else # at this point, we know max_sales >= min_sales, and neither is zero
+      range = [max_sales - min_sales + 1, max_choices].min
+      [0] + (min_sales .. min_sales+range-1).to_a
+    end
+  end
+
+  def display_min_and_max_sales_per_txn
+    if min_sales_per_txn == 1
+      max_sales_per_txn == INFINITE ? '' : "(max #{max_sales_per_txn} per order)"
+    else                        # minimum order
+      case max_sales_per_txn
+      when min_sales_per_txn then "(#{min_sales_per_txn} per order)"
+      when INFINITE then "(#{min_sales_per_txn}+ per order)"
+      else "(#{min_sales_per_txn}-#{max_sales_per_txn} per order)"
+      end
+    end
+  end
+
   private
 
   # A zero-price vouchertype that is marked as "available to public"
@@ -79,6 +113,16 @@ class ValidVoucher < ActiveRecord::Base
     if vouchertype.self_service_comp? &&  promo_code.blank?
       errors.add(:promo_code, "must be provided for comps that are available for self-purchase")
     end
+  end
+
+  # Min/max sales per transaction cannot contradict min/max sales for type.
+  # This is checked *after* each attribute is individually range-checked
+  def min_max_sales_constraints
+    errors.add :min_sales_per_txn, "cannot be greater than max allowed sales of this type"  if
+      min_sales_per_txn > max_sales_for_type
+    errors.add :min_sales_per_txn, "cannot be greater than maximum purchase per transaction" if
+      min_sales_per_txn > max_sales_per_txn
+    errors.empty?
   end
 
   # Vouchertype's valid date must not be later than valid_voucher start date
@@ -156,6 +200,7 @@ class ValidVoucher < ActiveRecord::Base
       when INFINITE then "No performance-specific limit applies"
       else "#{max_sales_for_this_patron} remaining"
       end
+    self.explanation << " " << display_min_and_max_sales_per_txn
     self.visible = true
   end
 
@@ -201,10 +246,10 @@ class ValidVoucher < ActiveRecord::Base
 
   def self.bundles_available_to(customer = Customer.walkup_customer, promo_code=nil)
     bundles = ValidVoucher.
-      where('? BETWEEN start_sales AND end_sales', Time.current).
-      includes(:vouchertype,:showdate).references(:vouchertypes).
-      where('vouchertypes.category' => 'bundle').
-      order("season DESC,display_order,price DESC")
+                where('? BETWEEN start_sales AND end_sales', Time.current).
+                includes(:vouchertype,:showdate).references(:vouchertypes).
+                where('vouchertypes.category' => 'bundle').
+                order("season DESC,display_order,price DESC")
     bundles = bundles.map do |b|
       b.customer = customer
       b.supplied_promo_code = promo_code

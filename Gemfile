@@ -55,7 +55,7 @@ group :test do
   gem 'email_spec'
   gem 'faker'
   gem 'fake_stripe'
-  gem 'webdrivers','~> 5.0', require: false
+  gem 'webdrivers','>= 5.2.0', require: false
   gem 'rspec-json_expectations'
   gem 'simplecov'
   gem 'timecop'

@@ -24,7 +24,8 @@
         - nsales = showdate.sales_by_type(v.vouchertype_id)
         .col-3
           = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}
-          = "(#{h(v.promo_code)})" unless v.promo_code.blank?
+          = v.display_min_and_max_sales_per_txn
+          = "(#{v.promo_code})" unless v.promo_code.blank?
         .col-3= time_in_words_relative_to(v.start_sales,showdate.thedate)
         .col-3= showdate_time_limit_for(v, :end_sales)
         .col-3

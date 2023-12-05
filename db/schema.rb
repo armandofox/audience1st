@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20230803004141) do
+ActiveRecord::Schema.define(version: 20230925030503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -320,8 +320,10 @@ ActiveRecord::Schema.define(version: 20230803004141) do
     t.datetime "start_sales"
     t.datetime "end_sales"
     t.integer  "max_sales_for_type"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+    t.integer  "min_sales_per_txn",               default: 1
+    t.integer  "max_sales_per_txn",               default: 999
   end
 
   add_index "valid_vouchers", ["showdate_id"], name: "index_valid_vouchers_on_showdate_id", using: :btree

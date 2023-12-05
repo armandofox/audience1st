@@ -366,6 +366,17 @@ en:
       Maximum number of bundles/subscriptions of this type that may be sold.
       Leave blank for unlimited.                  
 
+    valid_voucher_min_sales_per_txn:
+
+      Minimum number of tickets of this type that can be purchased in one transaction.
+      For example, set it to 2 to offer a 2-ticket pack.  Leave blank for 1.
+
+    valid_voucher_max_sales_per_txn:
+
+      Maximum number of tickets of this type that can be purchased in one transaction.
+      For example, you can limit sales of a promo or discount ticket to a maximum
+      per transaction.  Leave blank for unlimited.
+
     valid_voucher_promo_code: >
 
       If you enter a promo code here, customers (but not box office staff) 
