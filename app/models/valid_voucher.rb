@@ -195,7 +195,7 @@ class ValidVoucher < ActiveRecord::Base
   def adjust_for_capacity
     self.max_sales_for_this_patron = seats_of_type_remaining()
     min_max = display_min_and_max_sales_per_txn
-    self.explanation =
+    self.explanation = 
       case max_sales_for_this_patron
       when 0 then "No seats remaining for tickets of this type"
       when INFINITE then "No performance-specific limit applies #{min_max}".strip
