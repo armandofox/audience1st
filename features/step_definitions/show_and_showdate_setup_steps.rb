@@ -149,13 +149,10 @@ end
 Given /^there are (\d+) "(.*)" tickets and (\d+) total seats available$/ do |per_ticket_limit, vouchertype_name, seat_limit|
   vtype = Vouchertype.find_by_name!(vouchertype_name)
   vtype.valid_vouchers = []
-  vtype.valid_vouchers <<
-    ValidVoucher.new(
-    :showdate => @showdate,
-    :start_sales => 1.week.ago,
-    :end_sales   => @showdate.thedate,
-    :max_sales_for_type => per_ticket_limit
-    )
+  create(:valid_voucher,
+         :vouchertype => vtype,
+         :showdate => @showdate,
+         :max_sales_for_type => per_ticket_limit)
   @showdate.update_attributes!(:max_advance_sales => seat_limit)
 end
 
