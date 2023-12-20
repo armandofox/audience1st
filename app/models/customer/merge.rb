@@ -45,9 +45,9 @@ class Customer < ActiveRecord::Base
         
   def mergeable_with?(other)
     if other.special_customer? || self.is_admin || other.is_admin
-      self.errors.add :base,"Special customers and super admins cannot be merged"
+      self.errors.add :base, I18n.translate('customers.errors.merge.admin')
     elsif (self.special_customer? && self != Customer.anonymous_customer)
-      self.errors.add :base,"Merges disallowed into all special customers except Anonymous customer"
+      self.errors.add :base, I18n.translate('customers.errors.merge.special')
     end
     self.errors.empty?
   end

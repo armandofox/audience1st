@@ -5,7 +5,7 @@
     .col-md-2= select_tag 'season', options_for_seasons(3.years.ago.year,2.years.from_now.year,@season), :onchange => 'this.form.submit();', :class => 'form-control'
 
 - if @vouchertypes.empty?
-  .alert.alert-secondary.text-center= t('season_setup.errors.no_vouchertypes_exist', :season => @season)
+  .alert.alert-secondary.text-center= t('season_setup.errors.no_vouchertypes_exist', :season => Option.humanize_season(@season))
 - else
   .row
     .col-md-4.form-group

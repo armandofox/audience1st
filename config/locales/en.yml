@@ -180,6 +180,11 @@ en:
 
   customers:
 
+    errors:
+      merge:
+        admin: Special customers and super admins cannot be merged
+        special: Merges disallowed into all special customers except Anonymous Customer
+
     confirm_delete: >
       Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked
       to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?
