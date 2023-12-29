@@ -155,6 +155,11 @@ class CustomersController < ApplicationController
     if @customer.try(:valid_reset_token?)
       @customer.token_created_at = 10.minutes.ago
       create_session(@customer, 'reset_token')
+      # 185979216: explicitly update last_login so that if this customer has never logged
+      # in before, this counts as a 'Login' action and they will now see the action tabs.
+      # This update used to occur in SessionsController#create, but creating a session
+      # can also happen as the result of resetting a password.
+      @customer.record_login!
     else
       redirect_to login_path, :alert => "The reset password link is invalid or has expired"
     end

@@ -23,6 +23,7 @@ class SessionsController < ApplicationController
         note_failed_signin(@email, u)
         redirect_to new_session_path, :email => @email, :remember_me => @remember_me
       else
+        u.record_login!
         session.delete(:admin_disabled) # in case admin signin
       end
       u
@@ -38,7 +39,7 @@ class SessionsController < ApplicationController
         note_failed_signin(@email, u)
         redirect_to (u.errors.has_key?(:no_secret_question) ? login_path : new_from_secret_session_path)
       else
-        u.update_attribute(:last_login,Time.current)
+        u.record_login!
       end
       u
     end

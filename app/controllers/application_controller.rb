@@ -186,11 +186,6 @@ class ApplicationController < ActionController::Base
       # button. Uncomment if you understand the tradeoffs.
       # reset_session
       self.current_user = @user
-      # 185979216: explicitly update last_login so that if this customer has never logged
-      # in before, this counts as a 'Login' action and they will now see the action tabs.
-      # This update used to occur in SessionsController#create, but creating a session
-      # can also happen as the result of resetting a password.
-      @user.update_attribute(:last_login, Time.current)
       session[:guest_checkout] = false
       # 'remember me' checked?
       new_cookie_flag = (params[:remember_me] == "1")
