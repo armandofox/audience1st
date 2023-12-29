@@ -100,13 +100,6 @@ class ApplicationController < ActionController::Base
       customer_path(customer))
   end
 
-  def redirect_after_reset_token(customer)
-    redirect_to ((r = session.delete(:return_to)) ?
-      r.merge(:customer_id => customer) :
-      change_password_for_customer_path(customer))
-    flash[:alert] = I18n.t('login.change_password_now')
-  end
-
   def find_cart
     # if there is an existing order that HAS NOT BEEN finalized, return it....
     if (o = Order.find_by(:id => session[:cart]))  &&  o.sold_on.nil?
@@ -202,9 +195,10 @@ class ApplicationController < ActionController::Base
       reset_shopping unless @gOrderInProgress
       session[:new_session] = true
       if action == 'reset_token'
-        return redirect_after_reset_token(@user)
+        redirect_to change_password_for_customer_path(@user), :alert => I18n.t('login.change_password_now')
+      else
+        redirect_after_login(@user)
       end
-      redirect_after_login(@user)
     end
   end
 

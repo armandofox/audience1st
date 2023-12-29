@@ -15,7 +15,7 @@ Scenario: supply new valid password
   When I fill in "New Password" with "syzygy"
   And I fill in "Confirm New Password" with "syzygy"
   And I press "Save Changes"
-  Then I should be able to login with username "tom@foolery.com" and password "syzygy"
+  And I should be able to login with username "tom@foolery.com" and password "syzygy"
 
 Scenario: confirmation mismatch
 

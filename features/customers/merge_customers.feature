@@ -50,6 +50,6 @@ Scenario: cannot merge Admins
 
   When I select customers "Super Administrator" and "Janey Weigandt" for merging
   And I press "Auto Merge"
-  Then I should see "super admins cannot be merged"
+  Then I should see "Customers with the role of Admin cannot be merged with other customers."
   And customer "Janey Weigandt" should exist
   And customer "Super Administrator" should exist

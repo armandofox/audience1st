@@ -40,9 +40,16 @@ Scenario: magic link expires after 10 minutes
   And customer "john@doe.com" clicks on "http://www.example.com/customers/reset_token?token=test_token" 
   Then I should be on the login page
   But customer "John Doe" should not be logged in
-  
-  
-  
+
+Scenario: user created by admin and who has never logged in resets password
+
+  Given customer with email "john@doe.com" activates a valid forgot-password link
+  Then I should be on the change password page
+  When I fill in "New Password" with "syzygy"
+  And I fill in "Confirm New Password" with "syzygy"
+  And I press "Save Changes"
+  Then I should see "My Tickets" within "#main-tabs"
+
   
   
 

@@ -180,6 +180,11 @@ en:
 
   customers:
 
+    errors:
+      merge:
+        admin: Customers with the role of Admin cannot be merged with other customers.
+        special: The customer Boxoffice Daemon cannot be merged with other customers.
+
     confirm_delete: >
       Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked
       to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?
