@@ -57,10 +57,7 @@ describe SessionsController do
               end
             end
             it "updates my last_login" do
-              expect(@user).to receive(:update_attribute) do |meth,arg|
-                expect(meth).to eq(:last_login)
-                expect(arg).to be_a_kind_of(Time)
-              end
+              expect(@user).to receive(:record_login!)
               post(:create, @login_params)
             end
             it "kills existing login"        do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params); end    
