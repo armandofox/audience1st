@@ -182,8 +182,8 @@ en:
 
     errors:
       merge:
-        admin: Special customers and super admins cannot be merged
-        special: Merges disallowed into all special customers except Anonymous Customer
+        admin: Customers with the role of Admin cannot be merged with other customers.
+        special: The customer Boxoffice Daemon cannot be merged with other customers.
 
     confirm_delete: >
       Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked

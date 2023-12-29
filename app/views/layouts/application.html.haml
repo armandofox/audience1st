@@ -45,7 +45,7 @@
               = render :partial => 'components/season_tabs'
           #staff-nav
             = render :partial => 'components/quick_search' if current_user && @gAdminDisplay
-            = render :partial => 'components/staff_buttons' if display_customer_actions? && @gAdminDisplay
+            = render :partial => 'components/acting_on_behalf_of' if display_customer_actions? && @gAdminDisplay
           #content.a1-plain.p-3
             - if controller.controller_name =~ /checkins|walkup_sales/
               = render :partial => 'checkins/change_showdate'

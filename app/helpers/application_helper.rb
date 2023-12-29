@@ -41,10 +41,15 @@ module ApplicationHelper
   end
   
   def display_customer_actions?
+    # when to display the 'staff ribbon' showing customer being acted on behalf of?
+    allowed_actions = {
+      :customers => [:show, :edit, :change_password_for, :change_secret_question],
+      :vouchers => [:index],
+      :orders => [:index],
+      :store => [:index, :subscribe, :donate, :donate_to_fund, :shipping_address, :checkout]
+    }
     ! @customer.try(:new_record?) &&
-      ((controller.controller_name == 'customers' && action_name !~ /^index|list_duplicate/) ||
-      (controller.controller_name == 'vouchers' && action_name == 'index')  ||
-      (controller.controller_name == 'orders' && action_name == 'index'))
+      (allowed_actions[controller.controller_name.to_sym] || {}).include?(action_name.to_sym)
   end
 
   def display_order_in_progress?

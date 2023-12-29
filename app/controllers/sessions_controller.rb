@@ -23,7 +23,6 @@ class SessionsController < ApplicationController
         note_failed_signin(@email, u)
         redirect_to new_session_path, :email => @email, :remember_me => @remember_me
       else
-        u.update_attribute(:last_login,Time.current)
         session.delete(:admin_disabled) # in case admin signin
       end
       u

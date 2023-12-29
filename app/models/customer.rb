@@ -238,6 +238,11 @@ class Customer < ActiveRecord::Base
     msg
   end
 
+  def valid_reset_token?
+    token_created_at &&
+      token_created_at >= 10.minutes.ago
+  end
+
   def has_ever_logged_in?
     last_login > Time.zone.parse('2007-04-07') # sentinel date should match what's in schema.rb
   end

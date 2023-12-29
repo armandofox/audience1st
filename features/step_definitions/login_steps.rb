@@ -1,18 +1,20 @@
-module CustomerLoginHelper
-  def verify_successful_login
-    # if someone is currently logged in, log them out first
-    visit login_path
-    return if page.has_content?("Log Out #{@customer.full_name}") # correct person already logged in
-    visit logout_path if page.has_content?("Log Out")             # logout whoever's logged in
-    visit login_path
-    fill_in 'email', :with => @customer.email
-    fill_in 'password', :with => @password
-    click_button 'Login'
-    expect(page).to have_content("Log Out #{@customer.full_name}")
-    expect(page).to have_css('.admin') if @is_admin
+module ScenarioHelpers
+  module CustomerLoginHelper
+    def verify_successful_login
+      # if someone is currently logged in, log them out first
+      visit login_path
+      return if page.has_content?("Log Out #{@customer.full_name}") # correct person already logged in
+      visit logout_path if page.has_content?("Log Out")             # logout whoever's logged in
+      visit login_path
+      fill_in 'email', :with => @customer.email
+      fill_in 'password', :with => @password
+      click_button 'Login'
+      expect(page).to have_content("Log Out #{@customer.full_name}")
+      expect(page).to have_css('.admin') if @is_admin
+    end
   end
 end
-World(CustomerLoginHelper)
+World(ScenarioHelpers::CustomerLoginHelper)
 
 Given /^I am not logged in$/ do
   visit logout_path
@@ -59,6 +61,12 @@ Then /(?:customer )"(.*) (.*)" should (not )?be logged in$/ do |first,last,no|
   else
     page.should have_content("Log Out #{@customer.full_name}")
   end
+end
+
+Given /customer with email "(.*)" activates a valid forgot-password link/ do |email|
+  @customer = Customer.find_by!(:email => email)
+  @customer.update_attributes!(:token => 'TEST', :token_created_at => Time.current)
+  visit reset_token_customers_path(@customer, :token => 'TEST')
 end
 
 When /I ask to send a password reset email to "(.*)"/ do |email|

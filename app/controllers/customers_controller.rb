@@ -151,15 +151,13 @@ class CustomersController < ApplicationController
 
   def reset_token
     token = params[:token]
-    @customer = Customer.where(token: token).first
-    if @customer.nil? ||
-       @customer.token_created_at.nil?  ||
-       (Time.zone.now).utc >= (@customer.token_created_at + 10.minutes).utc
-      return redirect_to(login_path, :alert => "The reset password link has expired")
+    @customer = Customer.find_by(token: token)
+    if @customer.try(:valid_reset_token?)
+      @customer.token_created_at = 10.minutes.ago
+      create_session(@customer, 'reset_token')
     else
-      @customer.token_created_at = (Time.zone.now).utc - 10.minutes
+      redirect_to login_path, :alert => "The reset password link is invalid or has expired"
     end
-    create_session(@customer, 'reset_token')
   end
 
   # Regular user creating new account
