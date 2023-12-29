@@ -382,12 +382,12 @@ en:
   vouchertypes:
 
     errors:
-      subscriptions_shouldnt_be_walkups: >
+      subscriptions_shouldnt_be_walkups: >-
         Subscription vouchers can't be sold via walkup sales screen,
         since address must be captured.
-      comp_bundles_boxoffice_only: >
+      comp_bundles_boxoffice_only: >-
         Comp subscriptions and bundles must set Availability to "Box office use only"
-      bundles_include_only_zero_cost_vouchers: >
-        Bundles cannot include revenue vouchers %{items}
-      cannot_change_category: >
+      bundles_include_only_zero_cost_vouchers: >-
+        Bundles cannot include revenue vouchers (%{items})
+      cannot_change_category: >-
         cannot be changed on an existing voucher type
