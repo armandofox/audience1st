@@ -25,7 +25,7 @@
           .col-md-4.text-right
             %label.col-form-label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
           .col-md-1
-            = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty form-control form-control-sm', 'data-price' => v.price)
+            = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty form-control form-control-sm ticket', 'data-price' => v.price)
           .col-md-6
 
       .form-group.form-row  

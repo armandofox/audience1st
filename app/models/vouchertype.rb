@@ -25,10 +25,12 @@ class Vouchertype < ActiveRecord::Base
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
   validates_inclusion_of :category, :in => CATEGORIES
 
-  # Subscription vouchertypes shouldn't be available for walkup sale,
-  # since we need to capture the address
+  # Special validations on bundles/subscriptions:
+  #   Subscription vouchertypes shouldn't be available for walkup sale,
+  #   since we need to capture the address
   validate :subscriptions_shouldnt_be_walkups, :if => :subscription?
-
+  #   Comp subscriptions/bundles must be boxoffice only
+  validate :comp_bundles_boxoffice_only, :if => :bundle?
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
@@ -69,7 +71,7 @@ class Vouchertype < ActiveRecord::Base
   # can't change the category of an existing bundle
   def cannot_change_category
     if category != category_was
-      self.errors.add(:category, 'cannot be changed on an existing voucher type')
+      self.errors.add(:category, I18n.t('vouchertypes.errors.cannot_change_category'))
       false
     end
   end
@@ -86,16 +88,23 @@ class Vouchertype < ActiveRecord::Base
 
   def subscriptions_shouldnt_be_walkups
     if walkup_sale_allowed?
-      errors.add :base, "Subscription vouchers can't be sold via walkup sales screen, since address must be captured."
+      errors.add :base, I18n.t('vouchertypes.errors.subscriptions_shouldnt_be_walkups')
     end
   end
-  
+
+  def comp_bundles_boxoffice_only
+    if price.zero? && offer_public != BOXOFFICE
+      errors.add :base, I18n.t('vouchertypes.errors.comp_bundles_boxoffice_only')
+    end
+  end
+
   # BUG clean up this method
   def bundles_include_only_zero_cost_vouchers
     included_vtypes = Vouchertype.find(included_vouchers.keys)
     non_free = included_vtypes.select { |v| v.price.to_i != 0 }
     unless non_free.empty?
-      errors.add(:base, "Bundles cannot include revenue vouchers (#{non_free.map(&:name).join(', ')})")
+      errors.add(:base, I18n.t('vouchertypes.errors.bundles_include_only_zero_cost_vouchers',
+                               :items => non_free.map(&:name).join(', ')))
     end
   end
 
