@@ -184,7 +184,7 @@ describe Customer, "merging" do
       it "should refuse if LHS is any special customer other than Anonymous" do
         c0 = Customer.boxoffice_daemon
         expect(c0.merge_automatically!(@c1)).to be_nil
-        expect(c0.errors.full_messages).to include_match_for(/merges disallowed.*except anonymous/i)
+        expect(c0.errors.full_messages).to include_match_for(/cannot be merged with other customers/i)
       end
     end
     describe "items" do
