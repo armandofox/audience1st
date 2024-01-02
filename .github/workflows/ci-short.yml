@@ -1,0 +1,36 @@
+name: build
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_WITHOUT: production
+      BUNDLE_BUILD__NOKOGIRI: --use-system-libraries
+      TZ: America/Los_Angeles
+      
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: install libxslt
+      run: |
+        sudo apt-get install -y libxslt-dev
+
+    - name: Install Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7.7
+        bundler-cache: false
+        
+    - name: create test database and secrets file
+      run: |
+        gpg --pinentry-mode loopback --batch --passphrase "${{ secrets.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
+        cp config/database.yml.test config/database.yml
+        
+    - name: install gems
+      run: |
+        bundle install --without production
+        
+    - name: run fluttering Cucumber tests
+      run: |
+        bundle exec cucumber features/import/ticket_sales_import_with_reserved_seating.feature:22:34:45 features/season_setup/add_house_seats.feature:15 2>/dev/null
