@@ -11,7 +11,7 @@ describe VouchersController do
       end
       @showdate = create(:showdate, :thedate => 1.week.from_now)
       allow(Voucher).to receive(:find).and_return(@vouchers)
-      @params = {:customer_id => @customer.id, :voucher_ids => @vouchers.map(&:id), :showdate_id => @showdate.id}
+      @params = {:customer_id => @customer.id, :voucher_ids => @vouchers.map(&:id).join(','), :showdate_id => @showdate.id}
     end
     shared_examples_for 'all reservations' do
       it "redirects to welcome" do ; expect(response).to redirect_to customer_path(@customer) ; end

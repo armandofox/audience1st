@@ -1,8 +1,8 @@
 class VouchersController < ApplicationController
   
   before_filter :is_logged_in
-  before_filter :is_boxoffice_filter, :except => %w(update_shows confirm_multiple cancel_multiple)
-  before_filter :owns_voucher_or_is_boxoffice, :except => :update_shows
+  before_filter :is_boxoffice_filter, :except => %w(confirm_multiple cancel_multiple)
+  before_filter :owns_voucher_or_is_boxoffice
 
   
   ERR = 'reservations.errors.'  # prefix string for reservation error msgs in en.yml
@@ -25,15 +25,6 @@ class VouchersController < ApplicationController
 
   public
 
-  # AJAX helper for adding comps
-  def update_shows
-    @valid_vouchers = ValidVoucher.
-      where(:vouchertype_id => params[:vouchertype_id]).
-      includes(:showdate => :show).
-      order('showdates.thedate')
-    render :partial => 'reserve_comps_for'
-  end
-
   def index
     @vouchers = @customer.vouchers.
       includes(:showdate,:bundled_vouchers,:order => :purchaser)
@@ -51,8 +42,10 @@ class VouchersController < ApplicationController
   end
 
   def create
+    # rails5: @params = params.permit(:customer_email, :seats, :customer_id, :comp_order => {})
+    @params = params.permit!
     # post: add the actual comps, and possibly reserve
-    comp_order = params[:comp_order].merge({:seats => view_context.seats_from_params(params),
+    comp_order = @params[:comp_order].merge({:seats => view_context.seats_from_params(@params),
         :processed_by => current_user, :customer => @customer})
 
     add_comps_order = CompOrder.new(comp_order)
@@ -67,7 +60,7 @@ class VouchersController < ApplicationController
         :showdate_id => add_comps_order.showdate_id,
         :voucher_id => add_comps_order.order.vouchers.first.id,
         :purchasemethod => Purchasemethod.get_type_by_name('none'))
-      if params[:customer_email]
+      if @params[:customer_email]
         email_confirmation(:confirm_add_comps, @customer, add_comps_order)
       end
       redirect_to customer_path(@customer), :notice => add_comps_order.confirmation_message
@@ -75,31 +68,33 @@ class VouchersController < ApplicationController
   end
 
   def update_comment
-    comment = params[:comments].to_s
-    vouchers = Voucher.find(params[:voucher_ids].split(","))
+    @params = params.permit(:comments, :voucher_ids)
+    comment = @params[:comments].to_s
+    vouchers = Voucher.find(@params[:voucher_ids].split(","))
     vouchers.each do |v|
       v.update_attributes(:comments => comment, :processed_by => current_user)
     end
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :voucher_id => vouchers.first.id,
-      :comments => params[:comments],
+      :comments => comment,
       :logged_in_id => current_user.id)
     render :nothing => true
   end
 
   def confirm_multiple
+    @params = params.permit(:number, :showdate_id, :customer_id, :seats, :comments, :voucher_ids, :zone)
     the_showdate = Showdate.find_by(:id => params[:showdate_id])
-    num = params[:number].to_i
+    num = @params[:number].to_i
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_showdate")) unless the_showdate
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_vouchers")) unless num > 0
-    vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
-    if !params[:seats].blank?           # handle reserved seating reservation
+    vouchers = Voucher.find(@params[:voucher_ids].split(",")).slice(0,num)
+    if !@params[:seats].blank?           # handle reserved seating reservation
       seats = view_context.seats_from_params(params)
       return redirect_to(customer_path(@customer), :alert => t("#{ERR}seat_count_mismatch")) unless seats.length == vouchers.length
       vouchers.each { |v| v.seat = seats.pop }
     end
-    comments = params[:comments].to_s
+    comments = @params[:comments].to_s
     Voucher.transaction do
       vouchers.each do |v|
         if v.reserve_for(the_showdate, current_user, comments)
@@ -121,10 +116,14 @@ class VouchersController < ApplicationController
   end
 
   def transfer_multiple
-    vouchers = params[:vouchers]
+    # rails5: uncomment the line below and delete the line following it:
+    #   in rails 4, strong params cannot be used to pass a hash with arbitrary keys like vouchers
+    # @params = params.permit(:cid, :vouchers => {})
+    @params = params.permit!
+    vouchers = @params[:vouchers]
     return redirect_to(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you did not select any vouchers.') unless vouchers
-    cid = Customer.id_from_route(params[:cid]) # extract id from URL matching customer_path(params[:cid])
+    cid = Customer.id_from_route(@params[:cid]) # extract id from URL matching customer_path(params[:cid])
     new_customer = Customer.find_by_id(cid)
     return redirect_to(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you must select valid customer to transfer to.') unless new_customer.kind_of? Customer
@@ -137,10 +136,11 @@ class VouchersController < ApplicationController
   end
 
   def cancel_multiple
-    vchs = Voucher.includes(:showdate).find(params[:voucher_ids].split(","))
+    @params = params.permit(:voucher_ids, :cancelnumber)
+    vchs = Voucher.includes(:showdate).find(@params[:voucher_ids].split(","))
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}cannot_be_changed"))unless
       vchs.all? { |v| v.can_be_changed?(current_user) }
-    num = params['cancelnumber'].to_i
+    num = @params['cancelnumber'].to_i
     orig_showdate = vchs.first.showdate
     orig_seats = Voucher.seats_for(vchs) # after cancel, seat info will be unavailable
     if (result = Voucher.cancel_multiple!(vchs, num, current_user))
@@ -150,5 +150,7 @@ class VouchersController < ApplicationController
       redirect_to customer_path(@customer), :alert => t('reservations.cannot_be_changed')
     end
   end
+
+  private
 
 end
