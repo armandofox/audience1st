@@ -47,7 +47,7 @@ class Audience1stSeeder
       admin = Customer.new({:first_name => 'Super',
         :last_name => 'Administrator',
         :password => 'admin',
-        :email => 'admin@audience1st.com'}, :without_protection => true)
+        :email => 'admin@audience1st.com'})
       admin.created_by_admin = true
       admin.role = 100
       admin.last_login = Time.current
@@ -55,7 +55,7 @@ class Audience1stSeeder
     end
     @@special_customers.each_pair do |which, attrs|
       unless Customer.find_by_role(attrs[:role])
-        c = Customer.new(attrs.except(:role), :without_protection => true)
+        c = Customer.new(attrs.except(:role))
         c.role = attrs[:role]
         c.created_by_admin = true
         c.save!
@@ -75,8 +75,7 @@ class Audience1stSeeder
       :default_retail_account_code => a.id,
       :subscription_order_service_charge_account_code => a.id,
       :regular_order_service_charge_account_code => a.id,
-      :classes_order_service_charge_account_code => a.id },
-                                     :without_protection => true)
+      :classes_order_service_charge_account_code => a.id } )
   end
 
   def self.create_default_seating_zone

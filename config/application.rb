@@ -36,9 +36,6 @@ module Audience1st
 
     config.assets.enabled = true
 
-    # Raise exceptiosn when mass-assignment issues arise, to surface them
-    config.active_record.mass_assignment_sanitizer = :strict
-    
     # Add additional load paths for your own custom dirs
     additional_paths = Dir.glob(File.join Rails.root, "app/models/**/*").select { |f| File.directory? f }
     config.eager_load_paths += additional_paths
