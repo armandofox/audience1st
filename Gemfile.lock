@@ -189,8 +189,6 @@ GEM
       heroics (~> 0.1.1)
       moneta (~> 1.0.0)
       rate_throttle_client (~> 0.1.0)
-    protected_attributes (1.1.4)
-      activemodel (>= 4.0.1, < 5.0)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -388,7 +386,6 @@ DEPENDENCIES
   nokogiri (~> 1.12)
   pg (= 0.20)
   platform-api
-  protected_attributes
   pry
   puma (>= 4.3.8)
   puma-heroku
