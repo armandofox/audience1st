@@ -116,7 +116,10 @@ class VouchersController < ApplicationController
   end
 
   def transfer_multiple
-    @params = params.permit(:vouchers, :cid)
+    # rails5: uncomment the line below and delete the line following it:
+    #   in rails 4, strong params cannot be used to pass a hash with arbitrary keys like vouchers
+    # @params = params.permit(:cid, :vouchers => {})
+    @params = params.permit!
     vouchers = @params[:vouchers]
     return redirect_to(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you did not select any vouchers.') unless vouchers
