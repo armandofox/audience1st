@@ -16,9 +16,6 @@ class ValidVoucher < ActiveRecord::Base
   class InvalidRedemptionError < RuntimeError ;  end
   class InvalidProcessedByError < RuntimeError ; end
 
-  attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type, :min_sales_per_txn, :max_sales_per_txn
-  # auxiliary attributes that aren't persisted
-  attr_accessible :explanation, :visible, :supplied_promo_code, :customer, :max_sales_for_this_patron
   belongs_to :showdate
   belongs_to :vouchertype
   # validate :self_service_comps_must_have_promo_code

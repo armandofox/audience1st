@@ -31,7 +31,10 @@ class ValidVouchersController < ApplicationController
 
   def update
     @valid_voucher = ValidVoucher.find(params[:id])
-    args = params[:valid_voucher]
+    
+    args = params.require(:valid_voucher).permit(
+      :max_sales_for_type, :min_sales_per_txn, :max_sales_per_txn,
+      :promo_code, :start_sales, :end_sales)
     set_arg_defaults_if_blank!(args)
     if @valid_voucher.update_attributes(args)
       redirect_to edit_show_path(@valid_voucher.showdate.show), :notice => 'Update successful.'
@@ -41,18 +44,18 @@ class ValidVouchersController < ApplicationController
   end
 
   def create
-    args = params[:valid_voucher]
-    preserve = params[:preserve] || {}
-    vt = params[:vouchertypes]
-    sd = params[:showdates]
+    valid_voucher_allowed_args = [ :max_sales_for_type, :min_sales_per_txn, :max_sales_per_txn,
+                                   :promo_code, :start_sales, :end_sales ]
+    args = params.require(:valid_voucher).permit(valid_voucher_allowed_args + [:before_showtime])
+    preserve = params.permit(:preserve => valid_voucher_allowed_args)[:preserve]
+    vt = params.permit(:vouchertypes => [])[:vouchertypes]
+    sd = params.permit(:showdates => [])[:showdates]
     back = new_valid_voucher_path(:show_id => params[:show_id])
     return redirect_to(back, :alert => t('season_setup.must_select_showdates')) if sd.blank?
     return redirect_to(back, :alert => t('season_setup.must_select_vouchertypes')) if vt.blank?
     vouchertypes = Vouchertype.find vt
     showdates = Showdate.find sd
     set_arg_defaults_if_blank!(args)
-    # min_sales_for_type if blank should default to 1
-    args[:min_sales_per_txn] = 1 if args[:min_sales_per_txn].blank?
     # params[:before_or_after] is either '+1' or '-1' to possibly negate minutes_before_curtain
     # (so the value stored is "Minutes before", but may be negative to indicate "minutes after")
     args[:before_showtime] = (params[:minutes_before].to_i * params[:before_or_after].to_i).minutes
