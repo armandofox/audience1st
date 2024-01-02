@@ -71,6 +71,7 @@ When /I (fail to )?confirm seats? "(.*)" for import customer "(.*)"/ do |should_
     allow_any_instance_of(Voucher).to receive(:assign_seat).and_return(nil)
   end
   steps %Q{When I choose seats "#{seat_list}" for import customer "#{name}"}
+  sleep 2
   within(find_import_row_for name) { click_button "Confirm" }
 end
 
