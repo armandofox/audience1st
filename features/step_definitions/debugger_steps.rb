@@ -2,6 +2,10 @@ Then /^show me the page$/ do
   save_and_open_page
 end
 
+Then /take a screenshot/ do
+  save_screenshot
+end
+
 Then /show me a screenshot/ do
   save_and_open_screenshot
 end
