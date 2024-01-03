@@ -47,6 +47,7 @@ Then /that performance's house seats should be: (.*)/ do |seats|
 end
 
 Then /I should (not )?see the seatmap/ do |no|
+  #sleep 1
   if no
     expect(page).not_to have_selector('#seating-charts-wrapper', :visible => true)
   else
@@ -60,7 +61,6 @@ When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, 
     steps %Q{Then I should see the seatmap}
   end
   seat_list.split(/\s*,\s*/).map { |seat|  page.find("##{seat}").click }
-  #sleep 2
 end
 
 When /I (fail to )?confirm seats? "(.*)" for import customer "(.*)"/ do |should_fail, seat_list, name|
@@ -70,8 +70,9 @@ When /I (fail to )?confirm seats? "(.*)" for import customer "(.*)"/ do |should_
     # assignment confirmation to fail.
     allow_any_instance_of(Voucher).to receive(:assign_seat).and_return(nil)
   end
+  save_screenshot
   steps %Q{When I choose seats "#{seat_list}" for import customer "#{name}"}
-  sleep 2
+  save_screenshot
   within(find_import_row_for name) { click_button "Confirm" }
 end
 

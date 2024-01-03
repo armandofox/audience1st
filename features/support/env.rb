@@ -25,22 +25,37 @@ require 'email_spec/cucumber'
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 Capybara.server = :webrick
-Capybara.register_driver :selenium do |app|
-  Webdrivers::Chromedriver.required_version = '119.0.6045.105'
-  webdriver_args = %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
-  options = Selenium::WebDriver::Chrome::Options.new(
-    args: webdriver_args
-  )
-  # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
-  # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
+# Capybara.register_driver :selenium do |app|
+#   Webdrivers::Chromedriver.required_version = '119.0.6045.105'
+#   webdriver_args = %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
+#   options = Selenium::WebDriver::Chrome::Options.new(
+#     args: webdriver_args
+#   )
+#   # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
+#   # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
+#   options.add_option(:unhandled_prompt_behavior, :accept)
+#   Capybara::Selenium::Driver.new(
+#     app,
+#     browser: :chrome,
+#     capabilities: options,
+#     clear_session_storage: true,
+#     clear_local_storage: true)
+# end
+Capybara.register_driver :headless_chrome do |app|
+  options = Selenium::WebDriver::Chrome::Options.new
+
+  #options.add_preference(:download, prompt_for_download: false, default_directory: '/tmp/downloads')
+  #options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
   options.add_option(:unhandled_prompt_behavior, :accept)
-  Capybara::Selenium::Driver.new(
-    app,
-    browser: :chrome,
-    capabilities: options,
-    clear_session_storage: true,
-    clear_local_storage: true)
+  options.add_argument('--headless')
+  options.add_argument('--disable-gpu')
+  options.add_argument('--window-size=1024,1024')
+  driver = Capybara::Selenium::Driver.new(app, browser: :chrome, options: options, 
+                                          clear_session_storage: true,
+                                          clear_local_storage: true)
 end
+Capybara.default_driver = :rack_test
+Capybara.javascript_driver = :headless_chrome
 
 # If you set this to false, any error raised from within your app will bubble 
 # up to your step definition and out to cucumber unless you catch it somewhere
