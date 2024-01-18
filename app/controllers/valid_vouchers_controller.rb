@@ -1,7 +1,7 @@
 class ValidVouchersController < ApplicationController
 
-  before_filter :is_boxoffice_filter
-  before_filter(:is_boxoffice_manager_filter,:except => :show)
+  before_action :is_boxoffice_filter
+  before_action(:is_boxoffice_manager_filter,:except => :show)
 
   def show
     @valid_voucher = ValidVoucher.find(params[:id])

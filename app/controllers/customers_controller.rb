@@ -9,11 +9,11 @@ class CustomersController < ApplicationController
                              auto_complete_for_customer)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
-  before_filter :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
-  before_filter :is_myself_or_staff, :only => CUSTOMER_ACTIONS
-  before_filter :is_staff_filter, :only => ADMIN_ACTIONS
+  before_action :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
+  before_action :is_myself_or_staff, :only => CUSTOMER_ACTIONS
+  before_action :is_staff_filter, :only => ADMIN_ACTIONS
 
-  skip_before_filter :verify_authenticity_token, %w(auto_complete_for_customer)
+  skip_before_action :verify_authenticity_token, %w(auto_complete_for_customer), :raise => false
 
   private
 

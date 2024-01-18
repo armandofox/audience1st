@@ -1,6 +1,6 @@
 class ReservationsController < ApplicationController
 
-  before_filter :is_logged_in
+  before_action :is_logged_in
 
   # AJAX helper for adding comps
 

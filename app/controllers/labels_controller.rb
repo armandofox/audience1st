@@ -1,5 +1,5 @@
 class LabelsController < ApplicationController
-  before_filter :is_staff_filter
+  before_action :is_staff_filter
 
   before_action do
     session[:return_to] ||= params[:return_to]

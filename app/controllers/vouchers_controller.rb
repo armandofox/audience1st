@@ -1,8 +1,8 @@
 class VouchersController < ApplicationController
   
-  before_filter :is_logged_in
-  before_filter :is_boxoffice_filter, :except => %w(confirm_multiple cancel_multiple)
-  before_filter :owns_voucher_or_is_boxoffice
+  before_action :is_logged_in
+  before_action :is_boxoffice_filter, :except => %w(confirm_multiple cancel_multiple)
+  before_action :owns_voucher_or_is_boxoffice
 
   
   ERR = 'reservations.errors.'  # prefix string for reservation error msgs in en.yml

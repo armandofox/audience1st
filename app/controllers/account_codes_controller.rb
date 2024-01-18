@@ -1,6 +1,6 @@
 class AccountCodesController < ApplicationController
 
-  before_filter :is_staff_filter
+  before_action :is_staff_filter
 
   # GET /account_codes
   # GET /account_codes.xml

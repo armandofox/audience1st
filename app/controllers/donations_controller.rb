@@ -1,7 +1,7 @@
 class DonationsController < ApplicationController
 
-  before_filter :is_staff_filter
-  before_filter :load_customer, :only => [:new, :create]
+  before_action :is_staff_filter
+  before_action :load_customer, :only => [:new, :create]
 
   private
 

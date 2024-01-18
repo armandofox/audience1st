@@ -1,7 +1,7 @@
 class ShowdatesController < ApplicationController
 
-  before_filter :is_boxoffice_manager_filter
-  before_filter :load_show
+  before_action :is_boxoffice_manager_filter
+  before_action :load_show
 
   private
 

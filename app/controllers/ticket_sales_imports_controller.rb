@@ -1,6 +1,6 @@
 class TicketSalesImportsController < ApplicationController
 
-  before_filter :is_boxoffice_filter
+  before_action :is_boxoffice_filter
 
   # View all imports, also provides a form to create a new import by uploading a file.
   # The view provides a dropdown populated from TicketSalesImporter::IMPORTERS, which

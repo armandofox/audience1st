@@ -1,9 +1,9 @@
 class CheckinsController < ApplicationController
 
-  before_filter :is_boxoffice_filter
+  before_action :is_boxoffice_filter
 
   # sets  instance variable @showdate and others for every method.
-  before_filter :get_showdate, :except => [:update, :modify_walkup_vouchers]
+  before_action :get_showdate, :except => [:update, :modify_walkup_vouchers]
   
   private
 

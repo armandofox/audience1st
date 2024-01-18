@@ -1,6 +1,6 @@
 class WalkupSalesController < ApplicationController
 
-  before_filter :is_boxoffice_filter
+  before_action :is_boxoffice_filter
 
   before_action do
     @showdate = Showdate.in_theater.find params[:id]
