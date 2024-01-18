@@ -1,7 +1,7 @@
 FactoryBot.define do
 
   factory :donation do
-    amount 25
+    amount { 25 }
     account_code { Donation.default_code }
   end
 

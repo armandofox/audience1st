@@ -54,10 +54,4 @@ Rails.application.configure do
 
   config.log_level = :debug
 
-  # Find n+1 query problems and unused eager-loads
-  config.after_initialize do
-    Bullet.enable = false       # change to 'true' to enable n+1 query logging
-    Bullet.bullet_logger = true # log/bullet.log
-  end
-
 end
