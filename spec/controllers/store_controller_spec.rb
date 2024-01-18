@@ -140,7 +140,7 @@ describe StoreController do
       end
       it 'redirects preserving customer info' do
         post :process_donation, @params
-        expect(response).to redirect_to(quick_donate_path(@params.except(:credit_card_token)))
+        expect(response).to redirect_to(quick_donate_path(@params.to_unsafe_hash.except(:credit_card_token)))
       end
       it 'shows error' do
         post :process_donation, @params

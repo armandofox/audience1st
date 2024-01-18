@@ -70,7 +70,7 @@ class StoreController < ApplicationController
   end
 
   def index
-    return_after_login params.except(:customer_id)
+    return_after_login params.to_unsafe_hash.except(:customer_id)
 
     @store = Store::Flow.new(current_user(), @customer, @gAdminDisplay, params)
     return redirect_to(store_subscribe_path(@customer)) if params[:what] == 'Subscription'
@@ -78,8 +78,8 @@ class StoreController < ApplicationController
     @page_title = "#{Option.venue} - Tickets"
     reset_shopping unless (@promo_code = params[:promo_code])
 
-    @show_url = url_for(params.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
-    @showdate_url = url_for(params.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @show_url = url_for(params.to_unsafe_hash.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @showdate_url = url_for(params.to_unsafe_hash.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
     @store.setup
   end
@@ -87,7 +87,7 @@ class StoreController < ApplicationController
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,
   # but valid for eligibility for tickets
   def subscribe
-    return_after_login params.except(:customer_id)
+    return_after_login params.to_unsafe_hash.except(:customer_id)
     @store = Store::Flow.new(current_user(), @customer, @gAdminDisplay, params)
     @page_title = "#{Option.venue} - Subscriptions"
     @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
@@ -104,7 +104,7 @@ class StoreController < ApplicationController
   end
 
   def donate_to_fund
-    return_after_login params.except(:customer_id)
+    return_after_login params.to_unsafe_hash.except(:customer_id)
     @account_code = AccountCode.find_by_code(params[:id]) ||
       AccountCode.find_by_id(params[:id]) ||
       AccountCode.default_account_code
@@ -174,7 +174,7 @@ class StoreController < ApplicationController
       redirect_to shipping_address_path(@customer)
     else
       # otherwise go directly to checkout
-      return_after_login params.except(:customer_id).merge(:action => 'checkout')
+      return_after_login params.to_unsafe_hash.except(:customer_id).merge(:action => 'checkout')
       redirect_to_checkout
     end
   end
