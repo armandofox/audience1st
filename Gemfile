@@ -67,10 +67,7 @@ end
 group :development, :test do
   # the following really belong in a separate 'staging' environment
   gem 'factory_bot_rails'
-  gem 'bullet'                # show needed/needless eager loads
   gem 'byebug'                  # 4
-  gem 'pry'
-  gem 'listen', '~> 2.2'
   #gem 'faye-websocket'
   #gem 'rb-readline'
   gem 'rspec', '~> 3.0'
