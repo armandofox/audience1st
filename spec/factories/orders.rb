@@ -30,7 +30,7 @@ FactoryBot.define do
     factory :order_from_vouchers do
       sold_on { Time.current }
       transient do
-        vouchers []
+        vouchers { [] }
       end
       after(:create) do |order,evaluator|
         evaluator.vouchers.each do |v|
