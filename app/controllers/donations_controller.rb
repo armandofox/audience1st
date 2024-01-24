@@ -21,7 +21,7 @@ class DonationsController < ApplicationController
       includes(:order,:customer,:account_code).
       where.not(:customer_id => Customer.walkup_customer.id).
       order(:sold_on)
-    if params[:use_cid]         # cust id will be embedded in route in autocomplete field
+    if (params[:use_cid] && !params[:cid].blank?)  # cust id will be embedded in route in autocomplete field
       cid = if params[:cid] =~ /^\d+$/ then params[:cid] else Customer.id_from_route(params[:cid]) end
       @donations = @donations.where(:customer_id => cid)
       @full_name = Customer.find(cid).full_name
