@@ -13,12 +13,7 @@ Rails.application.configure do
 
   # Full error reports are disabled and caching is turned on
   config.action_controller.perform_caching             = true
-
-  # Enable Rack::Cache to put a simple HTTP cache in front of your application
-  # Add `rack-cache` to your Gemfile before enabling this.
-  # For large-scale production use, consider using a caching reverse proxy like
-  # NGINX, varnish or squid.
-  # config.action_dispatch.rack_cache = true
+  config.consider_all_requests_local = false
 
   # Configure the goddamn assets pipeline
   # Compress JavaScripts and CSS.
@@ -30,6 +25,8 @@ Rails.application.configure do
   # Do not fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
 
+  # Enable serving of images, stylesheets, and javascripts from an asset server
+  # config.action_controller.asset_host = "http://assets.example.com"
   # Serve static assets from EDGE CDN Heroku add-on
   config.action_controller.asset_host = ENV['EDGE_URL'] if ENV.has_key?('EDGE_URL')
 
@@ -44,10 +41,11 @@ Rails.application.configure do
   end
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :subdomain, :uuid ]
+  # config.log_tags = [ :subdomain, :uuid ]
+  config.log_tags = [ :subdomain, :request_id ]
   config.log_level = :info
   
   # Use a different logger for distributed setups
@@ -56,8 +54,7 @@ Rails.application.configure do
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
 
-  # Enable serving of images, stylesheets, and javascripts from an asset server
-  # config.action_controller.asset_host = "http://assets.example.com"
+  config.action_mailer.perform_caching = false
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
