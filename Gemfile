@@ -23,7 +23,7 @@ gem 'json', '>= 2.0'            # see https://github.com/flori/json/issues/399 -
 gem 'nokogiri', '< 1.16.0'
 gem 'platform-api'                # for restart task
 #gem 'responders', '~> 2.0'
-gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
+gem 'attr_encrypted', '< 4.0.0'
 gem 'rake'
 #gem 'scout_apm'
 gem 'stripe'
@@ -50,6 +50,7 @@ group :test do
   gem 'fake_stripe'
   gem 'webdrivers','>= 5.2.0', require: false
   gem 'rspec-json_expectations'
+  gem 'rails-controller-testing' # for assigns()
   gem 'simplecov'
   gem 'timecop'
   gem 'webmock'
