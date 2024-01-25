@@ -14,12 +14,12 @@ describe CheckinsController do
       end
       it 'should instead use current-or-next showdate if there is one' do
         allow(Showdate).to receive(:current_or_next).and_return(@m)
-        get :show, :id => @id
+        get :show, :params => {:id => @id}
         expect(assigns(:showdate)).to eq(@m)
       end
       it 'should redirect to shows controller if no showdates at all' do
         Showdate.delete_all
-        get :show, :id => @id
+        get :show, :params => {  :id => @id }
         expect(response).to redirect_to(:controller => 'shows', :action => 'index')
       end
     end
@@ -27,7 +27,7 @@ describe CheckinsController do
       it "should work with valid showdate even if no others exist" do
         show = create(:show, :season => 2009)
         @m = create(:showdate, :date => 1.year.ago, :show => show)
-        get :show, :id => @m.id
+        get :show, :params => {  :id => @m.id }
         expect(response).to render_template(:show)
       end
     end

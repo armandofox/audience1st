@@ -20,7 +20,7 @@ class CheckinsController < ApplicationController
     end
     # nil showdate: try defaulting to current or next
     if (@showdate = Showdate.in_theater.current_or_next(:grace_period => 2.hours))
-      redirect_to(params.to_hash.merge(:id => @showdate.id))
+      redirect_to(params.to_unsafe_h.merge(:id => @showdate.id))
     else
       redirect_to(shows_path, :alert => I18n.t('checkins.no_showdates'))
     end
