@@ -1,6 +1,6 @@
 # tabular data
 
-World(XPath)
+# World(XPath)
 
 Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
   page.should have_xpath("//#{table}")

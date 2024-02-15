@@ -1,4 +1,4 @@
-World(XPath)
+# World(XPath)
 
 require 'xpath'
 DATE_TIME_SUFFIXES = {
