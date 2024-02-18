@@ -1,8 +1,8 @@
 class Option < ActiveRecord::Base
 
-  attr_encrypted_options.merge!(:key => Figaro.env.attr_encrypted_key!)
-  attr_encrypted :stripe_secret
-  attr_encrypted :mailchimp_key
+  attr_encrypted :stripe_secret, :key => Figaro.env.attr_encrypted_key!
+  attr_encrypted :mailchimp_key, :key => Figaro.env.attr_encrypted_key!
+
 
   serialize :feature_flags, Array
 
