@@ -21,7 +21,7 @@ Rails.application.configure do
   # config.log_level = :debug
 
   # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :stderr
+  config.active_support.deprecation = :log
 
   # Debug mode disables concatenation and preprocessing of assets.
   # This option may cause significant delays in view rendering with a large
