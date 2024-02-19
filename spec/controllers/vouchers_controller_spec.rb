@@ -18,7 +18,7 @@ describe VouchersController do
     end
     describe 'successful reservations' do
       describe 'for all 3 vouchers' do
-        before :each do ; @successful = 3 ; post :confirm_multiple, @params.merge(:number => 3) ; end
+        before :each do ; @successful = 3 ; post :confirm_multiple, :params => @params.merge(:number => 3) ; end
         it 'notifies' do ; expect(flash[:notice]).to match(/^An email confirmation was sent to #{@customer.email}/) ; end
         it_should_behave_like 'all reservations'
       end
@@ -26,7 +26,7 @@ describe VouchersController do
         before :each do
           allow(@vouchers[2]).to receive(:reserve_for).and_raise("Shouldn't have tried to reserve this one")
           @successful = 2
-          post :confirm_multiple, @params.merge(:number => 2)
+          post :confirm_multiple, :params => @params.merge(:number => 2)
         end
         it 'notifies' do ; expect(flash[:notice]).to match(/^An email confirmation was sent to #{@customer.email}./) ; end
         it_should_behave_like 'all reservations'
@@ -40,7 +40,7 @@ describe VouchersController do
         end
       end
       describe 'for 3 vouchers' do
-        before :each do ; @successful = 2; post :confirm_multiple, @params.merge(:number => 3) ; end
+        before :each do ; @successful = 2; post :confirm_multiple, :params => @params.merge(:number => 3) ; end
         it 'notifies' do
           expect(flash[:alert]).to match(/could not be completed:/)
           expect(flash[:alert]).to match(/An error occurred/)

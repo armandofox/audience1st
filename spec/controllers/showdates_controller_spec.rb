@@ -35,7 +35,7 @@ describe ShowdatesController do
     context 'validate strong params' do
 
       it 'checks strong params on create' do
-        post :create, @mass_assignment_attack_params
+        post :create, :params => @mass_assignment_attack_params
         last_showdate = Showdate.last
         @dummies.each { |symb| expect(last_showdate.attributes).not_to have_key(symb), "ensure that the attribute hasn't been pushed to the model" }
         message = 'ensure proper attribute is persisted'
@@ -43,7 +43,7 @@ describe ShowdatesController do
       end
 
       it 'checks strong params on update' do
-        post :create, @mass_assignment_attack_params
+        post :create, :params => @mass_assignment_attack_params
         last_sdate = Showdate.last
         expect(last_sdate.max_advance_sales).to eq 50000
 
@@ -67,7 +67,7 @@ describe ShowdatesController do
           "id"=>last_sdate.id
         }
 
-        put :update, update_params
+        put :update, :params => update_params
         # validate modification
         last_sdate = Showdate.last
         expect(last_sdate.max_advance_sales).to eq 96

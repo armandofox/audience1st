@@ -42,7 +42,7 @@ class StoreController < ApplicationController
     if redirect_customer == specified_customer # ok to proceed as is
       @customer = specified_customer
     else      
-      redirect_to url_for(params.merge(:customer_id => redirect_customer.id, :only_path => true))
+      redirect_to url_for(params.to_unsafe_h.merge(:customer_id => redirect_customer.id, :only_path => true))
     end
   end
 
@@ -80,7 +80,7 @@ class StoreController < ApplicationController
 
     @show_url = url_for(params.to_unsafe_hash.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @showdate_url = url_for(params.to_unsafe_hash.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
-    @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
+    @reload_url = url_for(params.to_unsafe_h.merge(:promo_code => 'XXXX', :only_path => true))
     @store.setup
   end
 

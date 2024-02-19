@@ -32,7 +32,7 @@ describe TicketSalesImportsController do
       before :each do
         # don't actually parse
         TicketSalesImport.any_instance.stub_chain(:parser, :parse).and_return(true)
-        post :create, mixed_params
+        post :create, :params => mixed_params
         @post_tsi = TicketSalesImport.find(1)
       end
       it 'will not set unpermitted param' do

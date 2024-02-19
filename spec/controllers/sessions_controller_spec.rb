@@ -58,26 +58,26 @@ describe SessionsController do
             end
             it "updates my last_login" do
               expect(@user).to receive(:record_login!)
-              post(:create, @login_params)
+              post(:create, :params => @login_params)
             end
-            it "kills existing login"        do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params); end    
-            it "logs me in"                  do post(:create, @login_params); expect(controller.send(:logged_in?)).to  be_truthy  end    
-            it "sets/resets/expires cookie"  do expect(controller).to receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
-            it "sends a cookie"              do expect(controller).to receive(:send_remember_cookie!);  post(:create, @login_params) end
-            it 'redirects to the home page'  do post(:create, @login_params); expect(response).to redirect_to(@home_page)   end
+            it "kills existing login"        do expect(controller).to receive(:logout_keeping_session!); post(:create, :params => @login_params); end    
+            it "logs me in"                  do post(:create, :params => @login_params); expect(controller.send(:logged_in?)).to  be_truthy  end    
+            it "sets/resets/expires cookie"  do expect(controller).to receive(:handle_remember_cookie!).with(want_remember_me); post(:create, :params => @login_params) end
+            it "sends a cookie"              do expect(controller).to receive(:send_remember_cookie!);  post(:create, :params => @login_params) end
+            it 'redirects to the home page'  do post(:create, :params => @login_params); expect(response).to redirect_to(@home_page)   end
             if (has_request_token == :valid)
-              it 'does not make new token'   do expect(@user).not_to receive(:remember_me);   post(:create, @login_params) end
-              it 'does refresh token'        do expect(@user).to receive(:refresh_token);     post(:create, @login_params) end 
-              it "sets an auth cookie"       do post(:create, @login_params);  end
+              it 'does not make new token'   do expect(@user).not_to receive(:remember_me);   post(:create, :params => @login_params) end
+              it 'does refresh token'        do expect(@user).to receive(:refresh_token);     post(:create, :params => @login_params) end 
+              it "sets an auth cookie"       do post(:create, :params => @login_params);  end
             else
               if want_remember_me
-                it 'makes a new token'       do expect(@user).to receive(:remember_me);       post(:create, @login_params) end 
-                it "does not refresh token"  do expect(@user).not_to receive(:refresh_token); post(:create, @login_params) end
-                it "sets an auth cookie"       do post(:create, @login_params);  end
+                it 'makes a new token'       do expect(@user).to receive(:remember_me);       post(:create, :params => @login_params) end 
+                it "does not refresh token"  do expect(@user).not_to receive(:refresh_token); post(:create, :params => @login_params) end
+                it "sets an auth cookie"       do post(:create, :params => @login_params);  end
               else 
-                it 'does not make new token' do expect(@user).not_to receive(:remember_me);   post(:create, @login_params) end
-                it 'does not refresh token'  do expect(@user).not_to receive(:refresh_token); post(:create, @login_params) end 
-                it 'kills user token'        do expect(@user).to receive(:forget_me);         post(:create, @login_params) end 
+                it 'does not make new token' do expect(@user).not_to receive(:remember_me);   post(:create, :params => @login_params) end
+                it 'does not refresh token'  do expect(@user).not_to receive(:refresh_token); post(:create, :params => @login_params) end 
+                it 'kills user token'        do expect(@user).to receive(:forget_me);         post(:create, :params => @login_params) end 
               end
             end
           end # inner describe
@@ -91,13 +91,13 @@ describe SessionsController do
       expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(nil)
       login_as create(:customer, :email => 'quentin@email.com')
     end
-    it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
-    it 'flashes an error'           do post(:create, @login_params); expect(flash[:alert]).to match(/couldn't log you in/i) end
-    it 'renders the log in page'    do post(:create, @login_params); expect(response).to redirect_to(new_session_path)  end
-    it "doesn't log me in"          do post(:create, @login_params); expect(controller.send(:logged_in?)).to eq(false) end
+    it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, :params => @login_params) end
+    it 'flashes an error'           do post(:create, :params => @login_params); expect(flash[:alert]).to match(/couldn't log you in/i) end
+    it 'renders the log in page'    do post(:create, :params => @login_params); expect(response).to redirect_to(new_session_path)  end
+    it "doesn't log me in"          do post(:create, :params => @login_params); expect(controller.send(:logged_in?)).to eq(false) end
     it "doesn't send password back" do 
       @login_params[:password] = 'FROBNOZZ'
-      post(:create, @login_params)
+      post(:create, :params => @login_params)
       expect(response).not_to have_text(/FROBNOZZ/i)
     end
   end
@@ -128,7 +128,7 @@ describe SessionsController do
         @user = Customer.create!(:first_name => "Fake", :last_name => "User", 
                               :email => "user84@yahoo.com", :password => "test",
                               :secret_question => 5, :secret_answer => "yes")
-        post :create_from_secret, secret_question_params
+        post :create_from_secret, :params => secret_question_params
       end
 
       it "returns associated user" do

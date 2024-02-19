@@ -12,10 +12,10 @@ describe WalkupSalesController do
     shared_examples "no transfer is attempted" do
       it "should not attempt to transfer" do
         expect(Voucher).not_to receive(:change_showdate_multiple)
-        put :update, @params
+        put :update, :params => @params
       end
       it "should redirect" do
-        put :update, @params
+        put :update, :params => @params
         expect(response).to be_redirect
       end
     end
@@ -23,7 +23,7 @@ describe WalkupSalesController do
       before(:each) do ;  @params = {:id => @showdate.id} ; end
       it_should_behave_like "no transfer is attempted"
       it "should display appropriate error" do
-        put :update, @params
+        put :update, :params => @params
         expect(flash[:alert]).to match(/you didn't select any vouchers/i)
       end
     end
@@ -35,7 +35,7 @@ describe WalkupSalesController do
       end
       it_should_behave_like "no transfer is attempted"
       it "should display appropriate error" do
-        put :update, @params
+        put :update, :params => @params
         expect(flash[:alert]).to match(/no changes were made/i)
       end
     end
@@ -48,12 +48,12 @@ describe WalkupSalesController do
       end
       it_should_behave_like "no transfer is attempted"
       it "should display error if showdate not found" do
-        put :update, @params
+        put :update, :params => @params
         expect(flash[:alert]).to match(/NO changes were made.*couldn't find showdate with 'id'=99999/i)
       end
       it "should display error if showdate not specified" do
         @params.delete(:to_showdate)
-        put :update, @params
+        put :update, :params => @params
         expect(flash[:alert]).to match(/NO changes were made.*couldn't find showdate without an id/i)
       end
     end
@@ -71,16 +71,16 @@ describe WalkupSalesController do
           expect(Voucher).to receive(:change_showdate_multiple).with(kind_of(Array), kind_of(Showdate), anything())
         end
         it "should do the transfer" do
-          put :update, @params
+          put :update, :params => @params
         end
         it "should display confirmation" do
-          put :update, @params
+          put :update, :params => @params
           expect(flash[:notice]).to eq("2 vouchers transferred to #{@showdate.printable_name}.")
         end
       end
       specify "and errors occur should display a message" do
         expect(Voucher).to receive(:change_showdate_multiple).and_raise("boom!")
-        put :update, @params
+        put :update, :params => @params
         expect(flash[:alert]).to match(/no changes were made/i)
         expect(flash[:alert]).to match(/boom!/)
       end
