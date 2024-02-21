@@ -142,7 +142,8 @@ describe StoreController do
         post :process_donation, :params => @params
         new_params = ActionController::Parameters.new(@params.except(:credit_card_token))
         new_params.permit!
-        expect(response).to redirect_to(quick_donate_path(new_params.to_hash))
+        expect(response).to render_template('donate')
+        expect(assigns(:customer)).to have_attributes(@invalid_customer)
       end
       it 'shows error' do
         post :process_donation, :params => @params
@@ -226,7 +227,13 @@ describe StoreController do
     before(:each) do
       allow(controller).to receive(:add_retail_items_to_cart)
       allow(controller).to receive(:add_donation_to_cart)
-      allow_any_instance_of(Order).to receive(:errors).and_return(['Error']) # make #empty? false
+      fake_order = double('order_in_progress',
+                          :add_comment => true,
+                          :add_tickets_from_params => true,
+                          :destroy => nil)
+      allow(fake_order).to receive_message_chain(:errors, :empty?) { false }
+      allow(fake_order).to receive_message_chain(:errors, :as_html) { "" }
+      allow(Order).to receive(:create).and_return(fake_order)
       3.times { create(:showdate) }
       @sd = create(:showdate).id # so it's not the first one
       @anon = Customer.anonymous_customer.id

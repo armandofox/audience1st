@@ -53,14 +53,14 @@ class SessionsController < ApplicationController
 
   def temporarily_disable_admin
     session[:admin_disabled] = true
-    redirect_to :back, :notice => "Switched to non-admin user view."
+    redirect_back(:fallback_location => root_path, :notice => "Switched to non-admin user view.")
   end
 
   def reenable_admin
     if session.delete(:admin_disabled)
       flash[:notice] = "Admin view reestablished."
     end
-    redirect_to :back
+    redirect_back(:fallback_location => root_path)
   end
 
   protected
