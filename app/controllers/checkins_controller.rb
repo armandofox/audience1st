@@ -12,7 +12,9 @@ class CheckinsController < ApplicationController
   # force a redirect to a different controller & action
   def get_showdate
     if (@showdate = Showdate.in_theater.find_by(:id => params[:id]))
-      @showdates = Showdate.in_theater.all_showdates_for_seasons(Time.current.year, Time.current.year+1)
+      @showdates = Showdate.in_theater.
+                     all_showdates_for_seasons(Time.current.year, Time.current.year+1).
+                     to_a
       @showdates << @showdate unless @showdates.include?(@showdate)
       @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
       @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate, is_boxoffice: true) if @showdate.has_reserved_seating?
