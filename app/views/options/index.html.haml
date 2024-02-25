@@ -3,9 +3,9 @@
   function showDefaultDonation(select_allow_recurring_donations) {
     var row = document.getElementById('default_donation_type_form_row');
     if (select_allow_recurring_donations.value == 'true') {
-      row.style.display = '';
+      row.style.visibility = 'visible';
     } else {
-      row.style.display = 'none';
+      row.style.visibility = 'hidden';
     }
   }
 
@@ -58,7 +58,7 @@
           = option_description_for(:allow_recurring_donations)
         .col-md-8
           = f.select :allow_recurring_donations, [['Yes', true], ['No', false]], {}, {:class => 'form-control', onchange: 'showDefaultDonation(this)'}
-      .form-row{id:"default_donation_type_form_row", style:"display: none;"}
+      .form-row{id:"default_donation_type_form_row", style:"visibility: #{@allow_recurring_donations ? 'visible' : 'hidden'}"}
         .col-md-4.text-right
           %label.col-form-label Default Donation Type
           = option_description_for(:default_donation_type)
