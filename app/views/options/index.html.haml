@@ -64,8 +64,8 @@
           = option_description_for(:default_donation_type)
         .col-md-8
           .radio-group.form-inline
-            = f.radio_button :default_donation_type, 'one_time', :class => 'form-control', :id => 'one_time'
-            = f.label :default_donation_type, 'One Time', :class => 'form-control', :for => 'one_time'
+            = f.radio_button :default_donation_type, 'one', :class => 'form-control', :id => 'one'
+            = f.label :default_donation_type, 'One Time', :class => 'form-control', :for => 'one'
             = f.radio_button :default_donation_type, 'monthly', :class => 'form-control', :id => 'monthly'
             = f.label :default_donation_type, 'Monthly', :class => 'form-control', :for => 'monthly'
       = render_collection_of_options f, %w( |
