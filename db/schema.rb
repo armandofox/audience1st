@@ -236,6 +236,7 @@ ActiveRecord::Schema.define(version: 20240229121243) do
     t.integer  "account_code_id"
     t.integer  "customer_id"
     t.float    "amount",          default: 0.0
+    t.string   "comments",        limit: 255
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
   end
