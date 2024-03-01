@@ -151,7 +151,7 @@ class StoreController < ApplicationController
       render :action => 'place_order'
     else
       # if order fails to finalize, destroy recurring donation row
-      @recurring_donation.destroy
+      @recurring_donation.destroy if @recurring_donation
       redirect_to redirect_route, :alert => @gOrderInProgress.errors.as_html
     end
   end
