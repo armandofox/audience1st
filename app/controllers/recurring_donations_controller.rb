@@ -1,0 +1,2 @@
+class RecurringDonationsController < ApplicationController
+end

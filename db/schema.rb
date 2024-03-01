@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20240225093946) do
+ActiveRecord::Schema.define(version: 20240229121243) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -78,25 +78,26 @@ ActiveRecord::Schema.define(version: 20240225093946) do
   add_index "customers_labels", ["customer_id", "label_id"], name: "index_customers_labels_on_customer_id_and_label_id", unique: true, using: :btree
 
   create_table "items", force: :cascade do |t|
-    t.integer  "vouchertype_id",                 default: 0,          null: false
-    t.integer  "customer_id",                    default: 0,          null: false
+    t.integer  "vouchertype_id",                    default: 0,          null: false
+    t.integer  "customer_id",                       default: 0,          null: false
     t.integer  "showdate_id"
-    t.string   "comments",           limit: 255
-    t.boolean  "fulfillment_needed",             default: false,      null: false
-    t.string   "promo_code",         limit: 255
-    t.integer  "processed_by_id",                default: 2146722771, null: false
-    t.integer  "bundle_id",                      default: 0,          null: false
-    t.boolean  "checked_in",                     default: false,      null: false
-    t.boolean  "walkup",                         default: false,      null: false
-    t.float    "amount",                         default: 0.0
+    t.string   "comments",              limit: 255
+    t.boolean  "fulfillment_needed",                default: false,      null: false
+    t.string   "promo_code",            limit: 255
+    t.integer  "processed_by_id",                   default: 2146722771, null: false
+    t.integer  "bundle_id",                         default: 0,          null: false
+    t.boolean  "checked_in",                        default: false,      null: false
+    t.boolean  "walkup",                            default: false,      null: false
+    t.float    "amount",                            default: 0.0
     t.integer  "account_code_id"
     t.datetime "updated_at"
     t.datetime "letter_sent"
-    t.string   "type",               limit: 255
+    t.string   "type",                  limit: 255
     t.integer  "order_id"
     t.boolean  "finalized"
     t.string   "seat"
     t.datetime "sold_on"
+    t.integer  "recurring_donation_id"
   end
 
   add_index "items", ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
@@ -230,6 +231,15 @@ ActiveRecord::Schema.define(version: 20240225093946) do
   add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
   add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id", using: :btree
   add_index "orders", ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id", using: :btree
+
+  create_table "recurring_donations", force: :cascade do |t|
+    t.integer  "account_code_id"
+    t.integer  "customer_id"
+    t.float    "amount",          default: 0.0
+    t.string   "comments",        limit: 255
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
 
   create_table "seating_zones", force: :cascade do |t|
     t.string  "name"

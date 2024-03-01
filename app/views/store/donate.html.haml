@@ -46,9 +46,9 @@
           .form-group.form-row
             %label.col-form-label.text-right.col-sm-6{:for => :donation} Donation frequency
             .radio-group.col-sm-6.col-md-2.form-inline
-              = radio_button_tag 'donation_type', 'one', Option.default_donation_type == 'one', class: 'form-control', id: 'one'
+              = radio_button_tag 'donation_frequency', 'one', Option.default_donation_type == 'one', class: 'form-control', id: 'one'
               = label_tag 'donation_type_one_time', 'One Time', class: 'form-control', for: 'one'
-              = radio_button_tag 'donation_type', 'monthly', Option.default_donation_type == 'monthly', class: 'form-control', id: 'monthly'
+              = radio_button_tag 'donation_frequency', 'monthly', Option.default_donation_type == 'monthly', class: 'form-control', id: 'monthly'
               = label_tag 'donation_type_monthly', 'Monthly', class: 'form-control', for: 'monthly'
         .form-group.form-row
           %label.col-form-label{:for => :donation_comments} 
