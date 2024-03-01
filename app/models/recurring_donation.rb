@@ -1,18 +1,16 @@
 class RecurringDonation < ActiveRecord::Base
 
-  def self.default_code
-    AccountCode.find(Option.default_donation_account_code)
-  end
-
   belongs_to :account_code
-  validates_associated :account_code
-  validates_presence_of :account_code_id
-
   belongs_to :customer
-
   has_many :donations
 
-  validates_numericality_of :amount
-  validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
+  def self.from_order_w_first_donation_and_save(order)
+    @recurring_donation = RecurringDonation.create!(
+      account_code_id: order.donation.account_code_id,
+      customer_id: order.customer_id,
+      amount: order.donation.amount,
+      comments: order.donation.comments)
+    @recurring_donation
+  end
 
 end
