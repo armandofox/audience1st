@@ -3,7 +3,7 @@ require 'rails_helper'
 
 describe StoreController do
   before :each do ; @buyer = create(:customer) ;  end
-  
+
   shared_examples_for 'initial visit' do
     before :each do
       @r = {:controller => 'store', :action => 'index'}
@@ -112,7 +112,7 @@ describe StoreController do
       it 'redirects having created the customer' do
         post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
         created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
-        expect(response).to redirect_to(quick_donate_path(:donation => 5, :customer_id => created_customer.id))
+        expect(response).to redirect_to(quick_donate_path(:donation => 5, :customer_id => created_customer.id, :account_code_string => Donation.default_code.code))
       end
       it 'shows error message' do
         post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
@@ -123,7 +123,7 @@ describe StoreController do
       it 'redirects having created the customer' do
         post :process_donation, {:customer => @new_valid_customer, :credit_card_token => 'dummy'}
         created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
-        expect(response).to redirect_to(quick_donate_path(:donation => 0, :customer_id => created_customer.id))
+        expect(response).to redirect_to(quick_donate_path(:donation => 0, :customer_id => created_customer.id, :account_code_string => Donation.default_code.code))
       end
       it 'shows error message' do
         post :process_donation, :customer => @new_valid_customer, :credit_card_token => 'dummy'
@@ -147,7 +147,7 @@ describe StoreController do
         expect(flash[:alert]).to match(/Incomplete or invalid donor/i)
       end
     end
-    
+
   end
   describe "processing empty cart" do
     before :each do
