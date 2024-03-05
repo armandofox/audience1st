@@ -95,6 +95,7 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_to_donate_after_login(customer)
+      session.delete(:return_donate)
       redirect_to quick_donate_path, :customer_id => customer
   end
 
