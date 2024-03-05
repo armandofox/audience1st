@@ -90,6 +90,14 @@ class ApplicationController < ActionController::Base
 
   # Store the action to return to, or URI of the current request if no action given.
   # We can return to this location by calling #redirect_after_login.
+  def return_to_donate_after_login()
+      session[:return_donate] = true
+  end
+
+  def redirect_to_donate_after_login(customer)
+      redirect_to quick_donate_path, :customer_id => customer
+  end
+
   def return_after_login(route_params)
     session[:return_to] = route_params
   end
@@ -192,12 +200,16 @@ class ApplicationController < ActionController::Base
       handle_remember_cookie! new_cookie_flag
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
-      reset_shopping unless @gOrderInProgress
+      reset_shopping unless @gOrderInProgress 
       session[:new_session] = true
       if action == 'reset_token'
         redirect_to change_password_for_customer_path(@user), :alert => I18n.t('login.change_password_now')
       else
-        redirect_after_login(@user)
+        if session[:return_donate] == true 
+          redirect_to_donate_after_login(@user)
+        else
+          redirect_after_login(@user)
+        end
       end
     end
   end
