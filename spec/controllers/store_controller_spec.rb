@@ -133,7 +133,7 @@ describe StoreController do
     context 'when new customer not valid as purchaser' do
       before(:each) do
         @invalid_customer = attributes_for(:customer).except(:city,:state)
-        @params = {:customer => @invalid_customer, :donation => 5, :credit_card_token => 'dummy'}
+        @params = {:customer => @invalid_customer, :donation => 5, :credit_card_token => 'dummy', :account_code_string => Donation.default_code.code}
       end
       it 'does not create new customer' do
         expect { post :process_donation, @params }.not_to change { Customer.all.size }
