@@ -118,15 +118,13 @@ class StoreController < ApplicationController
       @customer = Customer.new
       session[:guest_checkout] = true
     end
-    # if account_code_string is in url, but doesn't correspond to an existing account in AccountCode model,
-    # then redirect to /donate with default account code inserted into url
-    if params[:account_code_string] && AccountCode.where(code: params[:account_code_string]).empty?
-      return redirect_to(
-        quick_donate_path(
-          :customer_id => @customer.id,
-          :account_code_string => Donation.default_code.code), :alert => "Invalid Fund ID")
-    else # account_code_string is nil (handled in #process_donation) or valid (exists in url and model)
+    # account_code_string is valid
+    if params[:account_code_string] && !AccountCode.where(code: params[:account_code_string]).empty?
       @account_code_string = params[:account_code_string]
+    elsif params[:account_code_string].nil? # account_code_string is nil, so redirect with default code inserted into url
+      return redirect_to(quick_donate_path(:customer_id => @customer.id, :account_code_string => Donation.default_code.code))
+    else # account_code_string is invalid, so redirect with default code inserted into url + display error message
+      return redirect_to(quick_donate_path(:customer_id => @customer.id, :account_code_string => Donation.default_code.code), :alert => "Invalid Fund ID")
     end
   end
 
