@@ -101,20 +101,50 @@ describe StoreController do
     end
   end
 
-  describe 'initiating a recurring donation' do
+  describe '#donate: handle account_code_string in URL query parameter' do
+    context 'when account_code_string is nil (does not exist in URL)' do
+      it 'redirects to /donate/?account_code_string=<default donation account code>' do
+
+      end
+    end
+    context 'when account_code_string is invalid (exists in URL but does not correspond to existing AccountCode)' do
+      it 'redirects to /donate/?account_code_string=<default donation account code> and displays error message' do
+
+      end
+    end
+    context 'when account_code_string is valid (exists in URL and corresponds to existing AccountCode)' do
+      it 'creates Donation record with correct account_code_id if transaction completes successfully' do
+
+      end
+      it 'redirects to /donate with the same valid account_code_string if transactions fails' do
+
+      end
+    end
+  end
+
+  describe '#process_donation: start a recurring donation' do
     before :each do
       @customer = create(:customer)
     end
     let (:monthly_donation_attempt) {
       post :process_donation,
-      {:customer_id => @customer.id, :donation => 5, :donation_frequency => 'monthly', :credit_card_token => 'dummy'}
+      {:customer_id => @customer.id, :donation => 5, :donation_frequency => 'monthly', :credit_card_token => 'dummy', :comments => 'hello I am making a donation'}
     }
-    context 'when donation completes successful' do
+    context 'when donation completes successfully' do
       before :each do
         allow(Stripe::Charge).to receive(:create).and_return(double("Stripe::Charge", id: 1))
       end
       it 'creates a new RecurringDonation record' do
         expect{monthly_donation_attempt}.to change {RecurringDonation.count}.by(1)
+      end
+      it 'sets new RecurringDonation record attributes to correct values' do
+        monthly_donation_attempt
+        recurring_donation_record = RecurringDonation.find(1)
+        donation_record = Donation.find(1)
+        expect(recurring_donation_record.account_code_id).to(equal(donation_record.account_code_id))
+        expect(recurring_donation_record.customer_id).to(equal(donation_record.customer_id))
+        expect(recurring_donation_record.amount).to(equal(donation_record.amount))
+        expect(recurring_donation_record.comments).to(equal(donation_record.comments))
       end
       it 'adds a foreign key to the corresponding first donation instance' do
         monthly_donation_attempt
