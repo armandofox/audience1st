@@ -11,8 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20240225093946) do
-
+ActiveRecord::Schema.define(version: 20240310070441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -97,6 +96,7 @@ ActiveRecord::Schema.define(version: 20240225093946) do
     t.boolean  "finalized"
     t.string   "seat"
     t.datetime "sold_on"
+    t.integer  "recurring_donation_id"
   end
 
   add_index "items", ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
