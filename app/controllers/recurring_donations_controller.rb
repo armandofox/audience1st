@@ -1,2 +1,0 @@
-class RecurringDonationsController < ApplicationController
-end

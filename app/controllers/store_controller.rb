@@ -1,13 +1,13 @@
 class StoreController < ApplicationController
 
   include StoreHelper
-
+  
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
   before_filter :set_customer, :except => %w[process_donation]
   before_filter :is_logged_in, :only => %w[checkout place_order]
   before_filter :order_is_not_empty, :only => %w[shipping_address checkout place_order]
-
+  
   #        ACTION                      INVARIANT BEFORE ACTION
   #        ------                      -----------------------
   # index, subscribe, donate_to_fund    valid @customer
@@ -41,7 +41,7 @@ class StoreController < ApplicationController
     redirect_customer = resolve_customer_in_url(logged_in_user, specified_customer)
     if redirect_customer == specified_customer # ok to proceed as is
       @customer = specified_customer
-    else
+    else      
       redirect_to url_for(params.merge(:customer_id => redirect_customer.id, :only_path => true))
     end
   end
@@ -139,19 +139,12 @@ class StoreController < ApplicationController
     @gOrderInProgress.processed_by = @customer
     @gOrderInProgress.comments = params[:comments].to_s
     @gOrderInProgress.ready_for_purchase? or return redirect_to(redirect_route, :alert => @gOrderInProgress.errors.as_html)
-    # if customer checks 'monthly' donation radio button, then create (and save) a new recurring donation instance
-    if params[:donation_frequency] == 'monthly'
-      @recurring_donation = RecurringDonation.from_order_w_first_donation_and_save(@gOrderInProgress)
-      @gOrderInProgress.donation.recurring_donation_id = @recurring_donation.id
-    end
     if finalize_order(@gOrderInProgress, send_email_confirmation: @gOrderInProgress.purchaser.valid_email_address?)
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
       render :action => 'place_order'
     else
-      # if order fails to finalize, destroy recurring donation row
-      @recurring_donation.destroy if @recurring_donation
       redirect_to redirect_route, :alert => @gOrderInProgress.errors.as_html
     end
   end
@@ -202,10 +195,10 @@ class StoreController < ApplicationController
     recipient = recipient_from_params(customer_params)
     @recipient =  recipient[0]
     if @recipient.email == @customer.email
-      flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice')
+      flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
       render :action => :shipping_address
       return
-    end
+    end 
     if Customer.email_matches_diff_last_name?(try_customer)
       flash.now[:alert] = I18n.t('store.errors.gift_matching_email_diff_last_name')
       render :action => :shipping_address
@@ -226,7 +219,7 @@ class StoreController < ApplicationController
     if Customer.email_last_name_match_diff_address?(try_customer)
       flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
     elsif recipient_from_params(customer_params)[1] == "found_matching_customer"
-      flash[:notice] = I18n.t('store.gift_recipient_on_file')
+      flash[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
     redirect_to_checkout
   end
