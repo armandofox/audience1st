@@ -11,6 +11,7 @@ class Order < ActiveRecord::Base
   attr_accessor :purchase_args
   attr_accessor :comments
   attr_reader :donation
+  attr_reader :recurring_donation
 
   # pending and errored states of a CC order (pending = payment has occurred but order has not
   #  yet been finalized; errored = payment has occurred and order NEVER got finalized, eg due
@@ -100,9 +101,16 @@ class Order < ActiveRecord::Base
 
   def purchase_medium ; Purchasemethod.get(purchasemethod).purchase_medium ; end
 
-  def self.new_from_donation(amount, account_code, donor)
+  def self.new_from_donation(amount, account_code, donor, donation_frequency)
     order = Order.new(:purchaser => donor, :customer => donor)
-    order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))
+    if donation_frequency == 'monthly'
+      recurring_donation = RecurringDonation.from_account_code(account_code)
+      order.add_recurring_donation(recurring_donation)
+      donation = recurring_donation.donations.new(amount: amount, account_code: account_code)
+    else
+      donation = Donation.from_amount_and_account_code_id(amount, account_code.id)
+    end
+    order.add_donation(donation)
     order
   end
 
@@ -236,6 +244,11 @@ class Order < ActiveRecord::Base
     else
       !donation.nil?
     end
+  end
+
+  def add_recurring_donation(rd) ; self.recurring_donation = rd ; end
+  def recurring_donation=(rd)
+    @recurring_donation = rd
   end
 
   def includes_bundle?
@@ -386,6 +399,7 @@ class Order < ActiveRecord::Base
         self.items += vouchers
         self.items += retail_items
         self.items << donation if donation
+        self.items << recurring_donation if recurring_donation
         self.items.each do |i|
           i.assign_attributes(:finalized => true,
                               :sold_on => sold_on_date,
@@ -398,6 +412,7 @@ class Order < ActiveRecord::Base
         customer.add_items(vouchers)
         customer.add_items(retail_items)
         purchaser.add_items([donation]) if donation
+        purchaser.add_items([recurring_donation]) if recurring_donation
         customer.save!
         purchaser.save!
         self.sold_on = sold_on_date
