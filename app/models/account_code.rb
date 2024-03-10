@@ -12,6 +12,7 @@ class AccountCode < ActiveRecord::Base
   default_scope { order('code') }
 
   has_many :donations
+  has_many :recurring_donations
   has_many :vouchertypes
 
   validates_length_of :name, :maximum => 255, :allow_nil => true
@@ -28,7 +29,7 @@ class AccountCode < ActiveRecord::Base
   def self.default_account_code_id
     self.default_account_code.id
   end
-  
+
   def self.default_account_code
     AccountCode.first
   end
@@ -42,12 +43,12 @@ class AccountCode < ActiveRecord::Base
   end
 
   class CannotDelete < RuntimeError ;  end
-  
+
   # convenience accessors
 
   def name_or_code ;    name.blank? ? code : name        ; end
   def name_with_code ;  sprintf("%-6.6s %s", code, name)  ; end
-  
+
   # cannot delete the last account code or the one associated as any
   # of the defaults
 

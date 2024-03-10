@@ -25,7 +25,7 @@ class Customer < ActiveRecord::Base
   def active_vouchers
     vouchers.select { |v| Time.current <= Time.at_end_of_season(v.season) }
   end
-  
+
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
   has_many :orders, -> { where( 'orders.sold_on IS NOT NULL').order(:sold_on => :desc) }
@@ -37,6 +37,7 @@ class Customer < ActiveRecord::Base
   has_many :txns
   has_one  :most_recent_txn, -> { order('txn_date DESC') }, :class_name=>'Txn'
   has_many :donations
+  has_many :recurring_donations
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,retail_items
 
@@ -61,7 +62,7 @@ class Customer < ActiveRecord::Base
       !email.blank?  &&  !email.match( /#{domain}\z/i )
   end
   validate :restricted_email, :if => :self_created?, :on => :create
-  
+
   EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered.'
   validates_uniqueness_of :email,
   :allow_blank => true,
@@ -427,7 +428,7 @@ class Customer < ActiveRecord::Base
     ['First name', 'Last name', 'ID', 'Email', 'Street', 'City', 'State', 'Zip',
      'Day/main phone', 'Eve/alt phone', "Don't mail", "Don't email"].freeze
   end
-  
+
   def self.to_csv(custs,opts={})
     CSV::Writer.generate(output='') do |csv|
       unless opts[:suppress_header]
