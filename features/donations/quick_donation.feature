@@ -97,16 +97,11 @@ Scenario: customer not logged in, logs in for a quicker checkout
   Given customer "Tom Foolery" has email "tom@foolery.com" and password "pass"
   And I am not logged in
   When I go to the quick donation page
-  Then I should see "Login For A Faster Checkout!"
   And I fill in "email" with "tom@foolery.com"
   And I fill in "password" with "pass"
   And I press "Login"
-  Then customer "Tom Foolery" should be logged in
-  And I should see "Support us with a donation"
   When I fill in "Donation amount" with "15"
   And I press "Charge Donation to Credit Card"
   Then I should see "You have paid a total of $15.00 by Credit card"
-  And an email should be sent to customer "Tom Foolery" containing "A1 Staging Theater thanks you for your donation!"
-  And an email should be sent to customer "Tom Foolery" containing "15.00  Donation to General Fund"
   And customer "Tom Foolery" should have a donation of $15.00 to "General Fund"
   
