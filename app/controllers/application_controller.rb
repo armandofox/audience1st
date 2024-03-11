@@ -76,7 +76,7 @@ class ApplicationController < ActionController::Base
     @gOrderInProgress.destroy if @gOrderInProgress
     @gOrderInProgress = nil
     set_order_in_progress(nil)
-    session.delete(:return_to)
+    session.delete(:return_to) unless (session[:return_to] != nil && session[:return_to]['action'] == 'donate')  #delete session unless customer was logging in from donate page
     true
   end
 
@@ -90,15 +90,6 @@ class ApplicationController < ActionController::Base
 
   # Store the action to return to, or URI of the current request if no action given.
   # We can return to this location by calling #redirect_after_login.
-  def return_to_donate_after_login()
-      session[:return_donate] = true
-  end
-
-  def redirect_to_donate_after_login(customer)
-      session.delete(:return_donate)
-      redirect_to quick_donate_path, :customer_id => customer
-  end
-
   def return_after_login(route_params)
     session[:return_to] = route_params
   end
@@ -206,11 +197,7 @@ class ApplicationController < ActionController::Base
       if action == 'reset_token'
         redirect_to change_password_for_customer_path(@user), :alert => I18n.t('login.change_password_now')
       else
-        if session[:return_donate] == true 
-          redirect_to_donate_after_login(@user)
-        else
-          redirect_after_login(@user)
-        end
+        redirect_after_login(@user)
       end
     end
   end

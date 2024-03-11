@@ -113,11 +113,11 @@ class StoreController < ApplicationController
   # Serve quick_donate page; POST calls #process_donation
   def donate
     reset_shopping                 # even if order in progress, going to donation page cancels it
-    return_to_donate_after_login
     if @customer == Customer.anonymous_customer
       # handle donation as a 'guest checkout', even though may end up being tied to real customer
       @customer = Customer.new
-      session[:guest_checkout] = true
+      session[:guest_checkout] = true 
+      return_after_login params.except(:customer_id)
     end
   end
 
