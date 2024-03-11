@@ -101,16 +101,9 @@ class Order < ActiveRecord::Base
 
   def purchase_medium ; Purchasemethod.get(purchasemethod).purchase_medium ; end
 
-  def self.new_from_donation(amount, account_code, donor, donation_frequency)
+  def self.new_from_donation(amount, account_code, donor)
     order = Order.new(:purchaser => donor, :customer => donor)
-    if donation_frequency == 'monthly'
-      recurring_donation = RecurringDonation.from_account_code(account_code)
-      order.add_recurring_donation(recurring_donation)
-      donation = recurring_donation.donations.new(amount: amount, account_code: account_code)
-    else
-      donation = Donation.from_amount_and_account_code_id(amount, account_code.id)
-    end
-    order.add_donation(donation)
+    order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))
     order
   end
 
@@ -246,9 +239,8 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def add_recurring_donation(rd) ; self.recurring_donation = rd ; end
-  def recurring_donation=(rd)
-    @recurring_donation = rd
+  def add_recurring_donation()
+    @recurring_donation = @donation.build_recurring_donation(amount: 0, account_code_id: @donation.account_code_id)
   end
 
   def includes_bundle?
