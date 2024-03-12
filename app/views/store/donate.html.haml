@@ -26,8 +26,8 @@
 
 #store
   #quick_donation
-    %h1.text-center= sanitize(Option.quick_donation_banner)
-    %p.text-center.lead-= sanitize(Option.quick_donation_explanation)
+    %h1.text-center= @account_code_name
+    %p.text-center.lead-= @account_code_description
 
     = form_tag(process_donation_path, {:id => '_stripe_payment_form', :onsubmit => 'return confirmAndSubmit()' }) do
       = hidden_field_tag 'referer', 'donate'
