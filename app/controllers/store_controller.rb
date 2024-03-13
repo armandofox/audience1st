@@ -156,19 +156,12 @@ class StoreController < ApplicationController
     @gOrderInProgress.processed_by = @customer
     @gOrderInProgress.comments = params[:comments].to_s
     @gOrderInProgress.ready_for_purchase? or return redirect_to(redirect_route, :alert => @gOrderInProgress.errors.as_html)
-    # if customer checks 'monthly' donation radio button, then create (and save) a new recurring donation instance
-    if params[:donation_frequency] == 'monthly'
-      @recurring_donation = RecurringDonation.from_order_w_first_donation_and_save(@gOrderInProgress)
-      @gOrderInProgress.donation.recurring_donation_id = @recurring_donation.id
-    end
     if finalize_order(@gOrderInProgress, send_email_confirmation: @gOrderInProgress.purchaser.valid_email_address?)
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
       render :action => 'place_order'
     else
-      # if order fails to finalize, destroy recurring donation row
-      @recurring_donation.destroy if @recurring_donation
       redirect_to redirect_route, :alert => @gOrderInProgress.errors.as_html
     end
   end

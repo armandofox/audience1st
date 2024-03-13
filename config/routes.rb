@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     resources :account_codes, :except => :show
     resources :ticket_sales_imports, :except => [:new]
     resources :labels, :only => [:index, :create, :update, :destroy]
-    resources :seatmaps, :except => [:new]
+    resources :seatmaps, :except => [:new] 
     resources :seating_zones, :only => [:index, :create, :destroy]
 
     resources :customers, :except => :destroy do
@@ -75,7 +75,7 @@ Rails.application.routes.draw do
     resources :shows, :except => [:show] do
       resources :showdates, :except => [:index]
     end
-
+    
     resources :valid_vouchers, :except => [:index]
     resources :vouchertypes do
       member do
@@ -129,7 +129,7 @@ Rails.application.routes.draw do
 
     # quick-donation neither requires nor sets customer-id:
 
-    get 'donate(/:customer_id)' => 'store#donate', :as => 'quick_donate'
+    get '/donate/(:customer_id)' => 'store#donate', :as => 'quick_donate'
     post '/process_donation/(:customer_id)' => 'store#process_donation', :as => 'process_donation'
 
     # config options
