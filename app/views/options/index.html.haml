@@ -56,13 +56,13 @@
         .col-md-4.text-right
           %label.col-form-label Allow Monthly Recurring Donations
           = option_description_for(:allow_recurring_donations)
-        .col-md-8
+        .col-md-8{id:"allow_recurring_donations_select"}
           = f.select :allow_recurring_donations, [['Yes', true], ['No', false]], {}, {:class => 'form-control', onchange: 'showDefaultDonation(this)'}
       .form-row{id:"default_donation_type_form_row", style:"visibility: #{@o.allow_recurring_donations ? 'visible' : 'hidden'}"}
         .col-md-4.text-right
           %label.col-form-label Default Donation Type
           = option_description_for(:default_donation_type)
-        .col-md-8
+        .col-md-8{id:"donation_type_radio"}
           .radio-group.form-inline
             = f.radio_button :default_donation_type, 'one', :class => 'form-control', :id => 'one'
             = f.label :default_donation_type, 'One Time', :class => 'form-control', :for => 'one'
