@@ -77,7 +77,7 @@ module NavigationHelpers
         date_str =~ /that performance/
       edit_show_showdate_path(@showdate.show,@showdate)
 
-    when /the donation landing page coded for fund (.*)/i then donate_to_fund_path(AccountCode.find_by_code!($1))
+    when /the donation landing page coded for fund (.*)/i then quick_donate_path(AccountCode.find_by_code!($1))
     when /the donation landing page coded for a nonexistent fund/i then donate_to_fund_path('999999')
     when /the quick donation landing page for account code (.*)/i then '/donate/1?account_code_string=' + $1.to_s
 
