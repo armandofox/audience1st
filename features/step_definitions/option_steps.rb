@@ -34,3 +34,46 @@
  Then /^the setting "(.*)" should be "(.*)"$/ do |opt,val|
    expect(Option.send(opt.tr(' ','').underscore)).to eq(val)
  end
+
+ #####
+ # Step defintions for testing the recurring donation feature admin view
+ #####
+ When /I set allow recurring donations to "(.*)"/ do |value|
+  drop_down = page.find(:css, "#allow_recurring_donations_select")
+  drop_down.select(value)
+ end
+ Then /the radio button to select the default donation type should be "(.*)"/ do |value|
+  if value == 'visible'
+    value = true
+  elsif value == 'hidden'
+    value = false
+  end
+  expect(page).to have_selector('#default_donation_type_form_row', visible: value)
+ end
+ Then /the radio button to select the default donation type should be set to "(.*)"/ do |value|
+  # How to check what option the radio button currently has selected?
+  radio_button = page.find(:css, '#donation_type_radio')
+ end
+
+######
+# Step defintions for testing the recurring donation feature user view
+######
+
+Given /admin "(.*)" allowed recurring donations/ do |value|
+  if value == 'has'
+    value = true
+  elsif value == 'has not'
+    value = false
+  end
+  Option.first.update_attributes!(:allow_recurring_donations => value)
+ end
+ When /I select monthly in the donation frequency radio button/ do 
+  radio_button = page.find(:css, "#donation_frequency_radio")
+  radio_button.choose("Monthly")
+ end
+ Then /there should be a Recurring Donation model instance belonging to "(.*) (.*)"$/ do |first,last|
+  r = RecurringDonation.first
+  c = Customer.find(r.customer_id)
+  expect(c.first_name).to eq(first)
+  expect(c.last_name).to eq(last)
+ end
