@@ -26,6 +26,8 @@ class StoreController < ApplicationController
 
   private
 
+  DONATION_FREQUENCIES = %w[one-time monthly]
+
   # if order is nil or empty after checkout phase, abort. This should never happen normally,
   # but can happen if customer does weird things trying to have multiple sessions open.
   def order_is_not_empty
@@ -113,6 +115,7 @@ class StoreController < ApplicationController
   # Serve quick_donate page; POST calls #process_donation
   def donate
     reset_shopping                 # even if order in progress, going to donation page cancels it
+    @donation_frequency_options = DONATION_FREQUENCIES
     if @customer == Customer.anonymous_customer
       # handle donation as a 'guest checkout', even though may end up being tied to real customer
       @customer = Customer.new
@@ -134,7 +137,10 @@ class StoreController < ApplicationController
     @amount > 0 or return redirect_to(redirect_route, :alert => 'Donation amount must be provided')
     # Given valid donation, customer, and charge token, create & place credit card order.
     @gOrderInProgress = Order.new_from_donation(@amount, Donation.default_code, @customer)
-    @gOrderInProgress.add_recurring_donation() if params[:donation_frequency] == 'monthly'
+    case params[:donation_frequency]
+    when DONATION_FREQUENCIES[1]
+      @gOrderInProgress.add_recurring_donation()
+    end
     @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
     @gOrderInProgress.purchase_args = {:credit_card_token => params[:credit_card_token]}
     @gOrderInProgress.processed_by = @customer
