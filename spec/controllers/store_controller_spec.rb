@@ -3,7 +3,7 @@ require 'rails_helper'
 
 describe StoreController do
   before :each do ; @buyer = create(:customer) ;  end
-  
+
   shared_examples_for 'initial visit' do
     before :each do
       @r = {:controller => 'store', :action => 'index'}
@@ -101,6 +101,45 @@ describe StoreController do
     end
   end
 
+  describe 'making a recurring donation' do
+    before :each do
+      @customer = create(:customer)
+    end
+    let (:attempt_recurring_donation) {
+      post :process_donation,
+      {:customer_id => @customer.id, :donation => 5, :donation_frequency => 'monthly', :credit_card_token => 'dummy'}
+    }
+    context 'when transaction completes successfully' do
+      before :each do
+        allow(Stripe::Charge).to receive(:create).and_return(double("Stripe::Charge", id: 1))
+      end
+      it 'creates a new RecurringDonation record' do
+        expect{attempt_recurring_donation}.to change {RecurringDonation.count}.by(1)
+      end
+      it 'sets new RecurringDonation record attributes to correct values' do
+        attempt_recurring_donation
+        recurring_donation = RecurringDonation.find(1)
+        donation = recurring_donation.donations[0]
+        expect(recurring_donation.account_code_id).to(equal(donation.account_code_id))
+        expect(recurring_donation.customer_id).to(equal(donation.customer_id))
+      end
+      it 'adds a recurring_donation_id foreign key to the first donation instance' do
+        attempt_recurring_donation
+        recurring_donation = RecurringDonation.find(1)
+        donation = recurring_donation.donations[0]
+        expect(donation.recurring_donation_id).to equal(recurring_donation.id)
+      end
+    end
+    context 'when transaction completes unsuccessfully' do
+      before :each do
+        allow(Stripe::Charge).to receive(:create).and_raise(Stripe::StripeError)
+      end
+      it 'does not create a new RecurringDonation record' do
+        expect{attempt_recurring_donation}.to change {RecurringDonation.count}.by(0)
+      end
+    end
+  end
+
   describe 'quick donation with nonexistent customer' do
     before :each do
       @new_valid_customer = attributes_for(:customer).except(:password,:password_confirmation)
@@ -147,7 +186,7 @@ describe StoreController do
         expect(flash[:alert]).to match(/Incomplete or invalid donor/i)
       end
     end
-    
+
   end
   describe "processing empty cart" do
     before :each do

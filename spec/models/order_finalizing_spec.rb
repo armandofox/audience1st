@@ -57,6 +57,16 @@ describe 'finalizing' do
         @order.finalize!
         expect(@order.purchaser.donations).to include(@donation)
       end
+      it 'should add recurring donation to customer account if purchaser==recipient' do
+        @order.add_recurring_donation()
+        @order.finalize!
+        expect(@order.purchaser.recurring_donations).to include(@order.recurring_donation)
+      end
+      it 'should associate donation with recurring donation' do
+        @order.add_recurring_donation()
+        @order.finalize!
+        expect(@donation.recurring_donation_id).to equal(@order.recurring_donation.id)
+      end
       context 'when purchaser!=recipient' do
         before :each do
           @order.purchaser = create(:customer)

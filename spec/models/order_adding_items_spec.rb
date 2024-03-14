@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Order, 'adding' do
-  before :each do 
+  before :each do
     @order = Order.create!(:processed_by => create(:customer)) # generic customer
     @vv = create(:valid_voucher)
   end
@@ -45,6 +45,15 @@ describe Order, 'adding' do
       reloaded = Order.find(@order.id)
       expect(reloaded.donation.amount).to eq(@donation.amount)
       expect(reloaded.donation.account_code_id).to eq(@donation.account_code_id)
+    end
+  end
+  describe 'recurring donations' do
+    before :each do
+      @order.add_donation(build(:donation, :amount => 17))
+    end
+    it 'should add recurring donation' do
+      @order.add_recurring_donation()
+      expect(@order.recurring_donation).to be_a_kind_of(RecurringDonation)
     end
   end
   describe 'and getting total price' do
