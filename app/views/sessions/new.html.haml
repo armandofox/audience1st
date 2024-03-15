@@ -2,47 +2,9 @@
 
 - unless @gOrderInProgress
   %h1.text-center.py-3= "#{Option.venue} Online Box Office"
-  
-= form_tag session_path, :class => 'form' do
   .row
-    .col-md-8
-      .card
-        .card-header.text-center
-          %h3 Subscribers and Returning Customers
-      .card-body
-        .row
-          .col-md-2.text-right
-            %label.col-form-label{:for=>:customer_email} Email
-          .col-md-6
-            = text_field_tag 'email', @email, :class => 'form-control'
-          .col-md-4
-        .row
-          .col-md-2.text-right
-            %label.col-form-label{:for=>:customer_password} Password
-          .col-md-6
-            = password_field_tag 'password', nil, :autocomplete => 'off', :class => 'form-control'
-          .col-md-4
-            = submit_tag 'Login', :class => 'btn btn-success', :disable_with => 'Logging in...'
-        .row
-          .col-md-2.text-right
-            = check_box_tag 'remember_me', '1', @remember_me
-          .col-md-10
-            Remember me for next time (Don't use on public/shared computers)
-        .row
-          Need to reset your password?&nbsp;
-          = link_to 'Reset password by email', forgot_password_customers_path
-          &nbsp;or&nbsp;
-          = link_to 'Login with secret question', new_from_secret_session_path
+    #content.a1-plain.col-md-8
+      = render :partial => 'layouts/login_form', locals: {head: @head}
 
-    .col-md-4
-      .card
-        .card-header.text-center
-          %h3 New Customers
-        .card-body.text-center
-          - if @gOrderInProgress  
-            - if @display_guest_checkout
-              .row.p-2= link_to "Checkout as Guest",  guest_checkout_customers_path, :class => 'btn btn-primary btn-block'
-            .row.p-2= link_to "Create Account", new_customer_path, :class => 'btn btn-primary btn-block'
-          - else
-            .row.p-2= link_to_if_option_text :homepage_ticket_sales_text, store_path, {:class => 'btn btn-primary btn-block'}
-            .row.p-2= link_to_if_option_text :homepage_subscription_sales_text, store_subscribe_path, {:class => 'btn btn-primary btn-block'}
+    #content.a2-plain.col-md-4
+      = render :partial => 'layouts/new_customers'
