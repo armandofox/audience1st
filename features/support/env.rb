@@ -26,18 +26,18 @@ require 'email_spec/cucumber'
 Capybara.default_selector = :css
 Capybara.server = :webrick
 Capybara.register_driver :selenium do |app|
-  Webdrivers::Chromedriver.required_version = '119.0.6045.105'
+  Webdrivers::Chromedriver.required_version = '121.0.6167.85'
   webdriver_args = %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
   options = Selenium::WebDriver::Chrome::Options.new(
     args: webdriver_args
   )
   # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
   # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
-  options.add_option(:unhandled_prompt_behavior, :accept)
+  options.unhandled_prompt_behavior = :accept
   Capybara::Selenium::Driver.new(
     app,
     browser: :chrome,
-    capabilities: options,
+    options: options,
     clear_session_storage: true,
     clear_local_storage: true)
 end

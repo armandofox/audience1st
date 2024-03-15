@@ -1,6 +1,6 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/maintainability)](https://codeclimate.com/github/armandofox/audience1st/maintainability)
-![Build Status](https://github.com/armandofox/audience1st/actions/workflows/ci.yml/badge.svg)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d9b6e16a95d868605440/maintainability)](https://codeclimate.com/github/cs169/audience1st/maintainability)
+![Build Status](https://github.com/cs169/audience1st/actions/workflows/ci.yml/badge.svg)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d9b6e16a95d868605440/test_coverage)](https://codeclimate.com/github/cs169/audience1st/test_coverage)
 [![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://pivotaltracker.com/n/projects/44802)
 
 
