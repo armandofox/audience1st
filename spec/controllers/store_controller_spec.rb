@@ -81,7 +81,7 @@ describe StoreController do
       it_should_behave_like 'initial visit'
     end
     describe 'to :donate_to_fund' do
-      before :each do ; @action = :donate_to_fund ; @extras = {:id => mock_model(AccountCode)}; end
+      before :each do ; @action = :donate_to_fund ; @extras = { id: '2' }; end
       it_should_behave_like 'initial visit'
     end
   end
@@ -100,6 +100,21 @@ describe StoreController do
       expect(response).to render_template 'components/session_expired'
     end
   end
+
+  describe 'Store donate_to_fund_redirect' do
+  before :each do
+    @new_account_code = create(:account_code, id: 2)
+    # url = 'https://my_tenant.audience1st.com/donate_to_fund/2'
+  end
+    it 'redirects to quick_donate_url with fund_code' do
+      fund_id = @new_account_code.code
+      puts "Params: #{params.inspect}"
+      get :donate_to_fund_redirect, :id => fund_id
+      
+      expect(response).to redirect_to(quick_donate_url(account_code_string: @new_account_code.code))
+    end
+  end
+
 
   describe '#donate: handle account_code_string in URL query parameter' do
     context 'when account_code_string is nil (does not exist in URL)' do
