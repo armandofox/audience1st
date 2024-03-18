@@ -101,21 +101,6 @@ describe StoreController do
     end
   end
 
-  describe 'Store donate_to_fund_redirect' do
-  before :each do
-    @new_account_code = create(:account_code, id: 2)
-    # url = 'https://my_tenant.audience1st.com/donate_to_fund/2'
-  end
-    it 'redirects to quick_donate_url with fund_code' do
-      fund_id = @new_account_code.code
-      puts "Params: #{params.inspect}"
-      get :donate_to_fund_redirect, :id => fund_id
-      
-      expect(response).to redirect_to(quick_donate_url(account_code_string: @new_account_code.code))
-    end
-  end
-
-
   describe '#donate: handle account_code_string in URL query parameter' do
     context 'when account_code_string is nil (does not exist in URL)' do
       it 'redirects to /donate/?account_code_string=<default donation account code>' do
@@ -173,6 +158,18 @@ describe StoreController do
       it 'does not create new RecurringDonation record if order fails to finalize' do
         expect{monthly_donation_attempt}.to change {RecurringDonation.count}.by(0)
       end
+    end
+  end
+
+  describe 'GET  #donate_to_fund_redirect' do
+    before :each do
+      @new_account_code = create(:account_code, id: 2)
+      @anon = Customer.anonymous_customer
+    end
+    it 'redirects to donate route with fund code' do
+      fund_code = @new_account_code.code
+      get :donate_to_fund_redirect, {:id => fund_code, :customer_id => @anon}
+      expect(response).to redirect_to(quick_donate_path(account_code_string: fund_code))
     end
   end
 
