@@ -178,7 +178,7 @@ GEM
     multipart-post (2.0.0)
     newrelic_rpm (5.0.0.342)
     nio4r (2.5.8)
-    nokogiri (1.15.5)
+    nokogiri (1.15.6)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     parallel (1.12.1)
@@ -383,7 +383,7 @@ DEPENDENCIES
   launchy
   listen (~> 2.2)
   newrelic_rpm
-  nokogiri (~> 1.12)
+  nokogiri (~> 1.15)
   pg (= 0.20)
   platform-api
   pry
