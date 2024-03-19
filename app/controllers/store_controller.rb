@@ -106,6 +106,7 @@ class StoreController < ApplicationController
   def donate_to_fund_redirect
     # redirect donate_to_fund route to quickdonate for potential printed material with donate_to_fund url
     fund_code = params[:id]
+    fund_code = Donation.default_code.code if fund_code.blank?
     redirect_to quick_donate_url(account_code_string: fund_code)
   end
 
