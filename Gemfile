@@ -22,7 +22,7 @@ gem 'jquery-rails', '= 4.0.5'
 gem 'jquery-ui-rails', '= 5.0.5'
 gem 'json', '>= 2.0'            # see https://github.com/flori/json/issues/399 - avoid deprecation warning with json 1.8.6
 gem 'newrelic_rpm'
-gem 'nokogiri', '~> 1.12'
+gem 'nokogiri', '~> 1.15'
 gem 'platform-api'                # for restart task
 gem 'responders', '~> 2.0'
 gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
