@@ -79,7 +79,7 @@ module NavigationHelpers
 
     when /the donation landing page coded for fund (.*)/i then donate_to_fund_path(AccountCode.find_by_code!($1))
     when /the donation landing page coded for a nonexistent fund/i then donate_to_fund_path('999999')
-    when /the quick donation landing page for account code (.*)/i then '/donate/1?account_code_string=' + $1.to_s
+    when /the quick donation landing page for account code (.*)/i then '/donate/' + $1.to_s + '?account_code_string=' + $1.to_s
 
     when /the edit page for the "(.*)" vouchertype/ then edit_vouchertype_path(Vouchertype.find_by_name!($1))
 

@@ -9,11 +9,11 @@ Background:
   Given the following account codes exist:
   | name             | code | description                                                     | donation_prompt          |
   | Soda Fund        | 0504 | The Soda Funds aims to put a Soda Fountain in Soda Hall         |                          |
+  And I am logged in as customer "Tom Foolery"
 
 Scenario: donor logged in, page gets prepopulated with donor info
 
   Given a donation of $10 on 2009-12-01 from "Tom Foolery" to the "General Fund"
-  And  I am logged in as customer "Tom Foolery"
   When I go to the quick donation page
 
   When I fill in "Donation amount" with "15"
@@ -98,26 +98,22 @@ Scenario: admin logged in, records donation on behalf of patron
   And an email should be sent to customer "Joe Mallon" containing "$  9.00  Donation to General Fund"
   
 Scenario: landing on quick donation page with valid account code
-  Given I am logged in as customer "Tom Foolery"
   When I visit the quick donation landing page for account code 0504
   Then I should not see "Donate to"
   And I should see "Soda Fund"
   And I should see "The Soda Funds aims to put a Soda Fountain in Soda Hall Address"
 
 Scenario: landing on quick donation page with invalid account code
-  Given I am logged in as customer "Tom Foolery"
   When I visit the quick donation landing page for account code 0505
   Then I should see "Invalid Fund ID"
 
 Scenario: landing on quick donation page with no account code
-  Given I am logged in as customer "Tom Foolery"
   When I go to the quick donation page
   Then I should not see "Donate to"
-  Then I should see "General Fund"
-  Then I should see "General Fund Address"
+  And I should see "General Fund"
+  And I should see "General Fund Address"
   
 Scenario: landing on quick donation page with valid account code and making quick donation
-  Given I am logged in as customer "Tom Foolery"
   When I go to the quick donation page
   When I fill in "Donation amount" with "15"
   And I press "Charge Donation to Credit Card"
