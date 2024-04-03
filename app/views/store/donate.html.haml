@@ -43,7 +43,7 @@
             .input-group-append
               %span.input-group-text.form-control-sm .00
         - if Option.allow_recurring_donations
-          .form-group.form-row
+          .form-group.form-row{id:"donation_frequency_radio"}
             %label.col-form-label.text-right.col-sm-6{:for => :donation} Donation frequency
             .radio-group.col-sm-6.col-md-2.form-inline
               - @donation_frequency_options.each do |frequency|

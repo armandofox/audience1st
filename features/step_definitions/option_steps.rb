@@ -49,7 +49,7 @@
   end
   When /I select monthly in the donation frequency radio button/ do
    radio_button = page.find(:css, "#donation_frequency_radio")
-   radio_button.choose("Monthly")
+   radio_button.choose("monthly")
   end
   Then /there should be a Recurring Donation model instance belonging to "(.*) (.*)"$/ do |first,last|
    r = RecurringDonation.first

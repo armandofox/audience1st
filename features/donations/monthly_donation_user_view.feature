@@ -2,7 +2,6 @@ Feature: make a recurring donation through quick donation
 
 Background:
   Given I am logged in as customer "Tom Foolery"
-  Given admin has allowed recurring donations
   Given admin "has" allowed recurring donations
   And I go to the quick donation page
 
