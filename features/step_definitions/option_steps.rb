@@ -2,7 +2,7 @@
    d = Date.parse(date)
    Option.first.update_attributes!(:season_start_month => d.month, :season_start_day => d.day)
  end
- 
+
  When /^I fill in all valid options$/ do
    opts = {
      'venue' => "Test Theater",
@@ -18,7 +18,7 @@
      fill_in "option[#{opt}]", :with => val
    end
  end
- 
+
  Given /^the (boolean )?setting "(.*)" is "(.*)"$/ do |bool,opt,val|
    val = !!(val =~ /true/i) if bool
    Option.first.update_attributes!(opt.downcase.gsub(/\s+/, '_') => val)
@@ -34,3 +34,26 @@
  Then /^the setting "(.*)" should be "(.*)"$/ do |opt,val|
    expect(Option.send(opt.tr(' ','').underscore)).to eq(val)
  end
+
+ ######
+ # Step defintions for testing the recurring donation feature user view
+ ######
+
+ Given /admin "(.*)" allowed recurring donations/ do |value|
+   if value == 'has'
+     value = true
+   elsif value == 'has not'
+     value = false
+   end
+   Option.first.update_attributes!(:allow_recurring_donations => value)
+  end
+  When /I select monthly in the donation frequency radio button/ do
+   radio_button = page.find(:css, "#donation_frequency_radio")
+   radio_button.choose("Monthly")
+  end
+  Then /there should be a Recurring Donation model instance belonging to "(.*) (.*)"$/ do |first,last|
+   r = RecurringDonation.first
+   c = Customer.find(r.customer_id)
+   expect(c.first_name).to eq(first)
+   expect(c.last_name).to eq(last)
+  end
