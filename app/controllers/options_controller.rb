@@ -1,7 +1,7 @@
 class OptionsController < ApplicationController
 
   before_filter :is_admin_filter
-
+  
   def index
     @o = Option.first
   end
@@ -15,8 +15,6 @@ class OptionsController < ApplicationController
       option_params['advance_sales_cutoff'].to_i * params['before_or_after'].to_i
     # if there is a file upload for HTML template, get it
     option_params['html_email_template'] = params['html_email_template'].read unless params['html_email_template'].blank?
-    # if recurring donations not allowed, set default_donation_type to one time
-    option_params['default_donation_type'] = 'one' unless option_params['allow_recurring_donations'] == 'true'
     if (@o.update_attributes(option_params))
       redirect_to options_path, :notice => "Update successful."
     else
