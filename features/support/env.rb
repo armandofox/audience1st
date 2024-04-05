@@ -26,7 +26,7 @@ require 'email_spec/cucumber'
 Capybara.default_selector = :css
 Capybara.server = :webrick
 Capybara.register_driver :selenium do |app|
-  Webdrivers::Chromedriver.required_version = '121.0.6167.85'
+  Webdrivers::Chromedriver.required_version = '123.0.6312.58'
   webdriver_args = %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
   options = Selenium::WebDriver::Chrome::Options.new(
     args: webdriver_args
@@ -141,4 +141,3 @@ end
 World(FactoryBot::Syntax::Methods)
 World(ActionView::Helpers::NumberHelper)
 World(ActionView::Helpers::TextHelper)
-
