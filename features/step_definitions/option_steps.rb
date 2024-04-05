@@ -44,11 +44,10 @@
  end
  Then /the radio button to select the default donation type should be "(.*)"/ do |value|
   if value == 'visible'
-    value = true
+    expect(page).to have_selector('#default_donation_type_form_row', visible: value)
   elsif value == 'hidden'
-    value = false
+    expect(page).not_to have_selector('#default_donation_type_form_row')
   end
-  expect(page).to have_selector('#default_donation_type_form_row', visible: value)
  end
  Then /the radio button to select the default donation type should be set to "(.*)"/ do |value|
   # How to check what option the radio button currently has selected?
