@@ -491,19 +491,19 @@ en:
 
     default_donation_type: >
 
-      Default donation type to be checked when a customer is on the 'make donation' page.
+      Whether the default option for donations is one-time or recurring when a customer is on the 'make donation' page.
 
     recurring_donation_contact_emails: >
 
-      Comma-separated list of theatre contact email addresses to contact
+      Comma-separated list of theater contact email addresses to contact
       regarding recurring donation activity.
 
-    notify_theatre_about_new_recurring_donation: >
+    notify_theater_about_new_recurring_donation: >
       
-      Whether to notify theatre contact email addresses when a customer initiates
+      Whether to notify theater contact email addresses when a customer initiates
       a new recurring donation.
 
-    notify_threate_about_failed_recurring_donation_charge: >
+    notify_theater_about_failed_recurring_donation_charge: >
 
-      Whether to notify theatre contact email addresses when a charge from an
+      Whether to notify theater contact email addresses when a charge from an
       existing recurring donation fails.

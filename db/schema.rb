@@ -201,8 +201,8 @@ ActiveRecord::Schema.define(version: 20240225093946) do
     t.boolean  "allow_recurring_donations",                                          default: false
     t.string   "default_donation_type",                                              default: "one"
     t.text     "recurring_donation_contact_emails"
-    t.boolean  "notify_theatre_about_new_recurring_donation",                        default: true
-    t.boolean  "notify_threate_about_failed_recurring_donation_charge",              default: true
+    t.boolean  "notify_theater_about_new_recurring_donation",                        default: true
+    t.boolean  "notify_theater_about_failed_recurring_donation_charge",              default: true
   end
 
   create_table "orders", force: :cascade do |t|
