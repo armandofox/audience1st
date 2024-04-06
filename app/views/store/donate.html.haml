@@ -30,9 +30,9 @@
     %p.text-center.lead-= @account_code_description
 
     - if session[:guest_checkout] == true
-      #content.a1-plain.col-md-12
+      .col-md-12
         = render :partial => 'layouts/login_form', locals: {head: @head}
-          
+
     = form_tag(process_donation_path, {:id => '_stripe_payment_form', :onsubmit => 'return confirmAndSubmit()' }) do
       = hidden_field_tag 'referer', 'donate'
       = hidden_field_tag 'customer_id', @customer.id
