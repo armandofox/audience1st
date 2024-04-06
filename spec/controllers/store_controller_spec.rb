@@ -3,7 +3,7 @@ require 'rails_helper'
 
 describe StoreController do
   before :each do ; @buyer = create(:customer) ;  end
-  
+
   shared_examples_for 'initial visit' do
     before :each do
       @r = {:controller => 'store', :action => 'index'}
@@ -81,7 +81,7 @@ describe StoreController do
       it_should_behave_like 'initial visit'
     end
     describe 'to :donate_to_fund' do
-      before :each do ; @action = :donate_to_fund ; @extras = {:id => mock_model(AccountCode)}; end
+      before :each do ; @action = :donate_to_fund ; @extras = { id: '2' }; end
       it_should_behave_like 'initial visit'
     end
   end
@@ -101,6 +101,27 @@ describe StoreController do
     end
   end
 
+  describe 'GET  #donate_to_fund_redirect' do
+  before :each do
+    @new_account_code = create(:account_code, id: 2)
+    @anon = Customer.anonymous_customer
+  end
+  it 'redirects to donate route with fund code' do
+    fund_code = @new_account_code.code
+    get :donate_to_fund_redirect, {:id => fund_code, :customer_id => @anon}
+    expect(response).to redirect_to(quick_donate_path(account_code_string: fund_code))
+  end
+  it 'sets the fund code to default code when it is missing' do
+    get :donate_to_fund_redirect, { :customer_id => @anon }
+    expect(response).to redirect_to(quick_donate_path(account_code_string: Donation.default_code.code))
+  end
+  it 'sets the fund code to default code when it is invalid' do
+    invalid_fund_code = ' '
+    get :donate_to_fund_redirect, { id: invalid_fund_code, :customer_id => @anon }
+    expect(response).to redirect_to(quick_donate_path(account_code_string: Donation.default_code.code))
+  end
+end
+
   describe 'quick donation with nonexistent customer' do
     before :each do
       @new_valid_customer = attributes_for(:customer).except(:password,:password_confirmation)
@@ -112,7 +133,7 @@ describe StoreController do
       it 'redirects having created the customer' do
         post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
         created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
-        expect(response).to redirect_to(quick_donate_path(:donation => 5, :customer_id => created_customer.id))
+        expect(response).to redirect_to(quick_donate_path(:donation => 5, :customer_id => created_customer.id, :account_code_string => Donation.default_code.code))
       end
       it 'shows error message' do
         post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
@@ -123,7 +144,7 @@ describe StoreController do
       it 'redirects having created the customer' do
         post :process_donation, {:customer => @new_valid_customer, :credit_card_token => 'dummy'}
         created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
-        expect(response).to redirect_to(quick_donate_path(:donation => 0, :customer_id => created_customer.id))
+        expect(response).to redirect_to(quick_donate_path(:donation => 0, :customer_id => created_customer.id, :account_code_string => Donation.default_code.code))
       end
       it 'shows error message' do
         post :process_donation, :customer => @new_valid_customer, :credit_card_token => 'dummy'
@@ -133,7 +154,7 @@ describe StoreController do
     context 'when new customer not valid as purchaser' do
       before(:each) do
         @invalid_customer = attributes_for(:customer).except(:city,:state)
-        @params = {:customer => @invalid_customer, :donation => 5, :credit_card_token => 'dummy'}
+        @params = {:customer => @invalid_customer, :donation => 5, :credit_card_token => 'dummy', :account_code_string => Donation.default_code.code}
       end
       it 'does not create new customer' do
         expect { post :process_donation, @params }.not_to change { Customer.all.size }
@@ -147,7 +168,7 @@ describe StoreController do
         expect(flash[:alert]).to match(/Incomplete or invalid donor/i)
       end
     end
-    
+
   end
   describe "processing empty cart" do
     before :each do
