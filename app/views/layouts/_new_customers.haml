@@ -2,7 +2,7 @@
   .card-header.text-center
     %h3 New Customers
   .card-body.text-center
-    - if @gOrderInProgress  
+    - if @gOrderInProgress
       - if @display_guest_checkout
         .row.p-2= link_to "Checkout as Guest",  guest_checkout_customers_path, :class => 'btn btn-primary btn-block'
       .row.p-2= link_to "Create Account", new_customer_path, :class => 'btn btn-primary btn-block'

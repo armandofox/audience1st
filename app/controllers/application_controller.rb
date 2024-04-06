@@ -64,7 +64,7 @@ class ApplicationController < ActionController::Base
   end
 
   def logging_in_from_donate
-      return session[:return_to] && session[:return_to]['action'] == 'donate'  #delete session unless customer was logging in from donate page
+    session[:return_to] && session[:return_to]['action'] == 'donate'  # delete session unless customer was logging in from donate page
   end
 
   def allow_guest_checkout?
