@@ -2,9 +2,9 @@
 
 - unless @gOrderInProgress
   %h1.text-center.py-3= "#{Option.venue} Online Box Office"
-  .row
-    #content.a1-plain.col-md-8
-      = render :partial => 'layouts/login_form', locals: {head: @head}
 
-    #content.a2-plain.col-md-4
-      = render :partial => 'layouts/new_customers'
+.row
+  .col-md-8
+    = render :partial => 'layouts/login_form', locals: {head: @head}
+  .col-md-4
+    = render :partial => 'layouts/new_customers'
