@@ -120,22 +120,39 @@ class StoreController < ApplicationController
       session[:guest_checkout] = true 
       return_after_login params.except(:customer_id)
     end
+    # account_code_string is valid
+    if params[:account_code_string] && !AccountCode.where(code: params[:account_code_string]).empty?
+      @account_code_string = params[:account_code_string]
+      @account_code_info = AccountCode.find_by_code(@account_code_string)
+      @account_code_name = @account_code_info.name
+      @account_code_description = @account_code_info.description
+    elsif params[:account_code_string].nil? # account_code_string is nil, so redirect with default code inserted into url
+      return redirect_to(quick_donate_path(:customer_id => @customer.id, :account_code_string => Donation.default_code.code))
+    else # account_code_string is invalid, so redirect with default code inserted into url + display error message
+      return redirect_to(quick_donate_path(:customer_id => @customer.id, :account_code_string => Donation.default_code.code), :alert => "Invalid Fund ID")
+    end
   end
 
   def process_donation
     @amount = to_numeric(params[:donation])
+    @account_code = AccountCode.where(code: params[:account_code_string])[0] || Donation.default_code
     if params[:customer_id].blank?
       customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
       @customer = Customer.for_donation(customer_params)
-      @customer.errors.empty? or return redirect_to(quick_donate_path(:customer => params[:customer], :donation => @amount), :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}")
+      @customer.errors.empty? or return redirect_to(
+        quick_donate_path(
+          :customer => params[:customer],
+          :account_code_string => @account_code.code,
+          :donation => @amount),
+          :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}")
     else     # we got here via a logged-in customer
       @customer = Customer.find params[:customer_id]
     end
     # At this point, the customer has been persisted, so future redirects just use the customer id.
-    redirect_route = quick_donate_path(:customer_id => @customer.id, :donation => @amount)
+    redirect_route = quick_donate_path(:customer_id => @customer.id, :account_code_string => @account_code.code, :donation => @amount)
     @amount > 0 or return redirect_to(redirect_route, :alert => 'Donation amount must be provided')
     # Given valid donation, customer, and charge token, create & place credit card order.
-    @gOrderInProgress = Order.new_from_donation(@amount, Donation.default_code, @customer)
+    @gOrderInProgress = Order.new_from_donation(@amount, @account_code, @customer)
     @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
     @gOrderInProgress.purchase_args = {:credit_card_token => params[:credit_card_token]}
     @gOrderInProgress.processed_by = @customer
@@ -306,7 +323,7 @@ class StoreController < ApplicationController
     promo_code_args = (@promo.blank? ? {} : {:promo_code => @promo})
     redirect_target =
       case params[:referer].to_s
-      when 'donate' then quick_donate_path # no @customer assumed
+      when 'donate' then quick_donate_path(:account_code_string => params[:account_code_string]) # no @customer assumed
       when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id], @customer)
       when 'subscribe' then store_subscribe_path(@customer,promo_code_args)
       when 'index' then store_path(@customer, promo_code_args.merge(:what => params[:what], :showdate_id => params[:showdate_id]))
