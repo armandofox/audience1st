@@ -96,7 +96,7 @@ Scenario: admin logged in, records donation on behalf of patron
   Then I should see "Thank You for Your Purchase!"
   And customer "Joe Mallon" should have a donation of $9.00 to "General Fund"
   And an email should be sent to customer "Joe Mallon" containing "$  9.00  Donation to General Fund"
-  
+
 Scenario: landing on quick donation page with valid account code
   Given I am logged in as customer "Tom Foolery"
   When I visit the quick donation landing page for account code 0504
@@ -115,7 +115,7 @@ Scenario: landing on quick donation page with no account code
   Then I should not see "Donate to"
   And I should see "General Fund"
   And I should see "General Fund Address"
-
+  
 Scenario: landing on quick donation page with valid account code and making quick donation
   Given I am logged in as customer "Tom Foolery"
   When I go to the quick donation page
