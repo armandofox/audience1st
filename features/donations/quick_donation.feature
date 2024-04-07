@@ -27,8 +27,7 @@ Scenario: donor logged in, page gets prepopulated with donor info
   
 Scenario: donor not logged in but has matching account
 
-  Given I am not logged in
-  And customer "Tom Foolery" exists with email "fool@gmail.com"
+  Given customer "Tom Foolery" exists with email "fool@gmail.com"
   And customer "Tom Foolery" has no contact info
 
   And   I am not logged in
@@ -97,7 +96,7 @@ Scenario: admin logged in, records donation on behalf of patron
   Then I should see "Thank You for Your Purchase!"
   And customer "Joe Mallon" should have a donation of $9.00 to "General Fund"
   And an email should be sent to customer "Joe Mallon" containing "$  9.00  Donation to General Fund"
-  
+
 Scenario: landing on quick donation page with valid account code
   Given I am logged in as customer "Tom Foolery"
   When I visit the quick donation landing page for account code 0504
