@@ -116,7 +116,7 @@ Scenario: landing on quick donation page with no account code
   And I should see "General Fund"
   And I should see "General Fund Address"
 
-Scenario: landing on quick donation page with valid account code and making a quick donation
+Scenario: landing on quick donation page with valid account code and making quick donation
   Given I am logged in as customer "Tom Foolery"
   When I go to the quick donation page
   And I fill in "Donation amount" with "15"
