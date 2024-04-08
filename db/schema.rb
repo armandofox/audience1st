@@ -79,17 +79,7 @@ ActiveRecord::Schema.define(version: 20240310070441) do
   create_table "items", force: :cascade do |t|
     t.integer  "vouchertype_id",                 default: 0,          null: false
     t.integer  "customer_id",                    default: 0,          null: false
-    t.integer  "vouchertype_id",                 default: 0,          null: false
-    t.integer  "customer_id",                    default: 0,          null: false
     t.integer  "showdate_id"
-    t.string   "comments",           limit: 255
-    t.boolean  "fulfillment_needed",             default: false,      null: false
-    t.string   "promo_code",         limit: 255
-    t.integer  "processed_by_id",                default: 2146722771, null: false
-    t.integer  "bundle_id",                      default: 0,          null: false
-    t.boolean  "checked_in",                     default: false,      null: false
-    t.boolean  "walkup",                         default: false,      null: false
-    t.float    "amount",                         default: 0.0
     t.string   "comments",           limit: 255
     t.boolean  "fulfillment_needed",             default: false,      null: false
     t.string   "promo_code",         limit: 255
@@ -102,11 +92,11 @@ ActiveRecord::Schema.define(version: 20240310070441) do
     t.datetime "updated_at"
     t.datetime "letter_sent"
     t.string   "type",               limit: 255
-    t.string   "type",               limit: 255
     t.integer  "order_id"
     t.boolean  "finalized"
     t.string   "seat"
     t.datetime "sold_on"
+    t.integer  "recurring_donation_id"
   end
 
   add_index "items", ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
