@@ -8,6 +8,7 @@ class StoreController < ApplicationController
   before_filter :is_logged_in, :only => %w[checkout place_order]
   before_filter :order_is_not_empty, :only => %w[shipping_address checkout place_order]
 
+
   #        ACTION                      INVARIANT BEFORE ACTION
   #        ------                      -----------------------
   # index, subscribe, donate_to_fund    valid @customer
@@ -105,11 +106,11 @@ class StoreController < ApplicationController
     redirect_to(store_path(@customer), :alert => "There are no subscriptions on sale at this time.") if @subs_to_offer.empty?
   end
 
-  def donate_to_fund
-    return_after_login params.except(:customer_id)
-    @account_code = AccountCode.find_by_code(params[:id]) ||
-      AccountCode.find_by_id(params[:id]) ||
-      AccountCode.default_account_code
+  def donate_to_fund_redirect
+    # redirect donate_to_fund route to quickdonate for potential printed material with donate_to_fund url
+    fund_code = params[:id]
+    fund_code = Donation.default_code.code if fund_code.blank?
+    redirect_to quick_donate_url(account_code_string: fund_code)
   end
 
   # Serve quick_donate page; POST calls #process_donation
