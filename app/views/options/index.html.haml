@@ -1,14 +1,3 @@
-:javascript
-  // Hide default donation type radio group unless recurring donations are allowed
-  function showDefaultDonation(select_allow_recurring_donations) {
-    var row = document.getElementById('default_donation_type_form_row');
-    if (select_allow_recurring_donations.value == 'true') {
-      row.style.visibility = 'visible';
-    } else {
-      row.style.visibility = 'hidden';
-    }
-  }
-
 = form_for @o, :html => {:multipart => true, :id => 'edit_options_form'} do |f|
   .card.my-1
     .card-header.h3 Your Venue Contact Info
@@ -51,27 +40,6 @@
         quick_donation_explanation |
         quick_donation_redirect |
         donation_ack_from |
-        ) |
-      .form-row
-        .col-md-4.text-right
-          %label.col-form-label Allow Monthly Recurring Donations
-          = option_description_for(:allow_recurring_donations)
-        .col-md-8
-          = f.select :allow_recurring_donations, [['Yes', true], ['No', false]], {}, {:class => 'form-control', onchange: 'showDefaultDonation(this)'}
-      .form-row{id:"default_donation_type_form_row", style:"visibility: #{@o.allow_recurring_donations ? 'visible' : 'hidden'}"}
-        .col-md-4.text-right
-          %label.col-form-label Default Donation Type
-          = option_description_for(:default_donation_type)
-        .col-md-8
-          .radio-group.form-inline
-            = f.radio_button :default_donation_type, 'one', :class => 'form-control', :id => 'one'
-            = f.label :default_donation_type, 'One Time', :class => 'form-control', :for => 'one'
-            = f.radio_button :default_donation_type, 'monthly', :class => 'form-control', :id => 'monthly'
-            = f.label :default_donation_type, 'Monthly', :class => 'form-control', :for => 'monthly'
-      = render_collection_of_options f, %w( |
-        recurring_donation_contact_emails |
-        notify_theatre_about_new_recurring_donation |
-        notify_threate_about_failed_recurring_donation_charge |
         ) |
 
   .card.my-1

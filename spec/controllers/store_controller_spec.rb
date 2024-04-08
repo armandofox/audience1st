@@ -151,7 +151,7 @@ describe StoreController do
       it 'redirects having created the customer' do
         post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
         created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
-        expect(response).to redirect_to(quick_donate_path(:donation => 5, :customer_id => created_customer.id))
+        expect(response).to redirect_to(quick_donate_path(:donation => 5, :customer_id => created_customer.id, :account_code_string => Donation.default_code.code))
       end
       it 'shows error message' do
         post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
@@ -162,7 +162,7 @@ describe StoreController do
       it 'redirects having created the customer' do
         post :process_donation, {:customer => @new_valid_customer, :credit_card_token => 'dummy'}
         created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
-        expect(response).to redirect_to(quick_donate_path(:donation => 0, :customer_id => created_customer.id))
+        expect(response).to redirect_to(quick_donate_path(:donation => 0, :customer_id => created_customer.id, :account_code_string => Donation.default_code.code))
       end
       it 'shows error message' do
         post :process_donation, :customer => @new_valid_customer, :credit_card_token => 'dummy'
@@ -172,7 +172,7 @@ describe StoreController do
     context 'when new customer not valid as purchaser' do
       before(:each) do
         @invalid_customer = attributes_for(:customer).except(:city,:state)
-        @params = {:customer => @invalid_customer, :donation => 5, :credit_card_token => 'dummy'}
+        @params = {:customer => @invalid_customer, :donation => 5, :credit_card_token => 'dummy', :account_code_string => Donation.default_code.code}
       end
       it 'does not create new customer' do
         expect { post :process_donation, @params }.not_to change { Customer.all.size }
