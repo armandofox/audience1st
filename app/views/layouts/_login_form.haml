@@ -1,0 +1,29 @@
+= form_tag session_path, :class => 'form' do
+  .card
+    .card-header.text-center
+      %h3
+        = head
+  .card-body
+    .row
+      .col-md-2.text-right
+        %label.col-form-label{ :for=>:customer_email } Email
+      .col-md-6
+        = text_field_tag 'email', @email, :class => 'form-control'
+      .col-md-4
+    .row
+      .col-md-2.text-right
+        %label.col-form-label{ :for=>:customer_password } Password
+      .col-md-6
+        = password_field_tag 'password', nil, :autocomplete => 'off', :class => 'form-control'
+      .col-md-4
+        = submit_tag 'Login', :class => 'btn btn-success', :disable_with => 'Logging in...'
+    .row
+      .col-md-2.text-right
+        = check_box_tag 'remember_me', '1', @remember_me
+      .col-md-10
+        Remember me for next time (Don't use on public/shared computers)
+    .row
+      Need to reset your password?&nbsp;
+      = link_to 'Reset password by email', forgot_password_customers_path
+      &nbsp;or&nbsp;
+      = link_to 'Login with secret question', new_from_secret_session_path

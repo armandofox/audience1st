@@ -1,13 +1,12 @@
 class StoreController < ApplicationController
 
   include StoreHelper
-  
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
   before_filter :set_customer, :except => %w[process_donation]
   before_filter :is_logged_in, :only => %w[checkout place_order]
   before_filter :order_is_not_empty, :only => %w[shipping_address checkout place_order]
-  
+
   #        ACTION                      INVARIANT BEFORE ACTION
   #        ------                      -----------------------
   # index, subscribe, donate_to_fund    valid @customer
@@ -41,7 +40,7 @@ class StoreController < ApplicationController
     redirect_customer = resolve_customer_in_url(logged_in_user, specified_customer)
     if redirect_customer == specified_customer # ok to proceed as is
       @customer = specified_customer
-    else      
+    else
       redirect_to url_for(params.merge(:customer_id => redirect_customer.id, :only_path => true))
     end
   end
@@ -103,11 +102,11 @@ class StoreController < ApplicationController
     redirect_to(store_path(@customer), :alert => "There are no subscriptions on sale at this time.") if @subs_to_offer.empty?
   end
 
-  def donate_to_fund
-    return_after_login params.except(:customer_id)
-    @account_code = AccountCode.find_by_code(params[:id]) ||
-      AccountCode.find_by_id(params[:id]) ||
-      AccountCode.default_account_code
+  def donate_to_fund_redirect
+    # redirect donate_to_fund route to quickdonate for potential printed material with donate_to_fund url
+    fund_code = params[:id]
+    fund_code = Donation.default_code.code if fund_code.blank?
+    redirect_to quick_donate_url(account_code_string: fund_code)
   end
 
   # Serve quick_donate page; POST calls #process_donation
@@ -115,8 +114,10 @@ class StoreController < ApplicationController
     reset_shopping                 # even if order in progress, going to donation page cancels it
     if @customer == Customer.anonymous_customer
       # handle donation as a 'guest checkout', even though may end up being tied to real customer
+      @head = 'Login for a faster checkout!'
       @customer = Customer.new
       session[:guest_checkout] = true
+      return_after_login params.except(:customer_id)
     end
     # account_code_string is valid
     if params[:account_code_string] && !AccountCode.where(code: params[:account_code_string]).empty?
@@ -212,10 +213,10 @@ class StoreController < ApplicationController
     recipient = recipient_from_params(customer_params)
     @recipient =  recipient[0]
     if @recipient.email == @customer.email
-      flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
+      flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice')
       render :action => :shipping_address
       return
-    end 
+    end
     if Customer.email_matches_diff_last_name?(try_customer)
       flash.now[:alert] = I18n.t('store.errors.gift_matching_email_diff_last_name')
       render :action => :shipping_address
@@ -236,7 +237,7 @@ class StoreController < ApplicationController
     if Customer.email_last_name_match_diff_address?(try_customer)
       flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
     elsif recipient_from_params(customer_params)[1] == "found_matching_customer"
-      flash[:notice] = I18n.t('store.gift_recipient_on_file')  
+      flash[:notice] = I18n.t('store.gift_recipient_on_file')
     end
     redirect_to_checkout
   end

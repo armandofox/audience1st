@@ -81,7 +81,7 @@ describe StoreController do
       it_should_behave_like 'initial visit'
     end
     describe 'to :donate_to_fund' do
-      before :each do ; @action = :donate_to_fund ; @extras = {:id => mock_model(AccountCode)}; end
+      before :each do ; @action = :donate_to_fund ; @extras = { id: '2' }; end
       it_should_behave_like 'initial visit'
     end
   end
@@ -100,6 +100,27 @@ describe StoreController do
       expect(response).to render_template 'components/session_expired'
     end
   end
+
+  describe 'GET  #donate_to_fund_redirect' do
+  before :each do
+    @new_account_code = create(:account_code, id: 2)
+    @anon = Customer.anonymous_customer
+  end
+  it 'redirects to donate route with fund code' do
+    fund_code = @new_account_code.code
+    get :donate_to_fund_redirect, {:id => fund_code, :customer_id => @anon}
+    expect(response).to redirect_to(quick_donate_path(account_code_string: fund_code))
+  end
+  it 'sets the fund code to default code when it is missing' do
+    get :donate_to_fund_redirect, { :customer_id => @anon }
+    expect(response).to redirect_to(quick_donate_path(account_code_string: Donation.default_code.code))
+  end
+  it 'sets the fund code to default code when it is invalid' do
+    invalid_fund_code = ' '
+    get :donate_to_fund_redirect, { id: invalid_fund_code, :customer_id => @anon }
+    expect(response).to redirect_to(quick_donate_path(account_code_string: Donation.default_code.code))
+  end
+end
 
   describe 'quick donation with nonexistent customer' do
     before :each do

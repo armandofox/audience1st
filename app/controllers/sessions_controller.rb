@@ -8,6 +8,7 @@ class SessionsController < ApplicationController
     end
     @remember_me = true
     @email ||= params[:email]
+    @head = 'Subscribers and Returning Customers'
   end
 
   def new_from_secret

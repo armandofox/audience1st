@@ -2,7 +2,7 @@
    d = Date.parse(date)
    Option.first.update_attributes!(:season_start_month => d.month, :season_start_day => d.day)
  end
- 
+
  When /^I fill in all valid options$/ do
    opts = {
      'venue' => "Test Theater",
@@ -18,7 +18,7 @@
      fill_in "option[#{opt}]", :with => val
    end
  end
- 
+
  Given /^the (boolean )?setting "(.*)" is "(.*)"$/ do |bool,opt,val|
    val = !!(val =~ /true/i) if bool
    Option.first.update_attributes!(opt.downcase.gsub(/\s+/, '_') => val)
@@ -33,4 +33,23 @@
 
  Then /^the setting "(.*)" should be "(.*)"$/ do |opt,val|
    expect(Option.send(opt.tr(' ','').underscore)).to eq(val)
+ end
+
+ #####
+ # Step defintions for testing the recurring donation feature admin view
+ #####
+ When /I set allow recurring donations to "(.*)"/ do |value|
+  drop_down = page.find(:css, "#allow_recurring_donations_select")
+  drop_down.select(value)
+ end
+ Then /the radio button to select the default donation type should be "(.*)"/ do |value|
+  if value == 'visible'
+    expect(page).to have_selector('#default_donation_type_form_row', visible: value)
+  elsif value == 'hidden'
+    expect(page).not_to have_selector('#default_donation_type_form_row')
+  end
+ end
+ Then /the radio button to select the default donation type should be set to "(.*)"/ do |value|
+  # How to check what option the radio button currently has selected?
+  radio_button = page.find(:css, '#donation_type_radio')
  end
