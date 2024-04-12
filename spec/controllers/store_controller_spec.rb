@@ -128,7 +128,7 @@ end
     end
     let (:attempt_recurring_donation) {
       post :process_donation,
-      {:customer_id => @customer.id, :donation => 5, :donation_frequency => 'monthly', :credit_card_token => 'dummy'}
+      {:customer_id => @customer.id, :donation => 5, :donation_frequency => 'Monthly', :credit_card_token => 'dummy'}
     }
     context 'when transaction completes successfully' do
       before :each do

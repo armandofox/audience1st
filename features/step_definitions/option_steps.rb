@@ -51,10 +51,6 @@
     expect(page).not_to have_selector('#default_donation_type_form_row')
   end
  end
- Then /the radio button to select the default donation type should be set to "(.*)"/ do |value|
-  # How to check what option the radio button currently has selected?
-  radio_button = page.find(:css, '#donation_type_radio')
- end
 
  ######
  # Step defintions for testing the recurring donation feature user view
@@ -70,7 +66,7 @@
   end
   When /I select monthly in the donation frequency radio button/ do
    radio_button = page.find(:css, "#donation_frequency_radio")
-   radio_button.choose("monthly")
+   radio_button.choose("Monthly")
   end
   Then /there should be a Recurring Donation model instance belonging to "(.*) (.*)"$/ do |first,last|
    r = RecurringDonation.first
