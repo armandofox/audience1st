@@ -54,10 +54,10 @@
             = option_description_for(:default_donation_type)
           .col-md-8{id:"donation_type_radio"}
             .radio-group.form-inline
-              = f.radio_button :default_donation_type, 'one', :class => 'form-control', :id => 'one'
-              = f.label :default_donation_type, 'One Time', :class => 'form-control', :for => 'one'
-              = f.radio_button :default_donation_type, 'monthly', :class => 'form-control', :id => 'monthly'
-              = f.label :default_donation_type, 'Monthly', :class => 'form-control', :for => 'monthly'
+              = f.radio_button :default_donation_frequency, Donation.one_time_donation, :class => 'form-control', :id => Donation.one_time_donation
+              = f.label :default_donation_frequency, Donation.one_time_donation, :class => 'form-control', :for => Donation.one_time_donation
+              = f.radio_button :default_donation_frequency, Donation.recurring_donation, :class => 'form-control', :id => Donation.recurring_donation
+              = f.label :default_donation_frequency, Donation.recurring_donation, :class => 'form-control', :for => Donation.recurring_donation
       = render_collection_of_options f, %w( |
         recurring_donation_contact_emails |
         notify_theater_about_new_recurring_donation |

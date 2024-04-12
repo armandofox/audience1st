@@ -199,7 +199,7 @@ ActiveRecord::Schema.define(version: 20240310070441) do
     t.integer  "import_timeout",                                                     default: 15,                                                                                                                              null: false
     t.string   "transactional_bcc_email"
     t.boolean  "allow_recurring_donations",                                          default: false
-    t.string   "default_donation_type",                                              default: "one"
+    t.string   "default_donation_frequency",                                         default: "One Time"
     t.text     "recurring_donation_contact_emails"
     t.boolean  "notify_theater_about_new_recurring_donation",                        default: true
     t.boolean  "notify_theater_about_failed_recurring_donation_charge",              default: true
