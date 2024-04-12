@@ -51,9 +51,10 @@
           .form-group.form-row{id:"donation_frequency_radio"}
             %label.col-form-label.text-right.col-sm-6{:for => :donation} Donation frequency
             .radio-group.col-sm-6.col-md-2.form-inline
-              - @donation_frequency_options.each do |frequency|
-                = radio_button_tag 'donation_frequency', frequency, Option.default_donation_type == frequency, class: 'form-control', id: frequency
-                = label_tag 'donation_type_#{frequency}', frequency, class: 'form-control', for: frequency
+              = radio_button_tag :donation_frequency, Donation.one_time_donation, Option.default_donation_frequency == Donation.one_time_donation, class: 'form-control', id: Donation.one_time_donation
+              = label_tag :donation_frequency, Donation.one_time_donation, class: 'form-control', for: Donation.one_time_donation
+              = radio_button_tag :donation_frequency, Donation.recurring_donation, Option.default_donation_frequency == Donation.recurring_donation, class: 'form-control', id: Donation.recurring_donation
+              = label_tag :donation_frequency, Donation.recurring_donation, class: 'form-control', for: Donation.recurring_donation
         .form-group.form-row
           %label.col-form-label{:for => :donation_comments} 
             If you'd like to be recognized as Anonymous, or if you'd like to donate in honor
