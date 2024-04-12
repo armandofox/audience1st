@@ -3,7 +3,6 @@
    Option.first.update_attributes!(:season_start_month => d.month, :season_start_day => d.day)
  end
 
-
  When /^I fill in all valid options$/ do
    opts = {
      'venue' => "Test Theater",
@@ -19,7 +18,6 @@
      fill_in "option[#{opt}]", :with => val
    end
  end
-
 
  Given /^the (boolean )?setting "(.*)" is "(.*)"$/ do |bool,opt,val|
    val = !!(val =~ /true/i) if bool

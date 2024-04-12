@@ -16,7 +16,7 @@ class Order < ActiveRecord::Base
   # pending and errored states of a CC order (pending = payment has occurred but order has not
   #  yet been finalized; errored = payment has occurred and order NEVER got finalized, eg due
   #  to server timeout or other event that happens during that step)
-
+  
   PENDING = 'pending'        # string in authorization field that marks in-process CC order
   ERRORED = 'errored'        # payment made, but timeout/something bad happened that prevented order finalization
 
@@ -78,7 +78,7 @@ class Order < ActiveRecord::Base
   scope :completed, ->() { where('sold_on IS NOT NULL') }
   scope :abandoned_since, ->(since) { where('sold_on IS NULL').where('updated_at < ?', since) }
   scope :pending_but_paid, ->() { where(:authorization => PENDING) }
-
+  
   scope :for_customer_reporting, ->() {
     includes(:vouchers => [:customer, :showdate,:vouchertype]).
     includes(:donations => [:customer, :account_code]).
@@ -100,7 +100,7 @@ class Order < ActiveRecord::Base
   def purchaser_name ; purchaser.full_name ; end
 
   def purchase_medium ; Purchasemethod.get(purchasemethod).purchase_medium ; end
-
+  
   def self.new_from_donation(amount, account_code, donor)
     order = Order.new(:purchaser => donor, :customer => donor)
     order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))
@@ -187,10 +187,10 @@ class Order < ActiveRecord::Base
       self.vouchers += new_vouchers
       self.save!
     else                        # since order can't proceed, DESTROY all vouchers so not orphaned
-      new_vouchers.each { |v| v.destroy if v.persisted? }
+      new_vouchers.each { |v| v.destroy if v.persisted? } 
     end
   end
-
+  
   def ticket_count ;       vouchers.size        ; end
   def item_count ; ticket_count + (includes_donation? ? 1 : 0) + retail_items.size; end
 
@@ -223,7 +223,7 @@ class Order < ActiveRecord::Base
       nil
     end
   end
-
+  
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)
     self.donation_data[:amount] = d.amount
@@ -250,7 +250,7 @@ class Order < ActiveRecord::Base
       vouchers.any? { |v| v.bundle? }
     end
   end
-
+  
   def add_retail_item(r)
     raise Order::NotPersistedError unless persisted?
     self.retail_items << r if r
@@ -318,7 +318,7 @@ class Order < ActiveRecord::Base
     # this is almost certainly a Demeter violation...but not sure how to make better
     vouchers.first.showdate.access_instructions
   end
-
+  
   def collect_notes
     # collect the showdate-specific (= show-specific) notes in the order
     items.map(&:showdate).compact.uniq.map(&:patron_notes).compact
@@ -363,7 +363,7 @@ class Order < ActiveRecord::Base
     self.processed_by = processed_by
     self.finalize!(sold_on)
   end
-
+  
   def finalize_with_new_customer!(customer,processed_by,sold_on=Time.current)
     customer.force_valid = true
     self.customer = self.purchaser = customer
@@ -421,7 +421,7 @@ class Order < ActiveRecord::Base
       raise e
     end
   end
-
+  
   def refundable?
     completed? &&
       items.any? { |i| !i.kind_of?(CanceledItem) } # in case all items were ALREADY refunded and now marked as canceled
@@ -459,13 +459,13 @@ class Order < ActiveRecord::Base
   end
 
   def summary_of_contents
-    if includes_vouchers? && includes_donation?
-      'order and donation'
+    if includes_vouchers? && includes_donation? 
+      'order and donation' 
     elsif includes_donation?
       'donation'
     else
       'order'
     end
-  end
+  end    
 
 end

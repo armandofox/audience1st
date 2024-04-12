@@ -1,13 +1,11 @@
 class StoreController < ApplicationController
 
   include StoreHelper
-
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
   before_filter :set_customer, :except => %w[process_donation]
   before_filter :is_logged_in, :only => %w[checkout place_order]
   before_filter :order_is_not_empty, :only => %w[shipping_address checkout place_order]
-
 
   #        ACTION                      INVARIANT BEFORE ACTION
   #        ------                      -----------------------

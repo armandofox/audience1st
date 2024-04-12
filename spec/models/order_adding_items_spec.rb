@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Order, 'adding' do
-  before :each do
+  before :each do 
     @order = Order.create!(:processed_by => create(:customer)) # generic customer
     @vv = create(:valid_voucher)
   end
