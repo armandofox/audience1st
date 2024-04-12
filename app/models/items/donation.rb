@@ -18,7 +18,7 @@ class Donation < Item
   validates_presence_of :account_code_id
   
   belongs_to :customer
-  belongs_to :recurring_donation, class_name: 'RecurringDonation', foreign_key: :recurring_donation_id
+  belongs_to :recurring_donation
 
   validates_numericality_of :amount
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
