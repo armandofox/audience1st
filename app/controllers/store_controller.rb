@@ -119,8 +119,10 @@ class StoreController < ApplicationController
     @donation_frequency_options = DONATION_FREQUENCIES
     if @customer == Customer.anonymous_customer
       # handle donation as a 'guest checkout', even though may end up being tied to real customer
+      @head = 'Login for a faster checkout!'
       @customer = Customer.new
       session[:guest_checkout] = true
+      return_after_login params.except(:customer_id)
     end
     # account_code_string is valid
     if params[:account_code_string] && !AccountCode.where(code: params[:account_code_string]).empty?

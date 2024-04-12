@@ -63,6 +63,10 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  def logging_in_from_donate
+    session[:return_to] && session[:return_to]['action'] == 'donate'  # delete session unless customer was logging in from donate page
+  end
+
   def allow_guest_checkout?
     # Only if option is enabled, and a self-purchase is in progress for an order that is OK for guest checkout
     !@gAdminDisplay               &&
@@ -76,7 +80,7 @@ class ApplicationController < ActionController::Base
     @gOrderInProgress.destroy if @gOrderInProgress
     @gOrderInProgress = nil
     set_order_in_progress(nil)
-    session.delete(:return_to)
+    session.delete(:return_to) unless logging_in_from_donate
     true
   end
 
