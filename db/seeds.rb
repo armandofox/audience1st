@@ -79,7 +79,8 @@ class Audience1stSeeder
   end
 
   def self.create_default_seating_zone
-    SeatingZone.create!(name: 'Reserved', short_name: 'res')
+    zone_params = {name: 'Reserved', short_name: 'res'}
+    SeatingZone.create!(zone_params) unless SeatingZone.find_by(zone_params)
   end
   
   def self.create_options
