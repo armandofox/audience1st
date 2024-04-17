@@ -80,10 +80,6 @@ describe StoreController do
       before :each do ; @action = :subscribe ; end
       it_should_behave_like 'initial visit'
     end
-    describe 'to :donate_to_fund' do
-      before :each do ; @action = :donate_to_fund ; @extras = { id: '2' }; end
-      it_should_behave_like 'initial visit'
-    end
   end
 
   describe "on InvalidAuthenticityToken exception" do

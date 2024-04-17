@@ -112,7 +112,6 @@ Rails.application.routes.draw do
 
     get '/store/(:customer_id)' => 'store#index', :defaults => {:customer_id => nil}, :as => 'store'
     get '/subscribe/(:customer_id)' => 'store#subscribe', :defaults => {:customer_id => nil}, :as => 'store_subscribe'
-    # get '/donate_to_fund/:id/(:customer_id)' => 'store#donate_to_fund', :defaults => {:customer_id => nil}, :as => 'donate_to_fund'
     get '/donate_to_fund/(:id)/(:customer_id)', :defaults => {:customer_id => nil}, to: 'store#donate_to_fund_redirect'
     get '/store/cancel' => 'store#cancel', :as => 'store_cancel'
 

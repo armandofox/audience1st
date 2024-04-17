@@ -327,7 +327,6 @@ class StoreController < ApplicationController
     redirect_target =
       case params[:referer].to_s
       when 'donate' then quick_donate_path(:account_code_string => params[:account_code_string]) # no @customer assumed
-      when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id], @customer)
       when 'subscribe' then store_subscribe_path(@customer,promo_code_args)
       when 'index' then store_path(@customer, promo_code_args.merge(:what => params[:what], :showdate_id => params[:showdate_id]))
       else store_path(@customer,promo_code_args)
