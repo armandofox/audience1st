@@ -12,6 +12,7 @@ Spring 24 Team Badges
 
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from:
 [Abhinav Dhulipala](https://github.com/abhinavDhulipala),
+[Adam Dong](https://github.com/adam2451),
 [Xiao Fu](https://github.com/fxdawnn),
 [Matthew Fyke](https://github.com/mattfyke),
 [Jasper Gan](https://github.com/jasgan),
@@ -25,21 +26,21 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Yowsean Li](https://github.com/yowsean),
 [Anthony Ling](https://github.com/Ant1ng2),
 [Jason Lum](https://github.com/jayl109),
+[Robert Nickles](https://github.com/rnickles),
 [Sanket Padmanabhan](https://github.com/sanketq),
+[Pratyush Sharma](https://github.com/PratyushSharma14),
 [Andrew Sun](https://github.com/andrewsun98),
 [Tanji Saraf-Chavez](https://github.com/tsarafchavez),
 [Jack Wan](https://github.com/WanNJ),
+[Winson Tsang Wan](https://github.com/winsonwan),
 [Alex Wang](https://github.com/raisindoc),
+[Justin Wong](https://github.com/JustinRWong),
 [Kevin Yen](https://github.com/crazyberry7),
 [Casper Yang](https://github.com/cyang2020),
 [Hang (Arthur) Yin](https://github.com/LoserNoOne),
-[Justin Wong](https://github.com/JustinRWong),
-[Adam Dong](https://github.com/adam2451),
-[Mayra Zamudio](https://github.com/MayZamudio),
-[Pratyush Sharma](https://github.com/PratyushSharma14),
-[Robert Nickles](https://github.com/rnickles),
 and
-[Winson Tsang Wan](https://github.com/winsonwan)
+[Mayra Zamudio](https://github.com/MayZamudio)
+
 
 
 # This information is for developers and deployers
