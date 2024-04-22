@@ -33,8 +33,13 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Kevin Yen](https://github.com/crazyberry7),
 [Casper Yang](https://github.com/cyang2020),
 [Hang (Arthur) Yin](https://github.com/LoserNoOne),
+[Justin Wong](https://github.com/JustinRWong),
+[Adam Dong](https://github.com/adam2451),
+[Mayra Zamudio](https://github.com/MayZamudio),
+[Pratyush Sharma](https://github.com/PratyushSharma14),
+[Robert Nickles](https://github.com/rnickles),
 and
-[Justin Wong](https://github.com/JustinRWong)
+[Winson Tsang Wan](https://github.com/winsonwan)
 
 
 # This information is for developers and deployers
