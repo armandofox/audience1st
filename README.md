@@ -16,9 +16,9 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Xiao Fu](https://github.com/fxdawnn),
 [Matthew Fyke](https://github.com/mattfyke),
 [Jasper Gan](https://github.com/jasgan),
+[Xiaoyu Alan He](https://github.com/AlanHe-Xiaoyu),
 [CiCi Huang](https://github.com/chengchenghuang),
 [Xu Huang](https://github.com/Hexhu),
-[Xiaoyu Alan He](https://github.com/AlanHe-Xiaoyu),
 [Anthony Jang](https://github.com/segfalut),
 [Kyle Khus](https://github.com/kkhus5),
 [Wayne Leung](https://github.com/WayneLeung12),
@@ -35,8 +35,8 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Winson Tsang Wan](https://github.com/winsonwan),
 [Alex Wang](https://github.com/raisindoc),
 [Justin Wong](https://github.com/JustinRWong),
-[Kevin Yen](https://github.com/crazyberry7),
 [Casper Yang](https://github.com/cyang2020),
+[Kevin Yen](https://github.com/crazyberry7),
 [Hang (Arthur) Yin](https://github.com/LoserNoOne),
 and
 [Mayra Zamudio](https://github.com/MayZamudio)
