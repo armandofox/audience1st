@@ -43,14 +43,10 @@ class Customer < ActiveRecord::Base
   }
   
   scope :seen_none_of, ->(show_ids) {
-    not_seen_these_shows = Customer.
+    Customer.
       includes(:vouchers, :showdates).
-      where.not(:showdates => {:show_id => show_ids})
-    not_seen_any_shows = Customer.
-      includes(:vouchers, :showdates).
-      where(:items => {:customer_id => nil})
-    byebug
-    not_seen_these_shows.or(not_seen_any_shows).distinct
+      where.not(:showdates => {:show_id => show_ids}).
+      references(:items)
   }
 
   scope :with_open_subscriber_vouchers, ->(vtypes) {

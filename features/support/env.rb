@@ -26,8 +26,14 @@ require 'email_spec/cucumber'
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 Capybara.server = :webrick
+# must have compatible versions of chromedriver and chrome-for-testing (headless) installed:
+#  Download a specific Chrome for Testing version:
+#  npx @puppeteer/browsers install chrome@124.0.6367.91
+#  Download a specific ChromeDriver version:
+#  npx @puppeteer/browsers install chromedriver@124.0.6367.91
+
 Capybara.register_driver :selenium do |app|
-  Webdrivers::Chromedriver.required_version = '119.0.6045.105'
+  Webdrivers::Chromedriver.required_version = '124.0.6367.91'
   webdriver_args = %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
   options = Selenium::WebDriver::Chrome::Options.new(
     args: webdriver_args
