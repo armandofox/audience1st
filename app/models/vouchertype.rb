@@ -72,7 +72,7 @@ class Vouchertype < ActiveRecord::Base
   def cannot_change_category
     if category != category_was
       self.errors.add(:category, I18n.t('vouchertypes.errors.cannot_change_category'))
-      false
+      throw :abort
     end
   end
   # When a bundle is created, automatically create the single valid-voucher
