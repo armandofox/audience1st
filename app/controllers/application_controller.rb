@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   helper :all
 
-  protect_from_forgery
+  protect_from_forgery :prepend => true
 
   if Rails.env.production?
     force_ssl
