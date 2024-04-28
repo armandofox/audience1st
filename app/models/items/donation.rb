@@ -4,10 +4,8 @@
 class Donation < Item
 
   # only possible donation frequencies (either one-time, or recurring at the specified interval) 
-  ONE_TIME_DONATION = 'One Time'
-  RECURRING_DONATION = 'Monthly'
-  # cattr_reader :one_time_donation
-  # cattr_reader :recurring_donation
+  ONE_TIME_DONATION = 'One Time'.freeze
+  RECURRING_DONATION = 'Monthly'.freeze
 
   def self.default_code
     AccountCode.find(Option.default_donation_account_code)
