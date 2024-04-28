@@ -72,3 +72,6 @@
    expect(c.first_name).to eq(first)
    expect(c.last_name).to eq(last)
   end
+  Then /there should not be a Recurring Donation model instance belonging to "(.*) (.*)"$/ do |first,last|
+    expect(RecurringDonation.first).to eq(nil)
+   end
