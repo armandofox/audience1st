@@ -108,6 +108,7 @@ describe 'finalizing' do
       @order.add_donation(@donation)
       @previous_vouchers_count = Voucher.count
       @previous_donations_count = Donation.count
+      @previous_recurring_donations_count = RecurringDonation.count
       allow(Store::Payment).to receive(:pay_with_credit_card).and_return(nil)
       expect { @order.finalize! }.to raise_error(Order::PaymentFailedError)
     end
@@ -117,6 +118,7 @@ describe 'finalizing' do
     it 'should not save the items' do
       expect(Voucher.count).to eq(@previous_vouchers_count)
       expect(Donation.count).to eq(@previous_donations_count)
+      expect(RecurringDonation.count).to eq(@previous_recurring_donations_count)
     end
     it 'should not add vouchers to customer' do
       expect(@order.customer.reload.vouchers).to be_empty

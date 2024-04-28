@@ -17,5 +17,6 @@ Scenario: make donation
 
 @stubs_failed_credit_card_payment
 Scenario: attempt to make a donation but card payment fails
+  Then I should see "frequency"
   Then a Recurring Donation record should not be created
   Then a regular Donation record should not be created
