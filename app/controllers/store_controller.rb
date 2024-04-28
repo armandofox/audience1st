@@ -153,7 +153,7 @@ class StoreController < ApplicationController
     # Given valid donation, customer, and charge token, create & place credit card order.
     @gOrderInProgress = Order.new_from_donation(@amount, @account_code, @customer)
     case params[:donation_frequency]
-    when Donation.recurring_donation
+    when Donation::RECURRING_DONATION
       @gOrderInProgress.add_recurring_donation()
     end
     @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
