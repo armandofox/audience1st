@@ -12,8 +12,10 @@ Background:
 @stubs_successful_credit_card_payment
 Scenario: make donation
   Then I should see "You have paid a total of $15.00 by Credit card"
-  Then there should be a Recurring Donation model instance belonging to "Tom Foolery"
+  Then there should be a Recurring Donation record belonging to "Tom Foolery"
+  Then there should be a regular Donation record belonging to "Tom Foolery"
 
 @stubs_failed_credit_card_payment
 Scenario: attempt to make a donation but card payment fails
-  Then there should not be a Recurring Donation model instance belonging to "Tom Foolery"
+  Then a Recurring Donation record should not be created
+  Then a regular Donation record should not be created

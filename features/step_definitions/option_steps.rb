@@ -66,12 +66,25 @@
    radio_button = page.find(:css, "#donation_frequency_radio")
    radio_button.choose("Monthly")
   end
-  Then /there should be a Recurring Donation model instance belonging to "(.*) (.*)"$/ do |first,last|
+  Then /there should be a Recurring Donation record belonging to "(.*) (.*)"$/ do |first,last|
    r = RecurringDonation.first
    c = Customer.find(r.customer_id)
    expect(c.first_name).to eq(first)
    expect(c.last_name).to eq(last)
   end
-  Then /there should not be a Recurring Donation model instance belonging to "(.*) (.*)"$/ do |first,last|
+  Then /there should be a regular Donation record belonging to "(.*) (.*)"$/ do |first,last|
+    r = RecurringDonation.first
+    expect(r.donations.count).to eq(1)
+    d = r.donations[0]
+    expect(Donation.count).to eq(1)
+    expect(d).to eq(Donation.first)
+    c = Customer.find(d.customer_id)
+    expect(c.first_name).to eq(first)
+    expect(c.last_name).to eq(last)
+  end 
+  Then /a Recurring Donation record should not be created$/ do
     expect(RecurringDonation.first).to eq(nil)
-   end
+  end
+  Then /a regular Donation record should not be created$/ do
+    expect(Donation.first).to eq(nil)
+  end
