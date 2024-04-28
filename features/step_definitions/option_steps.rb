@@ -54,7 +54,7 @@
  # Step defintions for testing the recurring donation feature user view
  ######
 
- Given /admin "(.*)" allowed recurring donations/ do |value|
+ Given /admin (.*) allowed recurring donations/ do |value|
    if value == 'has'
      value = true
    elsif value == 'has not'
