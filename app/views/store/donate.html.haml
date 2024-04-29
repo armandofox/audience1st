@@ -47,6 +47,14 @@
             = text_field_tag 'donation', @amount, :type => :number, :class => 'text-right form-control form-control-sm'
             .input-group-append
               %span.input-group-text.form-control-sm .00
+        - if Option.allow_recurring_donations
+          .form-group.form-row{id:"donation_frequency_radio"}
+            %label.col-form-label.text-right.col-sm-6{:for => :donation} Donation frequency
+            .radio-group.col-sm-6.col-md-2.form-inline
+              = radio_button_tag :donation_frequency, Donation::ONE_TIME_DONATION, Option.default_donation_frequency == Donation::ONE_TIME_DONATION, class: 'form-control', id: Donation::ONE_TIME_DONATION
+              = label_tag :donation_frequency, Donation::ONE_TIME_DONATION, class: 'form-control', for: Donation::ONE_TIME_DONATION
+              = radio_button_tag :donation_frequency, Donation::RECURRING_DONATION, Option.default_donation_frequency == Donation::RECURRING_DONATION, class: 'form-control', id: Donation::RECURRING_DONATION
+              = label_tag :donation_frequency, Donation::RECURRING_DONATION, class: 'form-control', for: Donation::RECURRING_DONATION
         .form-group.form-row
           %label.col-form-label{:for => :donation_comments} 
             If you'd like to be recognized as Anonymous, or if you'd like to donate in honor

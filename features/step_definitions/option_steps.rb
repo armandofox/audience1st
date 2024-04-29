@@ -49,7 +49,42 @@
     expect(page).not_to have_selector('#default_donation_type_form_row')
   end
  end
- Then /the radio button to select the default donation type should be set to "(.*)"/ do |value|
-  # How to check what option the radio button currently has selected?
-  radio_button = page.find(:css, '#donation_type_radio')
- end
+
+ ######
+ # Step defintions for testing the recurring donation feature user view
+ ######
+
+ Given /admin (has|has not) allowed recurring donations/ do |value|
+   if value == 'has'
+     value = true
+   elsif value == 'has not'
+     value = false
+   end
+   Option.first.update_attributes!(:allow_recurring_donations => value)
+  end
+  When /I select monthly in the donation frequency radio button/ do
+   radio_button = page.find(:css, "#donation_frequency_radio")
+   radio_button.choose("Monthly")
+  end
+  Then /there should be a Recurring Donation record belonging to "(.*) (.*)"$/ do |first,last|
+   r = RecurringDonation.first
+   c = Customer.find(r.customer_id)
+   expect(c.first_name).to eq(first)
+   expect(c.last_name).to eq(last)
+  end
+  Then /there should be a regular Donation record belonging to "(.*) (.*)"$/ do |first,last|
+    r = RecurringDonation.first
+    expect(r.donations.count).to eq(1)
+    d = r.donations[0]
+    expect(Donation.count).to eq(1)
+    expect(d).to eq(Donation.first)
+    c = Customer.find(d.customer_id)
+    expect(c.first_name).to eq(first)
+    expect(c.last_name).to eq(last)
+  end 
+  Then /a Recurring Donation record should not be created$/ do
+    expect(RecurringDonation.first).to eq(nil)
+  end
+  Then /a regular Donation record should not be created$/ do
+    expect(Donation.first).to eq(nil)
+  end
