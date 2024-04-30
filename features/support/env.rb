@@ -15,7 +15,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 TEST_FILES_DIR = File.join(Rails.root, 'spec', 'test_files') unless defined?(TEST_FILES_DIR)
 
 require 'cucumber/rails'
-require 'webdrivers'
+require 'selenium-webdriver'
 
 # This is email_spec
 require 'email_spec/cucumber'
@@ -31,9 +31,10 @@ Capybara.server = :webrick
 #  npx @puppeteer/browsers install chrome@124.0.6367.91
 #  Download a specific ChromeDriver version:
 #  npx @puppeteer/browsers install chromedriver@124.0.6367.91
+#  (Note: these 'installs' just put stuff in the $cwd. brew install may be better)
 
 Capybara.register_driver :selenium do |app|
-  Webdrivers::Chromedriver.required_version = '124.0.6367.91'
+  #Selenium::WebDriver::Chromedriver.required_version = '124.0.6367.91'
   webdriver_args = %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
   options = Selenium::WebDriver::Chrome::Options.new(
     args: webdriver_args

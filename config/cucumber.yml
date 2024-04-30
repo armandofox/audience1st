@@ -6,3 +6,4 @@ default: <%= format %> --tags 'not @wip'
 javascript: <%= format %> --tags @javascript
 passing:  <%= format %> --tags 'not @wip'
 cur:  --tags @cur <%= format %>
+default: --publish-quiet
