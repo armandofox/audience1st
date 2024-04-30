@@ -121,10 +121,11 @@ end
 
 Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,last,attribs|
   customer = find_customer first,last
-  dummy = Customer.new
   attribs.hashes.each do |attr|
     name,val = attr[:attribute], attr[:value]
-    customer.send(name).should == Customer.columns_hash[name].cast_type.type_cast_from_database(val)
+    column_type = Customer.column_for_attribute(name).type
+    object_after_cast = ActiveRecord::Type.lookup(column_type).cast(val)
+    expect(customer.send(name).to_s).to eq(object_after_cast)
   end
 end
 

@@ -73,7 +73,7 @@ ActionController::Base.allow_rescue = false
 # after each scenario, which can lead to hard-to-debug failures in 
 # subsequent scenarios. If you do this, we recommend you create a Before
 # block that will explicitly put your database in a known state.
-Cucumber::Rails::World.use_transactional_fixtures = false
+Cucumber::Rails::World.use_transactional_tests = false
 
 DatabaseCleaner.strategy = :transaction
 Cucumber::Rails::Database.javascript_strategy = :truncation

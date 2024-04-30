@@ -80,7 +80,7 @@ class StoreController < ApplicationController
 
     @show_url = url_for(params.to_unsafe_hash.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @showdate_url = url_for(params.to_unsafe_hash.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
-    @reload_url = url_for(params.to_unsafe_h.merge(:promo_code => 'XXXX', :only_path => true))
+    @reload_url = url_for(params.to_unsafe_hash.merge(:promo_code => 'XXXX', :only_path => true))
     @store.setup
   end
 
@@ -90,7 +90,7 @@ class StoreController < ApplicationController
     return_after_login params.to_unsafe_hash.except(:customer_id)
     @store = Store::Flow.new(current_user(), @customer, @gAdminDisplay, params)
     @page_title = "#{Option.venue} - Subscriptions"
-    @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
+    @reload_url = url_for(params.to_unsafe_hash.merge(:promo_code => 'XXXX'))
     @store.what = 'Subscription'
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
