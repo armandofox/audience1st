@@ -17,6 +17,9 @@ RSpec.configure do |config|
   config.include AuthenticatedTestHelper
   config.include RSpecHtmlMatchers
   config.include CustomMatchers
+  config.include FactoryBot::Syntax::Methods
+  config.include ApplicationHelper
+  config.include ActionView::Helpers
 
   config.filter_run :focus => true
   config.run_all_when_everything_filtered = true

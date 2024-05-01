@@ -7,9 +7,6 @@ gem 'pg', '0.20'                # Rails5: OK to upgrade to latest version
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
 gem 'rails', '5.0.1'
 
-# gem 'where-or'                  # backport from Rails 5; remove when upgrading
-
-# gem 'bigdecimal', '1.3.5'       # @see https://stackoverflow.com/questions/60226893/rails-nomethoderror-undefined-method-new-for-bigdecimalclass - this can be removed for Rails 5
 gem 'builder'
 gem 'bundler', '1.17.3'
 gem 'figaro'
@@ -19,13 +16,12 @@ gem 'gibbon'
 gem 'i18n'
 gem 'jbuilder', '~> 2.5'
 gem 'json', '>= 2.0'            # see https://github.com/flori/json/issues/399 - avoid deprecation warning with json 1.8.6
-#gem 'newrelic_rpm'
+gem 'newrelic_rpm'
 gem 'nokogiri', '< 1.16.0'
 gem 'platform-api'                # for restart task
 #gem 'responders', '~> 2.0'
 gem 'attr_encrypted', '< 4.0.0'
 gem 'rake'
-#gem 'scout_apm'
 gem 'stripe'
 gem 'will_paginate'
 

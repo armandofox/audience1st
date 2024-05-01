@@ -188,6 +188,7 @@ GEM
       timeout
     net-smtp (0.4.0.1)
       net-protocol
+    newrelic_rpm (9.9.0)
     nio4r (1.2.1)
     nokogiri (1.15.5)
       mini_portile2 (~> 2.8.2)
@@ -352,6 +353,7 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   json (>= 2.0)
   launchy
+  newrelic_rpm
   nokogiri (< 1.16.0)
   pg (= 0.20)
   platform-api
