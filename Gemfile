@@ -47,7 +47,7 @@ group :test do
   gem 'selenium-webdriver', require: false
   gem 'rspec-json_expectations'
   gem 'rails-controller-testing' # for assigns()
-  gem 'simplecov'
+  gem 'simplecov', '0.17.1'
   gem 'timecop'
   gem 'webmock'
   gem 'vcr'
