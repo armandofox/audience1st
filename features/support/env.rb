@@ -16,8 +16,6 @@ TEST_FILES_DIR = File.join(Rails.root, 'spec', 'test_files') unless defined?(TES
 
 require 'cucumber/rails'
 require 'selenium-webdriver'
-
-# This is email_spec
 require 'email_spec/cucumber'
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
@@ -73,7 +71,7 @@ ActionController::Base.allow_rescue = false
 # after each scenario, which can lead to hard-to-debug failures in 
 # subsequent scenarios. If you do this, we recommend you create a Before
 # block that will explicitly put your database in a known state.
-Cucumber::Rails::World.use_transactional_tests = false
+Cucumber::Rails::World.use_transactional_tests = true
 
 DatabaseCleaner.strategy = :transaction
 Cucumber::Rails::Database.javascript_strategy = :truncation
@@ -90,6 +88,7 @@ Before do
   end
 
   # static seed data - root user, venue options, etc.
+  DatabaseCleaner.clean
   load File.join(Rails.root, 'db', 'seeds.rb')
   
   # make rspec mocks/stubs work

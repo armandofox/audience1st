@@ -44,7 +44,7 @@ group :test do
   gem 'chronic'
   gem 'launchy'
   gem 'rack-test'
-  gem 'database_cleaner'
+  gem 'database_cleaner-active_record'
   gem 'email_spec'
   gem 'faker'
   gem 'fake_stripe'
