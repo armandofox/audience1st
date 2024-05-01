@@ -149,14 +149,14 @@ class Customer < ActiveRecord::Base
     conds =
       Array.new(terms.length, "(lower(first_name) LIKE ? or lower(last_name) LIKE ?)").join(' AND ')
     binds = terms.map { |w| [w.downcase, w.downcase] }
-    Customer.regular_customers.where(*([conds,binds].flatten)).uniq.order('last_name')
+    Customer.regular_customers.where(*([conds,binds].flatten)).distinct.order('last_name')
   end
 
   def self.partial_name_matches(terms)
     conds =
       Array.new(terms.length, "(lower(first_name) LIKE ? or lower(last_name) LIKE ?)").join(' AND ')
     binds = terms.map { |w| ["%#{w.downcase}%", "%#{w.downcase}%"] }
-    Customer.regular_customers.where(*([conds,binds].flatten)).uniq.order('last_name')
+    Customer.regular_customers.where(*([conds,binds].flatten)).distinct.order('last_name')
   end
 
   def self.other_term_matches(terms)
@@ -166,7 +166,7 @@ class Customer < ActiveRecord::Base
     end.flatten
     conds = Array.new(terms.size, conds).map{ |cond| "(#{cond})"}.join(" AND ")
     conds_ary.unshift(conds)
-    Customer.regular_customers.where(conds_ary).uniq.order('last_name')
+    Customer.regular_customers.where(conds_ary).distinct.order('last_name')
   end
 
   # Return value of field in this customer record that matches some term in an array of terms.
