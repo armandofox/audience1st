@@ -198,7 +198,7 @@ ActiveRecord::Schema.define(version: 20240604214048) do
     t.text     "general_reminder_email_notes"
     t.integer  "import_timeout",                                                     default: 15,                                                                                                                              null: false
     t.string   "transactional_bcc_email"
-    t.string   "accessible_seating_description",                                     default: "Please describe (wheelchair, no stairs, etc.)"
+    t.string   "accessibility_needs_prompt",                                     default: "Please describe (wheelchair, no stairs, etc.)"
   end
 
   create_table "orders", force: :cascade do |t|

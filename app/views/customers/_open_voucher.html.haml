@@ -19,6 +19,6 @@
         .form-group.special-seating.py-2.d-none
           %label{:for => 'comments', :class => 'form-control form-control-plaintext form-control-sm a1-force-fullwidth'}= t('store.accessible_seating_prompt')
           %br
-          = text_field_tag 'comments', '', :id => nil, :class => 'form-control form-control-sm a1-force-fullwidth', :placeholder => Option.accessible_seating_description
+          = text_field_tag 'comments', '', :id => nil, :class => 'form-control form-control-sm a1-force-fullwidth', :placeholder => Option.accessibility_needs_prompt
       .col-2.text-center= display_seats_field
       .col-2.text-center= submit_tag 'Confirm', :disabled => 'disabled', 'data-disable-with' => 'Confirming...', :id => nil, :class => 'confirm-seats btn btn-success'

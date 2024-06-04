@@ -384,7 +384,7 @@ en:
       HTML tags and will be wrapped in &lt;div
       id='accessible_seating_notices'&gt;.
 
-    accessible_seating_description: >
+    accessibility_needs_prompt: >
 
       Language that prompts the patron to briefly describe any special seating needs.
 
