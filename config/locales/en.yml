@@ -296,7 +296,7 @@ en:
       Are you sure? Click OK to continue with cancelling this reservation, or Cancel to leave things as they are.
 
     special_seating_requests: >
-      Any special seating/mobility needs?
+      Special seating/mobility needs?
 
     cancelled: >
       %{canceled_num} of your reservations have been cancelled.
@@ -309,9 +309,6 @@ en:
 
     accessible_seating_prompt: >
       Special seating needs?
-
-    accessible_seating_description: >
-      Please describe (wheelchair, no stairs, etc.)
 
     accept_terms_of_sale: >
       By completing your order, you agree to the terms of sale.

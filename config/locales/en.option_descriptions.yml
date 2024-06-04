@@ -384,6 +384,10 @@ en:
       HTML tags and will be wrapped in &lt;div
       id='accessible_seating_notices'&gt;.
 
+    accessible_seating_description: >
+
+      Language that prompts the patron to briefly describe any special seating needs.
+
     general_confirmation_email_notes: >
 
       General instructions to ALL CUSTOMERS that appear in order
