@@ -295,9 +295,6 @@ en:
     confirm_cancellation: >
       Are you sure? Click OK to continue with cancelling this reservation, or Cancel to leave things as they are.
 
-    special_seating_requests: >
-      Special seating/mobility needs?
-
     cancelled: >
       %{canceled_num} of your reservations have been cancelled.
 
@@ -308,7 +305,7 @@ en:
       Our transactions are securely processed through Stripe.
 
     accessible_seating_prompt: >
-      Special seating needs?
+      Special seating/mobility needs?
 
     accept_terms_of_sale: >
       By completing your order, you agree to the terms of sale.
