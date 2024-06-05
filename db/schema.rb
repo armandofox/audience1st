@@ -198,7 +198,12 @@ ActiveRecord::Schema.define(version: 20240604214048) do
     t.text     "general_reminder_email_notes"
     t.integer  "import_timeout",                                                     default: 15,                                                                                                                              null: false
     t.string   "transactional_bcc_email"
-    t.string   "accessibility_needs_prompt",                                     default: "Please describe (wheelchair, no stairs, etc.)"
+    t.string   "accessibility_needs_prompt",                                         default: "Please describe (wheelchair, no stairs, etc.)"
+    t.boolean  "allow_recurring_donations",                                          default: false
+    t.string   "default_donation_type",                                              default: "one"
+    t.text     "recurring_donation_contact_emails"
+    t.boolean  "notify_theater_about_new_recurring_donation",                        default: true
+    t.boolean  "notify_theater_about_failed_recurring_donation_charge",              default: true
   end
 
   create_table "orders", force: :cascade do |t|

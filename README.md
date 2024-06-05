@@ -3,15 +3,22 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
 [![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://pivotaltracker.com/n/projects/44802)
 
+Spring 24 Team Badges
+[![Maintainability](https://api.codeclimate.com/v1/badges/d9b6e16a95d868605440/maintainability)](https://codeclimate.com/github/cs169/audience1st/maintainability)
+![Build Status](https://github.com/cs169/audience1st/actions/workflows/ci.yml/badge.svg)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d9b6e16a95d868605440/test_coverage)](https://codeclimate.com/github/cs169/audience1st/test_coverage)
+[![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2488109)
+
 
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from:
 [Abhinav Dhulipala](https://github.com/abhinavDhulipala),
+[Adam Dong](https://github.com/adam2451),
 [Xiao Fu](https://github.com/fxdawnn),
 [Matthew Fyke](https://github.com/mattfyke),
 [Jasper Gan](https://github.com/jasgan),
+[Xiaoyu Alan He](https://github.com/AlanHe-Xiaoyu),
 [CiCi Huang](https://github.com/chengchenghuang),
 [Xu Huang](https://github.com/Hexhu),
-[Xiaoyu Alan He](https://github.com/AlanHe-Xiaoyu),
 [Anthony Jang](https://github.com/segfalut),
 [Kyle Khus](https://github.com/kkhus5),
 [Wayne Leung](https://github.com/WayneLeung12),
@@ -19,16 +26,21 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Yowsean Li](https://github.com/yowsean),
 [Anthony Ling](https://github.com/Ant1ng2),
 [Jason Lum](https://github.com/jayl109),
+[Robert Nickles](https://github.com/rnickles),
 [Sanket Padmanabhan](https://github.com/sanketq),
+[Pratyush Sharma](https://github.com/PratyushSharma14),
 [Andrew Sun](https://github.com/andrewsun98),
 [Tanji Saraf-Chavez](https://github.com/tsarafchavez),
 [Jack Wan](https://github.com/WanNJ),
+[Winson Tsang Wan](https://github.com/winsonwan),
 [Alex Wang](https://github.com/raisindoc),
-[Kevin Yen](https://github.com/crazyberry7),
+[Justin Wong](https://github.com/JustinRWong),
 [Casper Yang](https://github.com/cyang2020),
+[Kevin Yen](https://github.com/crazyberry7),
 [Hang (Arthur) Yin](https://github.com/LoserNoOne),
 and
-[Justin Wong](https://github.com/JustinRWong)
+[Mayra Zamudio](https://github.com/MayZamudio)
+
 
 
 # This information is for developers and deployers
