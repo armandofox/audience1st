@@ -7,8 +7,28 @@ class RecurringDonationsController < ApplicationController
     @account_codes = AccountCode.all
     @recurring_donation = @customer.recurring_donations.build(
       :account_code => AccountCode.default_account_code,
-      :amount => 50,
-      :state => :building)
+      :amount => 50)
+  end
+
+  def show
+    @recurring_donation = RecurringDonation.find params[:id]
+  end
+
+  def create
+    recurring_donation_params = params.require(:recurring_donation).permit(:account_code_id, :amount)
+    @recurring_donation = @customer.recurring_donations.build(recurring_donation_params)
+    @recurring_donation.state = 'preparing'
+    unless @recurring_donation.save
+      return redirect_to(new_customer_recurring_donation_path(@customer),
+                        :alert => @recurring_donation.errors.as_html)
+    end
+    # create the Stripe objects, and if all succeeds, redirect to a Stripe checkout session
+    if @recurring_donation.prepare_checkout
+      redirect_to @recurring_donation.checkout_url, 303
+    else
+      redirect_to new_customer_recurring_donations_path(@customer),
+                  :alert => 'Something went wrong'
+    end
   end
 
   private
