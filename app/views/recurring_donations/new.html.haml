@@ -1,0 +1,20 @@
+.form#recurring-donation
+  = form_for [@customer,@recurring_donation], :method => :post, :class => 'form' do |f|
+    = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
+    .form-row.py-2
+      .col-md-2.text-right
+        %label.col-form-label{:for => 'amount'} Amount $
+      .col-md-1
+        .input-group
+          = f.number_field 'amount', :class => 'form-control text-right'
+          .input-group-append
+            %span.input-group-text .00
+    .form-row.py-2
+      .col-md-2.text-right
+        %label.col-form-label{:for => 'account_code'} Fund
+      .col-md-3
+        = f.select 'account_code_id', options_from_collection_for_select(@account_codes, :id, :name), {}, {:class => 'form-control'}
+    .form-row.py-2
+      .col-md-3.offset-2
+        = f.submit 'Proceed to Payment', :class => 'btn btn-primary'
+    
