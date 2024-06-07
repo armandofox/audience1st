@@ -14,10 +14,10 @@ Scenario: change staff-only comment, labels, blacklist; don't email
   And I check "customer_e_blacklist"
   And I press "Save Changes"
   Then customer "Armando Fox" should have the following attributes:
-  | attribute   | value |
-  | comments    | Lush  |
-  | e_blacklist | true  |
-  | blacklist   | true  |
+  | attribute   | value  |
+  | comments    | Lush   |
+  | e_blacklist | "true" |
+  | blacklist   | "true" |
   And no email should be sent to customer "Armando Fox"
 
 Scenario: superadmin can change customer role

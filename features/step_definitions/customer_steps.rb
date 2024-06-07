@@ -125,7 +125,7 @@ Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,la
     name,val = attr[:attribute], attr[:value]
     column_type = Customer.column_for_attribute(name).type
     object_after_cast = ActiveRecord::Type.lookup(column_type).cast(val)
-    expect(customer.send(name).to_s).to eq(object_after_cast)
+    expect(customer.send(name)).to eq(object_after_cast)
   end
 end
 

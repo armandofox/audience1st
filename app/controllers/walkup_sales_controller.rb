@@ -35,7 +35,7 @@ class WalkupSalesController < ApplicationController
     seats = view_context.seats_from_params(params)
     qtys = params[:qty]
     @order.add_tickets_from_params(qtys, current_user, :seats => seats)
-    saved_params = {:qty => qtys, :nonticket => nonticket, :donation => donation,
+    saved_params = {:qty => qtys.to_unsafe_h, :nonticket => nonticket, :donation => donation,
       :seats => view_context.display_seats(seats)} # in case have to retry
     return redirect_to(walkup_sale_path(@showdate,saved_params), :alert => t('store.errors.empty_order')) if
       (donation.zero? && @order.vouchers.empty? && @order.retail_items.empty?)
