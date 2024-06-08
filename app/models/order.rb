@@ -128,9 +128,10 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def add_tickets_from_params(valid_voucher_params, customer, promo_code: '', seats: [])
-    return unless valid_voucher_params
+  def add_tickets_from_params(valid_voucher_params_object, customer, promo_code: '', seats: [])
+    return unless valid_voucher_params_object
     seats2 = seats.dup
+    valid_voucher_params = valid_voucher_params_object.to_unsafe_h
     total_tickets = valid_voucher_params.map do |id,count|
       ValidVoucher.find(id).vouchertype.reservable? ? count.to_i  : 0
     end.sum

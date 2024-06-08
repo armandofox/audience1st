@@ -79,7 +79,7 @@ class VouchersController < ApplicationController
       :voucher_id => vouchers.first.id,
       :comments => comment,
       :logged_in_id => current_user.id)
-    render :nothing => true
+    render :body => nil
   end
 
   def confirm_multiple

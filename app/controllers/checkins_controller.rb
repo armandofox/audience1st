@@ -59,7 +59,7 @@ class CheckinsController < ApplicationController
   end
 
   def update
-    render :nothing => true and return unless params[:vouchers]
+    render :body => nil and return unless params[:vouchers]
     showdate = Showdate.find params[:id]
     ids = params[:vouchers].split(/,/)
     vouchers = ids.map { |v| Voucher.find_by_id(v) }.compact
