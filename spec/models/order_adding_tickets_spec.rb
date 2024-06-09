@@ -12,7 +12,7 @@ describe 'Order adding tickets' do
     before :each do
       @boxoffice_user = create(:customer, :role => 'boxoffice')
       @order.processed_by = @boxoffice_user
-      @params = {@vv.id => 3}
+      @params = ActionController::Parameters.new({@vv.id => 3})
     end
     it 'can add tickets even if beyond max sales limit' do
       @vv.showdate.update_attributes!(:max_advance_sales => 2)
