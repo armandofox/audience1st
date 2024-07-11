@@ -28,7 +28,7 @@ gem 'responders', '~> 2.0'
 gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
 gem 'rake'
 gem 'scout_apm'
-gem 'stripe'
+gem 'stripe', '8.7.0'
 gem 'will_paginate'
 
 # asset pipeline

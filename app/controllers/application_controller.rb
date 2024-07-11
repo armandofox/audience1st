@@ -39,6 +39,17 @@ class ApplicationController < ActionController::Base
 
   public
 
+  # hostname to use for callback URLs.  Can be overridden in dev or test mode so that
+  #   endpoints behind a NAT/firewall can be exposed, etc.
+  def callback_host
+    if Rails.env.production?
+      request.host
+    elsif !Figaro.env.CALLBACK_HOST
+      Rails.logger.warn "*** WARNING: ApplicationController#callback_host called in non-production environment and no CALLBACK_HOST is set.  Setting to localhost with no port."
+      "http://localhost"
+    end
+  end
+
   # Session keys
   #  :cid               id of logged in user; if absent, nobody logged in
   #  :return_to         route params (for url_for) to return to after valid login

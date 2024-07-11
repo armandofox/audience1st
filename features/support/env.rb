@@ -138,6 +138,10 @@ Before('@stubs_failed_refund') do
   Store.stub(:refund_credit_card).and_raise(Stripe::StripeError.new("Refund failed in test mode"))
 end
 
+Before('@stubs_successful_recurring_payment') do
+  # TBD
+end
+
 World(FactoryBot::Syntax::Methods)
 World(ActionView::Helpers::NumberHelper)
 World(ActionView::Helpers::TextHelper)

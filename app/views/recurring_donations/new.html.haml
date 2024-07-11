@@ -3,9 +3,11 @@
     = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
     .form-row.py-2
       .col-md-2.text-right
-        %label.col-form-label{:for => 'amount'} Amount $
-      .col-md-1
+        %label.col-form-label{:for => 'recurring_donation_amount'} Amount
+      .col-md-2
         .input-group
+          .input-group-prepend
+            %span.input-group-text $
           = f.number_field 'amount', :class => 'form-control text-right'
           .input-group-append
             %span.input-group-text .00
