@@ -43,11 +43,10 @@ class ApplicationController < ActionController::Base
   #   endpoints behind a NAT/firewall can be exposed, etc.
   def callback_host
     if Rails.env.production?
-      Rails.logger.error "Hostname is '#{request.host}'"
-      request.host
+      "https://#{request.host}"
     elsif !Figaro.env.CALLBACK_HOST
       Rails.logger.warn "*** WARNING: ApplicationController#callback_host called in non-production environment and no CALLBACK_HOST is set.  Setting to localhost with no port."
-      "localhost"
+      "http://localhost"
     end
   end
 
