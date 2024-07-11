@@ -20,6 +20,9 @@ class RecurringDonation < Item
     cancel_url = URI.join(callback_host,
                           helpers.customer_path(self.customer))
     
+    # how the recurring donation description will appear in Stripe dashboard
+    recurring_donation_stripe_name = "$#{amount.to_i} monthly #{customer.full_name_with_email"
+
     # create the Price object and find/create the Product object for a recurring donation
     Store::Payment.set_api_key
     # TBD rescue exceptions
@@ -32,7 +35,7 @@ class RecurringDonation < Item
               currency: 'usd',
               unit_amount: (self.amount * 100).to_i,
               recurring: { interval: 'month' },
-              product_data: { name: "Monthly recurring donation to #{Option.venue}" }
+              product_data: { name: recurring_donation_stripe_name }
             },
             quantity: 1
           }
