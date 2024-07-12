@@ -307,7 +307,7 @@ class Customer < ActiveRecord::Base
   end
 
   @@user_entered_strings =
-    %w[first_name last_name street city state zip day_phone eve_phone  email]
+    %w[first_name last_name street city state zip day_phone eve_phone  email].freeze
 
   # strip whitespace before saving
   def trim_whitespace_from_user_entered_strings

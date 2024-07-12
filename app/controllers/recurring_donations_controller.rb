@@ -4,7 +4,9 @@ class RecurringDonationsController < ApplicationController
   before_action :get_customer_id
 
   def new
+    @page_title = 'Set up new recurring donation'
     @account_codes = AccountCode.all
+    @existing_recurring_donations = @customer.recurring_donations
     @recurring_donation = @customer.recurring_donations.build(
       :account_code => AccountCode.default_account_code,
       :amount => 50)
