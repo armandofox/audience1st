@@ -31,22 +31,30 @@ Capybara.server = :webrick
 #  npx @puppeteer/browsers install chromedriver@124.0.6367.91
 #  (Note: these 'installs' just put stuff in the $cwd. brew install may be better)
 
-Capybara.register_driver :selenium do |app|
-  #Selenium::WebDriver::Chromedriver.required_version = '124.0.6367.91'
-  webdriver_args = %w[--headless --no-sandbox --disable-gpu --window-size=1024,1024]
-  options = Selenium::WebDriver::Chrome::Options.new(
-    args: webdriver_args
-  )
-  # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
-  # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
-  options.add_option(:unhandled_prompt_behavior, :accept)
+Capybara.register_driver :selenium_chrome_headless do |app|
+  options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+    opts.add_argument '--headless'
+    opts.add_argument '--no-sandbox'
+    opts.add_argument '--disable-gpu'
+    opts.add_argument '--window-size=1024,1024'
+    # opts.binary = File.join(Rails.root, 'tmp', 'Google Chrome for Testing.app')
+    # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
+    # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
+    opts.unhandled_prompt_behavior = :accept
+  end
+
+  #service = Selenium::WebDriver::Service.chrome(path: File.join(Rails.root, 'tmp', 'chromedriver'))
+
+  
   Capybara::Selenium::Driver.new(
     app,
     browser: :chrome,
-    capabilities: options,
+    # service: service,
+    options: options,
     clear_session_storage: true,
     clear_local_storage: true)
 end
+Capybara.javascript_driver = :selenium_chrome_headless
 
 # If you set this to false, any error raised from within your app will bubble 
 # up to your step definition and out to cucumber unless you catch it somewhere

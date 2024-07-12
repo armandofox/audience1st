@@ -22,7 +22,7 @@ gem 'platform-api'                # for restart task
 #gem 'responders', '~> 2.0'
 gem 'attr_encrypted', '< 4.0.0'
 gem 'rake'
-gem 'stripe'
+gem 'stripe', '8.7.0'
 gem 'will_paginate'
 
 # asset pipeline
