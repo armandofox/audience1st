@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20231229020410) do
+ActiveRecord::Schema.define(version: 20240618113729) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 255, default: "", null: false
@@ -72,25 +72,27 @@ ActiveRecord::Schema.define(version: 20231229020410) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.integer  "vouchertype_id",                 default: 0,          null: false
-    t.integer  "customer_id",                    default: 0,          null: false
+    t.integer  "vouchertype_id",                    default: 0,          null: false
+    t.integer  "customer_id",                       default: 0,          null: false
     t.integer  "showdate_id"
-    t.string   "comments",           limit: 255
-    t.boolean  "fulfillment_needed",             default: false,      null: false
-    t.string   "promo_code",         limit: 255
-    t.integer  "processed_by_id",                default: 2146722771, null: false
-    t.integer  "bundle_id",                      default: 0,          null: false
-    t.boolean  "checked_in",                     default: false,      null: false
-    t.boolean  "walkup",                         default: false,      null: false
-    t.float    "amount",                         default: 0.0
+    t.string   "comments",              limit: 255
+    t.boolean  "fulfillment_needed",                default: false,      null: false
+    t.string   "promo_code",            limit: 255
+    t.integer  "processed_by_id",                   default: 2146722771, null: false
+    t.integer  "bundle_id",                         default: 0,          null: false
+    t.boolean  "checked_in",                        default: false,      null: false
+    t.boolean  "walkup",                            default: false,      null: false
+    t.float    "amount",                            default: 0.0
     t.integer  "account_code_id"
     t.datetime "updated_at"
     t.datetime "letter_sent"
-    t.string   "type",               limit: 255
+    t.string   "type",                  limit: 255
     t.integer  "order_id"
     t.boolean  "finalized"
     t.string   "seat"
     t.datetime "sold_on"
+    t.integer  "recurring_donation_id"
+    t.string   "state"
     t.index ["account_code_id"], name: "index_items_on_account_code_id"
     t.index ["bundle_id"], name: "index_items_on_bundle_id"
     t.index ["customer_id"], name: "index_items_on_customer_id"
@@ -191,6 +193,12 @@ ActiveRecord::Schema.define(version: 20231229020410) do
     t.text     "general_reminder_email_notes"
     t.integer  "import_timeout",                                                     default: 15,                                                                                                                              null: false
     t.string   "transactional_bcc_email"
+    t.string   "accessibility_needs_prompt",                                         default: "Please describe (wheelchair, no stairs, etc.)"
+    t.boolean  "allow_recurring_donations",                                          default: false
+    t.string   "default_donation_type",                                              default: "one"
+    t.text     "recurring_donation_contact_emails"
+    t.boolean  "notify_theater_about_new_recurring_donation",                        default: true
+    t.boolean  "notify_theater_about_failed_recurring_donation_charge",              default: true
   end
 
   create_table "orders", force: :cascade do |t|
@@ -216,6 +224,17 @@ ActiveRecord::Schema.define(version: 20231229020410) do
     t.index ["processed_by_id"], name: "index_orders_on_processed_by_id"
     t.index ["purchaser_id"], name: "index_orders_on_purchaser_id"
     t.index ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id"
+  end
+
+  create_table "recurring_donations", force: :cascade do |t|
+    t.integer  "customer_id"
+    t.integer  "account_code_id"
+    t.integer  "processed_by_id"
+    t.string   "stripe_price_oid"
+    t.string   "state"
+    t.integer  "amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "seating_zones", force: :cascade do |t|

@@ -30,8 +30,8 @@ Rails.application.configure do
   # number of complex assets.
   config.assets.enabled = true
 
-  config.serve_static_files   = true
-  config.static_cache_control = 'public, max-age=3600'
+  config.public_file_server.enabled   = true
+  config.public_file_server.headers = {'Cache-Control' => 'public, max-age=3600'}
 
   config.assets.debug = true
   config.assets.compile = true

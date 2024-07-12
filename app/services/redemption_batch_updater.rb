@@ -6,8 +6,8 @@ class RedemptionBatchUpdater
   def initialize(showdates, vouchertypes, valid_voucher_params: {}, preserve: {})
     @showdates = showdates
     @vouchertypes = vouchertypes
-    @valid_voucher_params = valid_voucher_params.symbolize_keys
-    @preserve = preserve.symbolize_keys
+    @valid_voucher_params = valid_voucher_params.to_h.symbolize_keys
+    @preserve = preserve.to_h.symbolize_keys
     @errs = Hash.new { |h,k| h[k] = [] } # vouchertype => showdate_id's to which it could NOT be added
     @possible_cause = {}
     @vv = nil
