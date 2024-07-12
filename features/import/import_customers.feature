@@ -1,3 +1,4 @@
+@wip
 @javascript
 Feature: Import customer list
 

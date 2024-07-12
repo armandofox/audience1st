@@ -33,7 +33,7 @@ Capybara.server = :webrick
 
 Capybara.register_driver :selenium_chrome_headless do |app|
   options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|
-    opts.add_argument '--headless'
+    #opts.add_argument '--headless'
     opts.add_argument '--no-sandbox'
     opts.add_argument '--disable-gpu'
     opts.add_argument '--window-size=1024,1024'

@@ -4,7 +4,10 @@
     %title #{@page_title}: #{@showdate.printable_name}
     = bootstrap_stylesheet_link_tag
     = stylesheet_link_tag :application, :media => 'all'
+    = jquery_javascript_css_tags
     = javascript_include_tag :application
+
+
   %body#door_list{:class => ('maintenance' if @gMaintMode)}
     = yield
     #footer
