@@ -99,7 +99,7 @@ GEM
       rexml (~> 3.0)
       webrick (~> 1.7)
     cucumber-tag-expressions (4.1.0)
-    database_cleaner-active_record (2.2.0)
+    database_cleaner-active_record (2.1.0)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
@@ -173,7 +173,7 @@ GEM
     mime-types-data (3.2024.0206)
     mini_mime (1.1.5)
     mini_portile2 (2.8.5)
-    minitest (5.22.3)
+    minitest (5.24.1)
     moneta (1.0.0)
     multi_json (1.15.0)
     multi_test (1.1.0)
@@ -339,9 +339,9 @@ DEPENDENCIES
   byebug
   capybara
   chronic
+  concurrent-ruby (= 1.2.3)
   cucumber-rails (< 3.0.0)
-  database_cleaner-active_record (>= 2.2.0)
-  database_cleaner-core (>= 2.0.1)
+  database_cleaner-active_record (= 2.1.0)
   email_spec
   factory_bot_rails
   fake_stripe

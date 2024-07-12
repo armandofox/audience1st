@@ -33,7 +33,7 @@ Capybara.server = :webrick
 
 Capybara.register_driver :selenium_chrome_headless do |app|
   options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|
-    #opts.add_argument '--headless'
+    opts.add_argument '--headless'
     opts.add_argument '--no-sandbox'
     opts.add_argument '--disable-gpu'
     opts.add_argument '--window-size=1024,1024'
@@ -49,7 +49,6 @@ Capybara.register_driver :selenium_chrome_headless do |app|
   Capybara::Selenium::Driver.new(
     app,
     browser: :chrome,
-    # service: service,
     options: options,
     clear_session_storage: true,
     clear_local_storage: true)
@@ -81,8 +80,9 @@ ActionController::Base.allow_rescue = false
 # block that will explicitly put your database in a known state.
 Cucumber::Rails::World.use_transactional_tests = true
 
+DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction
-Cucumber::Rails::Database.javascript_strategy = :truncation
+#Cucumber::Rails::Database.javascript_strategy = :truncation
 
 World(RSpec::Mocks::ExampleMethods)
 
