@@ -76,7 +76,7 @@ Rails.application.routes.draw do
       resources :showdates, :except => [:index]
     end
     
-    resources :valid_vouchers, :except => [:index]
+    resources :valid_vouchers, :except => [:index,:show]
     resources :vouchertypes do
       member do
         get :clone
