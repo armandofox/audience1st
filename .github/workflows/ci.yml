@@ -12,7 +12,10 @@ jobs:
       
     steps:
     - uses: actions/checkout@v2
-    - uses: nanasess/setup-chromedriver@v2
+
+    - uses: browser-actions/setup-chrome@v1
+      with:
+        install-chromedriver: true
 
     - name: install libxslt
       run: |
