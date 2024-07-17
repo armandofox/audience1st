@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20240417020007) do
+ActiveRecord::Schema.define(version: 20240618113729) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,46 +68,48 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.integer  "ticket_sales_import_id"
   end
 
-  add_index "customers", ["ticket_sales_import_id"], name: "index_customers_on_ticket_sales_import_id"
+  add_index "customers", ["ticket_sales_import_id"], name: "index_customers_on_ticket_sales_import_id", using: :btree
 
   create_table "customers_labels", id: false, force: :cascade do |t|
     t.integer "customer_id"
     t.integer "label_id"
   end
 
-  add_index "customers_labels", ["customer_id", "label_id"], name: "index_customers_labels_on_customer_id_and_label_id", unique: true
+  add_index "customers_labels", ["customer_id", "label_id"], name: "index_customers_labels_on_customer_id_and_label_id", unique: true, using: :btree
 
   create_table "items", force: :cascade do |t|
-    t.integer  "vouchertype_id",                 default: 0,          null: false
-    t.integer  "customer_id",                    default: 0,          null: false
+    t.integer  "vouchertype_id",                    default: 0,          null: false
+    t.integer  "customer_id",                       default: 0,          null: false
     t.integer  "showdate_id"
-    t.string   "comments",           limit: 255
-    t.boolean  "fulfillment_needed",             default: false,      null: false
-    t.string   "promo_code",         limit: 255
-    t.integer  "processed_by_id",                default: 2146722771, null: false
-    t.integer  "bundle_id",                      default: 0,          null: false
-    t.boolean  "checked_in",                     default: false,      null: false
-    t.boolean  "walkup",                         default: false,      null: false
-    t.float    "amount",                         default: 0.0
+    t.string   "comments",              limit: 255
+    t.boolean  "fulfillment_needed",                default: false,      null: false
+    t.string   "promo_code",            limit: 255
+    t.integer  "processed_by_id",                   default: 2146722771, null: false
+    t.integer  "bundle_id",                         default: 0,          null: false
+    t.boolean  "checked_in",                        default: false,      null: false
+    t.boolean  "walkup",                            default: false,      null: false
+    t.float    "amount",                            default: 0.0
     t.integer  "account_code_id"
     t.datetime "updated_at"
     t.datetime "letter_sent"
-    t.string   "type",               limit: 255
+    t.string   "type",                  limit: 255
     t.integer  "order_id"
     t.boolean  "finalized"
     t.string   "seat"
     t.datetime "sold_on"
+    t.integer  "recurring_donation_id"
+    t.string   "state"
   end
 
-  add_index "items", ["account_code_id"], name: "index_items_on_account_code_id"
-  add_index "items", ["bundle_id"], name: "index_items_on_bundle_id"
-  add_index "items", ["customer_id"], name: "index_items_on_customer_id"
-  add_index "items", ["finalized"], name: "index_items_on_finalized"
-  add_index "items", ["order_id"], name: "index_items_on_order_id"
-  add_index "items", ["processed_by_id"], name: "index_items_on_processed_by_id"
-  add_index "items", ["seat"], name: "index_items_on_seat"
-  add_index "items", ["showdate_id"], name: "index_items_on_showdate_id"
-  add_index "items", ["vouchertype_id"], name: "index_items_on_vouchertype_id"
+  add_index "items", ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
+  add_index "items", ["bundle_id"], name: "index_items_on_bundle_id", using: :btree
+  add_index "items", ["customer_id"], name: "index_items_on_customer_id", using: :btree
+  add_index "items", ["finalized"], name: "index_items_on_finalized", using: :btree
+  add_index "items", ["order_id"], name: "index_items_on_order_id", using: :btree
+  add_index "items", ["processed_by_id"], name: "index_items_on_processed_by_id", using: :btree
+  add_index "items", ["seat"], name: "index_items_on_seat", using: :btree
+  add_index "items", ["showdate_id"], name: "index_items_on_showdate_id", using: :btree
+  add_index "items", ["vouchertype_id"], name: "index_items_on_vouchertype_id", using: :btree
 
   create_table "labels", force: :cascade do |t|
     t.string "name", limit: 255
@@ -198,12 +200,12 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.text     "general_reminder_email_notes"
     t.integer  "import_timeout",                                                     default: 15,                                                                                                                              null: false
     t.string   "transactional_bcc_email"
+    t.string   "accessibility_needs_prompt",                                         default: "Please describe (wheelchair, no stairs, etc.)"
     t.boolean  "allow_recurring_donations",                                          default: false
     t.string   "default_donation_type",                                              default: "one"
     t.text     "recurring_donation_contact_emails"
     t.boolean  "notify_theater_about_new_recurring_donation",                        default: true
     t.boolean  "notify_theater_about_failed_recurring_donation_charge",              default: true
-    t.string   "accessibility_needs_prompt",                                     default: "Please describe (wheelchair, no stairs, etc.)"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -226,11 +228,22 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.text     "from_import"
   end
 
-  add_index "orders", ["customer_id"], name: "index_orders_on_customer_id"
-  add_index "orders", ["external_key"], name: "index_orders_on_external_key"
-  add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id"
-  add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id"
-  add_index "orders", ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id"
+  add_index "orders", ["customer_id"], name: "index_orders_on_customer_id", using: :btree
+  add_index "orders", ["external_key"], name: "index_orders_on_external_key", using: :btree
+  add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
+  add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id", using: :btree
+  add_index "orders", ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id", using: :btree
+
+  create_table "recurring_donations", force: :cascade do |t|
+    t.integer  "customer_id"
+    t.integer  "account_code_id"
+    t.integer  "processed_by_id"
+    t.string   "stripe_price_oid"
+    t.string   "state"
+    t.integer  "amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "seating_zones", force: :cascade do |t|
     t.string  "name"
@@ -265,8 +278,8 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.string   "house_seats",         limit: 8192
   end
 
-  add_index "showdates", ["seatmap_id"], name: "index_showdates_on_seatmap_id"
-  add_index "showdates", ["show_id"], name: "index_showdates_on_show_id"
+  add_index "showdates", ["seatmap_id"], name: "index_showdates_on_seatmap_id", using: :btree
+  add_index "showdates", ["show_id"], name: "index_showdates_on_show_id", using: :btree
 
   create_table "shows", force: :cascade do |t|
     t.string   "name",                      limit: 255
@@ -296,7 +309,7 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.datetime "created_at"
   end
 
-  add_index "ticket_sales_imports", ["processed_by_id"], name: "index_ticket_sales_imports_on_processed_by_id"
+  add_index "ticket_sales_imports", ["processed_by_id"], name: "index_ticket_sales_imports_on_processed_by_id", using: :btree
 
   create_table "txns", force: :cascade do |t|
     t.integer  "customer_id",                default: 1,   null: false
@@ -312,12 +325,12 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.string   "txn_type",       limit: 255
   end
 
-  add_index "txns", ["customer_id"], name: "index_txns_on_customer_id"
-  add_index "txns", ["entered_by_id"], name: "index_txns_on_entered_by_id"
-  add_index "txns", ["order_id"], name: "index_txns_on_order_id"
-  add_index "txns", ["show_id"], name: "index_txns_on_show_id"
-  add_index "txns", ["showdate_id"], name: "index_txns_on_showdate_id"
-  add_index "txns", ["voucher_id"], name: "index_txns_on_voucher_id"
+  add_index "txns", ["customer_id"], name: "index_txns_on_customer_id", using: :btree
+  add_index "txns", ["entered_by_id"], name: "index_txns_on_entered_by_id", using: :btree
+  add_index "txns", ["order_id"], name: "index_txns_on_order_id", using: :btree
+  add_index "txns", ["show_id"], name: "index_txns_on_show_id", using: :btree
+  add_index "txns", ["showdate_id"], name: "index_txns_on_showdate_id", using: :btree
+  add_index "txns", ["voucher_id"], name: "index_txns_on_voucher_id", using: :btree
 
   create_table "valid_vouchers", force: :cascade do |t|
     t.integer  "showdate_id"
@@ -332,8 +345,8 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.integer  "max_sales_per_txn",               default: 100000
   end
 
-  add_index "valid_vouchers", ["showdate_id"], name: "index_valid_vouchers_on_showdate_id"
-  add_index "valid_vouchers", ["vouchertype_id"], name: "index_valid_vouchers_on_vouchertype_id"
+  add_index "valid_vouchers", ["showdate_id"], name: "index_valid_vouchers_on_showdate_id", using: :btree
+  add_index "valid_vouchers", ["vouchertype_id"], name: "index_valid_vouchers_on_vouchertype_id", using: :btree
 
   create_table "vouchertypes", force: :cascade do |t|
     t.string   "name",                limit: 255
@@ -353,6 +366,6 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.integer  "seating_zone_id"
   end
 
-  add_index "vouchertypes", ["account_code_id"], name: "index_vouchertypes_on_account_code_id"
+  add_index "vouchertypes", ["account_code_id"], name: "index_vouchertypes_on_account_code_id", using: :btree
 
 end
