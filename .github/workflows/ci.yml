@@ -11,7 +11,8 @@ jobs:
       TZ: America/Los_Angeles
       
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+    - uses: nanasess/setup-chromedriver@v2
 
     - name: install libxslt
       run: |
@@ -38,16 +39,16 @@ jobs:
       run: |
         bundle install --without production
         
-    - name: run RSpec tests and capture coverage
-      run: |
-        bundle exec rspec
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
-        
     - name: run Cucumber tests and capture coverage
       run: |
         bundle exec cucumber --retry 2  2>/dev/null
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
   
+    - name: run RSpec tests and capture coverage
+      run: |
+        bundle exec rspec
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+        
     - name: Publish code coverage
       run: |
         export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
