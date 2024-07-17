@@ -19,7 +19,7 @@ gem 'gibbon'
 gem 'i18n'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', '= 4.0.5'
-gem 'jquery-ui-rails', '= 5.0.5'
+gem 'jquery-ui-rails', '7.0.0'
 gem 'json', '>= 2.0'            # see https://github.com/flori/json/issues/399 - avoid deprecation warning with json 1.8.6
 gem 'newrelic_rpm'
 gem 'nokogiri', '~> 1.12'
