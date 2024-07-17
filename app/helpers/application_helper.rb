@@ -46,7 +46,7 @@ module ApplicationHelper
       :customers => [:show, :edit, :change_password_for, :change_secret_question],
       :vouchers => [:index],
       :orders => [:index],
-      :store => [:index, :subscribe, :donate, :donate_to_fund, :shipping_address, :checkout]
+      :store => [:index, :subscribe, :donate, :shipping_address, :checkout]
     }
     ! @customer.try(:new_record?) &&
       (allowed_actions[controller.controller_name.to_sym] || {}).include?(action_name.to_sym)

@@ -5,6 +5,11 @@ Feature: quick donation without logging in
   To make it easier for people to donate
   I want to provide a way to donate with a credit card without logging in
 
+Background:
+  Given the following account codes exist:
+  | name             | code | description                                                     | donation_prompt          |
+  | Soda Fund        | 0504 | The Soda Funds aims to put a Soda Fountain in Soda Hall         |                          |
+
 Scenario: donor logged in, page gets prepopulated with donor info
 
   Given a donation of $10 on 2009-12-01 from "Tom Foolery" to the "General Fund"
@@ -91,4 +96,45 @@ Scenario: admin logged in, records donation on behalf of patron
   Then I should see "Thank You for Your Purchase!"
   And customer "Joe Mallon" should have a donation of $9.00 to "General Fund"
   And an email should be sent to customer "Joe Mallon" containing "$  9.00  Donation to General Fund"
+
+Scenario: landing on quick donation page with valid account code
+  Given I am logged in as customer "Tom Foolery"
+  When I visit the quick donation landing page for account code 0504
+  Then I should not see "Donate to"
+  And I should see "Soda Fund"
+  And I should see "The Soda Funds aims to put a Soda Fountain in Soda Hall Address"
+
+Scenario: landing on quick donation page with invalid account code
+  Given I am logged in as customer "Tom Foolery"
+  When I visit the quick donation landing page for account code 0505
+  Then I should see "Invalid Fund ID"
+
+Scenario: landing on quick donation page with no account code
+  Given I am logged in as customer "Tom Foolery"
+  When I go to the quick donation page
+  Then I should not see "Donate to"
+  And I should see "General Fund"
+  And I should see "General Fund Address"
+  
+Scenario: landing on quick donation page with valid account code and making quick donation
+  Given I am logged in as customer "Tom Foolery"
+  When I go to the quick donation page
+  And I fill in "Donation amount" with "15"
+  And I press "Charge Donation to Credit Card"
+  Then I should see "You have paid a total of $15.00 by Credit card"
+  And customer "Tom Foolery" should have a donation of $15.00 to "Soda Fund"
+  
+
+Scenario: customer not logged in, logs in for a quicker checkout
+
+  Given customer "Tom Foolery" has email "tom@foolery.com" and password "pass"
+  And I am not logged in
+  When I go to the quick donation page
+  And I fill in "email" with "tom@foolery.com"
+  And I fill in "password" with "pass"
+  And I press "Login"
+  When I fill in "Donation amount" with "15"
+  And I press "Charge Donation to Credit Card"
+  Then I should see "You have paid a total of $15.00 by Credit card"
+  And customer "Tom Foolery" should have a donation of $15.00 to "General Fund"
   

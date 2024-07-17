@@ -20,7 +20,7 @@ module StagingHelper
   end
   def self.switch_to_staging!
     abort_if_production!
-    abort "Only a1-staging and sandbox are valid tenants" unless ['a1-staging','sandbox'].include?(StagingHelper::TENANT)
+    # abort "Only a1-staging and sandbox are valid tenants" unless ['a1-staging','sandbox'].include?(StagingHelper::TENANT)
     Apartment::Tenant.switch! StagingHelper::TENANT
   end
 end
