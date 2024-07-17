@@ -145,7 +145,7 @@ class VouchersController < ApplicationController
     orig_seats = Voucher.seats_for(vchs) # after cancel, seat info will be unavailable
     if (result = Voucher.cancel_multiple!(vchs, num, current_user))
       redirect_to customer_path(@customer), :notice => t('reservations.cancelled', :canceled_num => num)
-      email_confirmation(:cancel_reservation, @customer, orig_showdate, orig_seats)
+      email_confirmation(:cancel_reservation, @customer, orig_showdate, num)
     else
       redirect_to customer_path(@customer), :alert => t('reservations.cannot_be_changed')
     end

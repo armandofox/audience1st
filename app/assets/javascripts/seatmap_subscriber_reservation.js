@@ -13,10 +13,14 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
   
   // first, disable ALL other showdate rows on page (so disable all, then re-enable us)
   $('.confirm-seats').prop('disabled', true);
-  $('.special-seating').addClass('invisible');
+  $('.special-seating').addClass('d-none');
 
+  // if no showdate is selected, we're done here
+  if (showdateId == 0) {
+    return;
+  }
   // now selectively re-display stuff in our own container
-  specialSeating.removeClass('invisible');    // show 'special seating needs' field for both G/A and R/S showdates
+  specialSeating.removeClass('d-none');    // show 'special seating needs' field for both G/A and R/S showdates
   selectedSeats.val(''); //  clear seat info from previous selection
   // in any case, hide seat map in case it was shown before from previous selection
   $('#seating-charts-wrapper').slideUp().addClass('d-none');
@@ -44,7 +48,7 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
       numToSelect.find('option').prop('disabled', false);
       showdateMenu.selectedIndex = 0;        // reset showdate menu to "Select..."
       confirmButton.prop('disabled', true); // disable 'Confirm' button
-      specialSeating.addClass('invisible'); // hide 'Special seating needs' comment field
+      specialSeating.addClass('d-none'); // hide 'Special seating needs' comment field
     };
     // get the seatmap and list of unavailable seats for this showdate
     $.getJSON(seatmapUrl, function(json_data) { 

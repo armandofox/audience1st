@@ -373,6 +373,10 @@ en:
       HTML tags and will be wrapped in &lt;div
       id='accessible_seating_notices'&gt;.
 
+    accessibility_needs_prompt: >
+
+      Language that prompts the patron to briefly describe any special seating needs.
+
     general_confirmation_email_notes: >
 
       General instructions to ALL CUSTOMERS that appear in order

@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20240417020007) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 255, default: "", null: false
     t.string "code",            limit: 255
@@ -200,6 +203,7 @@ ActiveRecord::Schema.define(version: 20240417020007) do
     t.text     "recurring_donation_contact_emails"
     t.boolean  "notify_theater_about_new_recurring_donation",                        default: true
     t.boolean  "notify_theater_about_failed_recurring_donation_charge",              default: true
+    t.string   "accessibility_needs_prompt",                                     default: "Please describe (wheelchair, no stairs, etc.)"
   end
 
   create_table "orders", force: :cascade do |t|
