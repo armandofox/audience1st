@@ -58,3 +58,8 @@ jobs:
         $CCTR sum-coverage coverage/codeclimate.*.json
         $CCTR upload-coverage --id ${{ secrets.CC_TEST_REPORTER_ID }}
         $CCTR after-build --id ${{ secrets.CC_TEST_REPORTER_ID }}
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
