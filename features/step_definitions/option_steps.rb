@@ -53,3 +53,13 @@
   # How to check what option the radio button currently has selected?
   radio_button = page.find(:css, '#donation_type_radio')
  end
+
+ Given /the "(.*)" feature is (enabled|disabled)/ do |name,enabled|
+   if enabled == 'enabled'
+     Option.enable_feature! name.to_sym
+   else
+     Option.disable_feature! name.to_sym
+   end
+ end
+ 
+    

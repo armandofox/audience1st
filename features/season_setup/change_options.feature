@@ -34,14 +34,14 @@ Scenario: invalid HTML email template because no placeholder
   Then I should see "must contain exactly one occurrence of the placeholder"
 
 Scenario: reminder emails feature renders changeable General Reminder Email Notes in options
-  When I enable the reminder email feature
+  Given the "reminder_emails" feature is enabled
   And I visit the admin:settings page
   Then I should see "General Reminder Email Notes"
   When I fill in "General Reminder Email Notes" with "This is an email reminder"
   And I press "Update Settings"
   Then the setting "General Reminder Email Notes" should be "This is an email reminder"
 
-Scenario: reminder emails feature iss disabled
-  When I disable the reminder email feature
+Scenario: reminder emails feature is disabled
+  Given the "reminder_emails" feature is disabled
   And I visit the admin:settings page
   Then I should not see "General Reminder Email Notes"
