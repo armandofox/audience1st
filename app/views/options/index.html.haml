@@ -39,7 +39,7 @@
         quick_donation_redirect |
         donation_ack_from |
         ) |
-      - if Option.feature_enabled?(:recurring_donations)
+      - if Option.feature_enabled?('recurring_donations')
         .form-row
           .col-md-4.text-right
             %label.col-form-label Allow Monthly Recurring Donations

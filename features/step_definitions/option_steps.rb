@@ -56,9 +56,9 @@
 
  Given /the "(.*)" feature is (enabled|disabled)/ do |name,enabled|
    if enabled == 'enabled'
-     Option.enable_feature! name.to_sym
+     Option.enable_feature! name
    else
-     Option.disable_feature! name.to_sym
+     Option.disable_feature! name
    end
  end
  
