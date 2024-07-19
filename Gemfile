@@ -57,6 +57,7 @@ group :test do
   gem 'webdrivers','>= 5.2.0', require: false
   gem 'rspec-json_expectations'
   gem 'simplecov'
+  gem 'simplecov-cobertura', require: false
   gem 'timecop'
   gem 'webmock'
   gem 'vcr'

@@ -12,13 +12,13 @@ class Option < ActiveRecord::Base
 
   # Feature flags
   def self.feature_enabled?(str)
-    Option.first.feature_flags.include?(str)
+    Option.first.feature_flags.include?(str.to_s)
   end
   def self.enable_feature!(str)
-    Option.first.update_attributes!(:feature_flags => Option.feature_flags | [str])
+    Option.first.update_attributes!(:feature_flags => Option.feature_flags | [str.to_s])
   end
   def self.disable_feature!(str)
-    Option.first.update_attributes!(:feature_flags => Option.feature_flags - [str])
+    Option.first.update_attributes!(:feature_flags => Option.feature_flags - [str.to_s])
   end
 
   validates_format_of :restrict_customer_email_to_domain, :with => /\A[^-_][-_.A-Za-z0-9]*[^-_]\z/, :allow_blank => true

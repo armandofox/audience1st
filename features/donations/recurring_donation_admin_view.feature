@@ -4,7 +4,8 @@ Feature: allow recurring donations
     I want to allow recurring donations
 
 Background:
-    Given I am logged in as administrator
+    Given the "recurring_donations" feature is enabled
+    And I am logged in as administrator
     And I visit the admin:settings page
 
 Scenario: Allow Monthly Recurring Donations

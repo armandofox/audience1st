@@ -132,11 +132,3 @@ Given /the URI "(.*)" is (not )?readable/ do |uri,no|
     stub_request(:any, uri).to_return(:headers => {})
   end
 end
-
-When /^I enable the reminder email feature$/ do
-  enable_new_feature('reminder_emails')
-end
-
-When /^I disable the reminder email feature$/ do
-  disable_new_feature('reminder_emails')
-end

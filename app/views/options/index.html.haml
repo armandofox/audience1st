@@ -39,28 +39,29 @@
         quick_donation_redirect |
         donation_ack_from |
         ) |
-      .form-row
-        .col-md-4.text-right
-          %label.col-form-label Allow Monthly Recurring Donations
-          = option_description_for(:allow_recurring_donations)
-        .col-md-8{id:"allow_recurring_donations_select"}
-          = f.select :allow_recurring_donations, [['Yes', true], ['No', false]], {}, {:class => 'form-control'}
-      - if Option.allow_recurring_donations
-        .form-row{id:"default_donation_type_form_row"}
+      - if Option.feature_enabled?('recurring_donations')
+        .form-row
           .col-md-4.text-right
-            %label.col-form-label Default Donation Type
-            = option_description_for(:default_donation_type)
-          .col-md-8{id:"donation_type_radio"}
-            .radio-group.form-inline
-              = f.radio_button :default_donation_type, 'one', :class => 'form-control', :id => 'one'
-              = f.label :default_donation_type, 'One Time', :class => 'form-control', :for => 'one'
-              = f.radio_button :default_donation_type, 'monthly', :class => 'form-control', :id => 'monthly'
-              = f.label :default_donation_type, 'Monthly', :class => 'form-control', :for => 'monthly'
-      = render_collection_of_options f, %w( |
-        recurring_donation_contact_emails |
-        notify_theater_about_new_recurring_donation |
-        notify_theater_about_failed_recurring_donation_charge |
-        ) |
+            %label.col-form-label Allow Monthly Recurring Donations
+            = option_description_for(:allow_recurring_donations)
+          .col-md-8{id:"allow_recurring_donations_select"}
+            = f.select :allow_recurring_donations, [['Yes', true], ['No', false]], {}, {:class => 'form-control'}
+        - if Option.allow_recurring_donations
+          .form-row{id:"default_donation_type_form_row"}
+            .col-md-4.text-right
+              %label.col-form-label Default Donation Type
+              = option_description_for(:default_donation_type)
+            .col-md-8{id:"donation_type_radio"}
+              .radio-group.form-inline
+                = f.radio_button :default_donation_type, 'one', :class => 'form-control', :id => 'one'
+                = f.label :default_donation_type, 'One Time', :class => 'form-control', :for => 'one'
+                = f.radio_button :default_donation_type, 'monthly', :class => 'form-control', :id => 'monthly'
+                = f.label :default_donation_type, 'Monthly', :class => 'form-control', :for => 'monthly'
+        = render_collection_of_options f, %w( |
+          recurring_donation_contact_emails |
+          notify_theater_about_new_recurring_donation |
+          notify_theater_about_failed_recurring_donation_charge |
+          ) |
 
   .card.my-1
     .card-header.h3 Customer Account
