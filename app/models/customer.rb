@@ -37,6 +37,7 @@ class Customer < ActiveRecord::Base
   has_many :txns
   has_one  :most_recent_txn, -> { order('txn_date DESC') }, :class_name=>'Txn'
   has_many :donations
+  has_many :recurring_donations
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,retail_items
 

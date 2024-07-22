@@ -5,11 +5,13 @@ class Order < ActiveRecord::Base
   has_many :items, :autosave => true, :dependent => :destroy
   has_many :vouchers, :autosave => true,  :dependent => :destroy
   has_many :donations, :autosave => true, :dependent => :destroy
+  has_many :recurring_donations, :autosave => true, :dependent => :destroy
   has_many :retail_items, :autosave => true, :dependent => :destroy
 
   attr_accessor :purchase_args
   attr_accessor :comments
   attr_reader :donation
+  attr_reader :recurring_donation
 
   # pending and errored states of a CC order (pending = payment has occurred but order has not
   #  yet been finalized; errored = payment has occurred and order NEVER got finalized, eg due
@@ -237,6 +239,10 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def add_recurring_donation()
+    @recurring_donation = @donation.build_recurring_donation(amount: 0, account_code_id: @donation.account_code_id)
+  end
+
   def includes_bundle?
     if completed?
       items.any? { |v| v.kind_of?(Voucher) && v.bundle? }
@@ -385,6 +391,7 @@ class Order < ActiveRecord::Base
         self.items += vouchers
         self.items += retail_items
         self.items << donation if donation
+        self.items << recurring_donation if recurring_donation
         self.items.each do |i|
           i.assign_attributes(:finalized => true,
                               :sold_on => sold_on_date,
@@ -397,6 +404,7 @@ class Order < ActiveRecord::Base
         customer.add_items(vouchers)
         customer.add_items(retail_items)
         purchaser.add_items([donation]) if donation
+        purchaser.add_items([recurring_donation]) if recurring_donation
         customer.save!
         purchaser.save!
         self.sold_on = sold_on_date
