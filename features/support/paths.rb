@@ -45,6 +45,7 @@ module NavigationHelpers
       # reporting pages 
     when /the quick donation page/      then quick_donate_path
     when /the donations page/i          then donations_path
+    when /the recurring donations setup page/ then new_customer_recurring_donation_path(@customer)
     when /the reports page/i            then reports_path
     when /the unfulfilled orders page/i then unfulfilled_orders_reports_path
     when /the vouchertypes page$/i       then vouchertypes_path

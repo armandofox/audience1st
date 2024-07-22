@@ -39,7 +39,7 @@ class Customer < ActiveRecord::Base
   has_many :donations
   has_many :recurring_donations
   has_many :retail_items
-  has_many :items               # the superclass of vouchers,donations,retail_items
+  has_many :items               # the superclass of vouchers,donations,recurring_donations,retail_items
 
   belongs_to :ticket_sales_import
 
@@ -307,7 +307,7 @@ class Customer < ActiveRecord::Base
   end
 
   @@user_entered_strings =
-    %w[first_name last_name street city state zip day_phone eve_phone  email]
+    %w[first_name last_name street city state zip day_phone eve_phone  email].freeze
 
   # strip whitespace before saving
   def trim_whitespace_from_user_entered_strings

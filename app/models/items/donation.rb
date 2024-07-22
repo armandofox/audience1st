@@ -1,6 +1,3 @@
-# to do:
-#  add logic to init new donation with correct default account_code (from options)
-
 class Donation < Item
 
   # only possible donation frequencies (either one-time, or recurring at the specified interval) 
