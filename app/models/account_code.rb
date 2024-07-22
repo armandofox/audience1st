@@ -12,6 +12,7 @@ class AccountCode < ActiveRecord::Base
   default_scope { order('code') }
 
   has_many :donations
+  has_many :recurring_donations
   has_many :vouchertypes
 
   validates_length_of :name, :maximum => 255, :allow_nil => true

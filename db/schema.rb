@@ -98,7 +98,10 @@ ActiveRecord::Schema.define(version: 20240618113729) do
     t.string   "seat"
     t.datetime "sold_on"
     t.integer  "recurring_donation_id"
+<<<<<<< HEAD
     t.string   "state"
+=======
+>>>>>>> 38195483ca56a30d1c47b5504ca6cd676d03081c
   end
 
   add_index "items", ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
@@ -202,7 +205,7 @@ ActiveRecord::Schema.define(version: 20240618113729) do
     t.string   "transactional_bcc_email"
     t.string   "accessibility_needs_prompt",                                         default: "Please describe (wheelchair, no stairs, etc.)"
     t.boolean  "allow_recurring_donations",                                          default: false
-    t.string   "default_donation_type",                                              default: "one"
+    t.string   "default_donation_frequency",                                         default: "One Time"
     t.text     "recurring_donation_contact_emails"
     t.boolean  "notify_theater_about_new_recurring_donation",                        default: true
     t.boolean  "notify_theater_about_failed_recurring_donation_charge",              default: true
@@ -233,6 +236,7 @@ ActiveRecord::Schema.define(version: 20240618113729) do
   add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
   add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id", using: :btree
   add_index "orders", ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id", using: :btree
+<<<<<<< HEAD
 
   create_table "recurring_donations", force: :cascade do |t|
     t.integer  "customer_id"
@@ -244,6 +248,8 @@ ActiveRecord::Schema.define(version: 20240618113729) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+=======
+>>>>>>> 38195483ca56a30d1c47b5504ca6cd676d03081c
 
   create_table "seating_zones", force: :cascade do |t|
     t.string  "name"
