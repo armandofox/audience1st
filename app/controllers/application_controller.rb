@@ -44,9 +44,9 @@ class ApplicationController < ActionController::Base
   def callback_host
     if Rails.env.production?
       "https://#{request.host}"
-    elsif !Figaro.env.CALLBACK_HOST
-      Rails.logger.warn "*** WARNING: ApplicationController#callback_host called in non-production environment and no CALLBACK_HOST is set.  Setting to localhost with no port."
-      "http://localhost"
+    else
+      Figaro.env.CALLBACK_HOST ||
+        raise(RuntimeError, "*** Error: ApplicationController#callback_host called in non-production environment and no CALLBACK_HOST is set.")
     end
   end
 

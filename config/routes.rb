@@ -31,7 +31,12 @@ Rails.application.routes.draw do
         post :change_secret_question
       end
       resources :donations, :only => [:new, :create]
-      resources :recurring_donations, :only => [:index, :new, :create]
+      resources :recurring_donations, :only => [:index, :new, :create] do
+        member do
+          get :stripe_success
+          get :stripe_failure
+        end
+      end
       resources :vouchers, :only => [:index, :new, :create] do
         member do
           put :update_comment

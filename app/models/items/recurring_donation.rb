@@ -31,9 +31,9 @@ class RecurringDonation < Item
   def prepare_checkout(callback_host)
     helpers = Rails.application.routes.url_helpers
     success_url = URI.join(callback_host,
-                           helpers.customer_recurring_donations_path(self.customer, self))
+                           helpers.stripe_success_customer_recurring_donation_path(customer, self))
     cancel_url = URI.join(callback_host,
-                          helpers.customer_path(self.customer))
+                          helpers.stripe_failure_customer_recurring_donation__path(customer, self))
     
     # how the recurring donation description will appear in Stripe dashboard
     recurring_donation_stripe_name = "$#{amount.to_i} monthly #{customer.full_name_with_email}"
