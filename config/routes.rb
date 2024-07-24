@@ -31,12 +31,7 @@ Rails.application.routes.draw do
         post :change_secret_question
       end
       resources :donations, :only => [:new, :create]
-      resources :recurring_donations, :only => [:index, :new, :create] do
-        member do
-          get :stripe_success
-          get :stripe_failure
-        end
-      end
+      resources :recurring_donations, :only => [:index, :new, :create]
       resources :vouchers, :only => [:index, :new, :create] do
         member do
           put :update_comment
@@ -48,6 +43,13 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    get '/stripe_callback/recurring_donation_success/:id' =>
+        'stripe_callback#recurring_donation_success',
+        :as => 'stripe_callback_recurring_donation_success'
+    get '/stripe_callback/recurring_donation_failure/:id' =>
+        'stripe_callback#recurring_donation_failure',
+        :as => 'stripe_callback_recurring_donation_failure'
 
     # list all donations management
 

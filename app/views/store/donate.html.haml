@@ -51,10 +51,14 @@
           .form-group.form-row{id:"donation_frequency_radio"}
             %label.col-form-label.text-right.col-sm-6{:for => :donation} Donation frequency
             .radio-group.col-sm-6.col-md-2.form-inline
-              = radio_button_tag :donation_frequency, Donation::ONE_TIME_DONATION, Option.default_donation_frequency == Donation::ONE_TIME_DONATION, class: 'form-control', id: Donation::ONE_TIME_DONATION
-              = label_tag :donation_frequency, Donation::ONE_TIME_DONATION, class: 'form-control', for: Donation::ONE_TIME_DONATION
-              = radio_button_tag :donation_frequency, Donation::RECURRING_DONATION, Option.default_donation_frequency == Donation::RECURRING_DONATION, class: 'form-control', id: Donation::RECURRING_DONATION
-              = label_tag :donation_frequency, Donation::RECURRING_DONATION, class: 'form-control', for: Donation::RECURRING_DONATION
+              .form-check.form-check-inline
+                = radio_button_tag :donation_frequency, '0', true, class: 'form-control form-check-input', id: 'donation_onetime'
+                %label.form-check-input{:for => 'donation_onetime'} One time
+              .form-check.form-check-inline
+              = radio_button_tag :donation_frequency, '1', false, class: 'form-control form-check-input', id: 'donation_recurring'
+              %label{:for => 'donation_recurring'} Monthly
+            .col-md-2#goto_recurring= link_to 'Set up...', new_customer_recurring_donation_path(@customer), :class => 'btn btn-success'
+
         .form-group.form-row
           %label.col-form-label{:for => :donation_comments} 
             If you'd like to be recognized as Anonymous, or if you'd like to donate in honor
@@ -67,3 +71,20 @@
       = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
       .row.py-3
         .col-md-4.offset-md-8= submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block'
+
+:javascript
+  $(function() {
+    $('#goto_recurring').hide();
+    $('#donation_recurring').click(
+    function() {
+      $('#credit_card,#_stripe_submit').hide();
+      $('#goto_recurring').show();
+    });
+    },
+    $('#donation_onetime').click(
+    function() {
+      $('#credit_card,#_stripe_submit').show();
+      $('#goto_recurring').hide();
+    })
+    );
+    

@@ -26,7 +26,6 @@ class RecurringDonationsController < ApplicationController
     # create the Stripe objects, and if all succeeds, redirect to a Stripe checkout session
     @recurring_donation.state = 'preparing'
     if @recurring_donation.prepare_checkout(callback_host)
-      byebug
       redirect_to @recurring_donation.checkout_url, :status => 303
     else
       redirect_to new_customer_recurring_donations_path(@customer),

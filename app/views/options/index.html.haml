@@ -46,17 +46,6 @@
             = option_description_for(:allow_recurring_donations)
           .col-md-8{id:"allow_recurring_donations_select"}
             = f.select :allow_recurring_donations, [['Yes', true], ['No', false]], {}, {:class => 'form-control'}
-        - if Option.allow_recurring_donations
-          .form-row{id:"default_donation_type_form_row"}
-            .col-md-4.text-right
-              %label.col-form-label Default Donation Type
-              = option_description_for(:default_donation_type)
-            .col-md-8{id:"donation_type_radio"}
-              .radio-group.form-inline
-                = f.radio_button :default_donation_frequency, Donation::ONE_TIME_DONATION, :class => 'form-control', :id => Donation::ONE_TIME_DONATION
-                = f.label :default_donation_frequency, Donation::ONE_TIME_DONATION, :class => 'form-control', :for => Donation::ONE_TIME_DONATION
-                = f.radio_button :default_donation_frequency, Donation::RECURRING_DONATION, :class => 'form-control', :id => Donation::RECURRING_DONATION
-                = f.label :default_donation_frequency, Donation::RECURRING_DONATION, :class => 'form-control', :for => Donation::RECURRING_DONATION
         = render_collection_of_options f, %w( |
           recurring_donation_contact_emails |
           notify_theater_about_new_recurring_donation |
