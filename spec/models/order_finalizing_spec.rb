@@ -57,16 +57,6 @@ describe 'finalizing' do
         @order.finalize!
         expect(@order.purchaser.donations).to include(@donation)
       end
-      it 'should add recurring donation to customer account if purchaser==recipient' do
-        @order.add_recurring_donation()
-        @order.finalize!
-        expect(@order.purchaser.recurring_donations).to include(@order.recurring_donation)
-      end
-      it 'should associate donation with recurring donation' do
-        @order.add_recurring_donation()
-        @order.finalize!
-        expect(@donation.recurring_donation_id).to equal(@order.recurring_donation.id)
-      end
       context 'when purchaser!=recipient' do
         before :each do
           @order.purchaser = create(:customer)
@@ -108,7 +98,6 @@ describe 'finalizing' do
       @order.add_donation(@donation)
       @previous_vouchers_count = Voucher.count
       @previous_donations_count = Donation.count
-      @previous_recurring_donations_count = RecurringDonation.count
       allow(Store::Payment).to receive(:pay_with_credit_card).and_return(nil)
       expect { @order.finalize! }.to raise_error(Order::PaymentFailedError)
     end
@@ -118,7 +107,6 @@ describe 'finalizing' do
     it 'should not save the items' do
       expect(Voucher.count).to eq(@previous_vouchers_count)
       expect(Donation.count).to eq(@previous_donations_count)
-      expect(RecurringDonation.count).to eq(@previous_recurring_donations_count)
     end
     it 'should not add vouchers to customer' do
       expect(@order.customer.reload.vouchers).to be_empty

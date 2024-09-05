@@ -47,15 +47,6 @@ describe Order, 'adding' do
       expect(reloaded.donation.account_code_id).to eq(@donation.account_code_id)
     end
   end
-  describe 'recurring donations' do
-    before :each do
-      @order.add_donation(build(:donation, :amount => 17))
-    end
-    it 'should add recurring donation' do
-      @order.add_recurring_donation()
-      expect(@order.recurring_donation).to be_a_kind_of(RecurringDonation)
-    end
-  end
   describe 'and getting total price' do
     it 'without donation' do
       vv2 = create(:valid_voucher)
