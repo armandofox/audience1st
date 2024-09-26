@@ -13,7 +13,6 @@ Feature: setup recurring donation
   Scenario: successfully create new recurring donation
 
     When I visit the recurring donations setup page
-    Then show me the page
     And I fill in "Amount" with "25"
     And I press "Proceed to Payment"
     

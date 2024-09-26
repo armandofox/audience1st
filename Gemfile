@@ -46,6 +46,7 @@ group :test do
   gem 'faker'
   gem 'fake_stripe'
   gem 'selenium-webdriver', require: false
+  gem 'simplecov-cobertura'
   gem 'rspec-json_expectations'
   gem 'rails-controller-testing' # for assigns()
   gem 'simplecov', '0.17.1'
