@@ -49,8 +49,8 @@ jobs:
 
     - name: run Cucumber tests and capture coverage
       env:
-        GITHUB_ACTIONS_CHROMEDRIVER_PATH: ${{ steps.install-chromedriver.outputs.chromedriver-path }} 
-        GITHUB_ACTIONS_CHROME_FOR_TESTING_PATH: ${{ steps.install-chromedriver.outputs.chrome-path }} 
+        CHROMEDRIVER_PATH: ${{ steps.install-chromedriver.outputs.chromedriver-path }} 
+        CHROME_FOR_TESTING_PATH: ${{ steps.install-chromedriver.outputs.chrome-path }} 
       run: |
         bundle exec cucumber --retry 2  2>/dev/null
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov

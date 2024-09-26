@@ -27,6 +27,7 @@ gem 'will_paginate'
 
 # asset pipeline
 gem 'sprockets-rails', :require => 'sprockets/railtie'
+gem 'sassc-rails'
 gem 'uglifier'
 
 group :production do
@@ -50,7 +51,6 @@ group :test do
   gem 'rspec-json_expectations'
   gem 'rails-controller-testing' # for assigns()
   gem 'simplecov', '0.17.1'
-  gem 'simplecov-cobertura'
   gem 'timecop'
   gem 'webmock'
   gem 'vcr'
