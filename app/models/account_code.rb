@@ -55,9 +55,9 @@ class AccountCode < ActiveRecord::Base
   before_destroy :can_be_deleted?
 
   def can_be_deleted?
-    errors.add(:base,'at least one account code must exist') and return false if AccountCode.count < 2
+    errors.add(:base,'at least one account code must exist') and throw(:abort) if AccountCode.count < 2
     Option.columns_hash.keys.select { |name| name =~ /account_code/ }.each do |option|
-      errors.add(:base, "it's the #{option.humanize.downcase}") and return false if
+      errors.add(:base, "it's the #{option.humanize.downcase}") and throw(:abort) if
         code == Option.send(option)
     end
   end

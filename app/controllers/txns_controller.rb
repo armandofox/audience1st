@@ -1,6 +1,6 @@
 class TxnsController < ApplicationController
 
-  before_filter :is_staff_filter
+  before_action :is_staff_filter
 
   def index
     # cache the Transaction Types table for faster rendering

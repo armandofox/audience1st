@@ -2,13 +2,13 @@ FactoryBot.define do
 
   factory :order do
     transient do
-      vouchers_count 0
-      contains_donation false
+      vouchers_count { 0 }
+      contains_donation { false }
     end
     association :purchaser, :factory => :customer
     association :processed_by, :factory => :customer
     association :customer
-    walkup nil
+    walkup { nil }
     purchasemethod { Purchasemethod.get_type_by_name(:box_cash) }
 
     after(:build) do |order|
@@ -30,7 +30,7 @@ FactoryBot.define do
     factory :order_from_vouchers do
       sold_on { Time.current }
       transient do
-        vouchers []
+        vouchers { [] }
       end
       after(:create) do |order,evaluator|
         evaluator.vouchers.each do |v|

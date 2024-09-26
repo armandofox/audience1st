@@ -18,16 +18,21 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :file
   config.action_mailer.raise_delivery_errors = true
+  config.active_job.queue_adapter = :inline
+  
   # config.log_level = :debug
 
   # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :stderr
+  config.active_support.deprecation = :log
 
   # Debug mode disables concatenation and preprocessing of assets.
   # This option may cause significant delays in view rendering with a large
   # number of complex assets.
   config.assets.enabled = true
-  config.serve_static_files = true
+
+  config.public_file_server.enabled   = true
+  config.public_file_server.headers = {'Cache-Control' => 'public, max-age=3600'}
+
   config.assets.debug = true
   config.assets.compile = true
   config.assets.digest = false
@@ -41,10 +46,4 @@ Rails.application.configure do
   require 'stripe'
   Stripe.verify_ssl_certs = false
 
-  # Find n+1 query problems and unused eager-loads
-  config.after_initialize do
-    Bullet.enable = false
-    Bullet.bullet_logger = true # log/bullet.log
-    Bullet.add_footer = true    # add footer to each page view
-  end
 end

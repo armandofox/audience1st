@@ -1,6 +1,6 @@
 class ReportsController < ApplicationController
 
-  before_filter :is_staff_filter
+  before_action :is_staff_filter
 
   def index
     season = Time.at_beginning_of_season
@@ -63,7 +63,7 @@ class ReportsController < ApplicationController
 
   # This handler is always called as XHR GET, but for one case ("display
   # matches on screen"), it must do a full HTTP redirect.
-  skip_before_filter :verify_authenticity_token, :only => :run_special, :if => lambda { request.xhr? }
+  skip_before_action :verify_authenticity_token, :only => :run_special, :if => lambda { request.xhr? }
   def run_special
     return unless (klass = validate_report_type params[:report_name])
     action = params[:what]

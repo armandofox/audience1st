@@ -8,13 +8,13 @@ describe LabelsController do
 
   describe "create label" do
     it "should create a new label from the controller" do
-      expect { post :create, :label_name => "valid name" }.to change(Label, :count).by(+1)
-      response = post :create, :label_name => "valid name"
+      expect { post :create, :params => {:label_name => "valid name"} }.to change(Label, :count).by(+1)
+      response = post :create, :params => { :label_name => "valid name" }
       expect(response).to redirect_to(labels_path)
     end
     it "should not create a new label due to missing parameter" do
       expect {
-        put :create, :bad_param => "bad update call"
+        put :create, :params => {:bad_param => "bad update call"}
       }.to raise_error(ActionController::ParameterMissing)
     end
   end
@@ -27,7 +27,7 @@ describe LabelsController do
     describe "should create and update the label" do
       it 'should update the label properly' do
         expect(@lab.name).to eq("valid name")
-        put :update, { :id => @lab.id, :label_name => "update name" }
+        put :update, :params => { :id => @lab.id, :label_name => "update name" }
         @lab.reload
         expect(@lab.name).to eq("update name")
       end
@@ -37,7 +37,7 @@ describe LabelsController do
         # Force an error with update_attributes for branch coverage
         allow_any_instance_of(Label).to receive(:update_attributes).and_return(false)
 
-        response = put :update, { :id => @lab.id, :label_name => "update name" }
+        response = put :update, :params => { :id => @lab.id, :label_name => "update name" }
         expect(@lab.name).to eq("valid name")
         expect(response).to redirect_to(labels_path)
         expect(@lab.errors).not_to be_nil
@@ -45,7 +45,7 @@ describe LabelsController do
 
       it "should be a bad update due to missing param" do
         expect {
-          put :update, :id => @lab.id, :bad_param => "bad update call"
+          put :update, :params => {:id => @lab.id, :bad_param => "bad update call"}
         }.to raise_error(ActionController::ParameterMissing)
       end
       end
@@ -53,8 +53,8 @@ describe LabelsController do
   
   describe "destroy label" do
     it "should create and destroy the label" do
-      expect{ post :create, :label_name => "valid name" }.to change(Label, :count).by(+1)
-      expect{ post :destroy, :id => Label.first.id }.to change(Label, :count).by(-1)
+      expect{ post :create, :params => {:label_name => "valid name"} }.to change(Label, :count).by(+1)
+      expect{ post :destroy, :params => {:id => Label.first.id} }.to change(Label, :count).by(-1)
     end
   end
 
@@ -78,7 +78,7 @@ describe LabelsController do
 
     context 'when creating label with a mix of permitted and unpermitted params' do
       before :each do
-        post :create, mixed_params
+        post :create, :params => mixed_params
         @lab = Label.first
       end
       it "create will not set vaule of unpermitted params" do

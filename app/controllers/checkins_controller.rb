@@ -1,9 +1,9 @@
 class CheckinsController < ApplicationController
 
-  before_filter :is_boxoffice_filter
+  before_action :is_boxoffice_filter
 
   # sets  instance variable @showdate and others for every method.
-  before_filter :get_showdate, :except => [:update, :modify_walkup_vouchers]
+  before_action :get_showdate, :except => [:update, :modify_walkup_vouchers]
   
   private
 
@@ -12,7 +12,9 @@ class CheckinsController < ApplicationController
   # force a redirect to a different controller & action
   def get_showdate
     if (@showdate = Showdate.in_theater.find_by(:id => params[:id]))
-      @showdates = Showdate.in_theater.all_showdates_for_seasons(Time.current.year, Time.current.year+1)
+      @showdates = Showdate.in_theater.
+                     all_showdates_for_seasons(Time.current.year, Time.current.year+1).
+                     to_a
       @showdates << @showdate unless @showdates.include?(@showdate)
       @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
       @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate, is_boxoffice: true) if @showdate.has_reserved_seating?
@@ -20,7 +22,7 @@ class CheckinsController < ApplicationController
     end
     # nil showdate: try defaulting to current or next
     if (@showdate = Showdate.in_theater.current_or_next(:grace_period => 2.hours))
-      redirect_to(params.to_hash.merge(:id => @showdate.id))
+      redirect_to(params.to_unsafe_h.merge(:id => @showdate.id))
     else
       redirect_to(shows_path, :alert => I18n.t('checkins.no_showdates'))
     end
@@ -57,7 +59,7 @@ class CheckinsController < ApplicationController
   end
 
   def update
-    render :nothing => true and return unless params[:vouchers]
+    render :body => nil and return unless params[:vouchers]
     showdate = Showdate.find params[:id]
     ids = params[:vouchers].split(/,/)
     vouchers = ids.map { |v| Voucher.find_by_id(v) }.compact

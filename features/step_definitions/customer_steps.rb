@@ -10,7 +10,7 @@ module ScenarioHelpers
       voucher = VoucherInstantiator.new(vtype).from_vouchertype.first
       customer.vouchers << voucher
       customer.save!
-      customer.should be_a_subscriber
+      expect(customer).to be_a_subscriber
     end
 
     def find_customer_by_fullname(name)
@@ -24,7 +24,7 @@ module ScenarioHelpers
     def get_secret_question_index(question)
       questions = I18n.t('app_config.secret_questions')
       indx = questions.index(question)
-      indx.should be_between(0, questions.length-1)
+      expect(indx).to be_between(0, questions.length-1)
       indx
     end
   end
@@ -43,13 +43,13 @@ Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,
   customer = find_or_create_customer first,last
   visit customer_path(customer)
   with_scope('#staffButtons') do
-    page.should have_content(customer.full_name)
+    expect(page).to have_content(customer.full_name)
   end
 end
 
 Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
   with_scope('#staffButtons') do
-    page.should have_content(full_name)
+    expect(page).to have_content(full_name)
   end
 end
 
@@ -101,7 +101,11 @@ end
 
 Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
   @customer = find_customer first,last
-  if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
+  if no
+    expect(@customer).to be_nil
+  else
+    expect(@customer).to be_a_kind_of Customer
+  end
 end
 
 Then /customer "(.*) (.*)" should exist with email "(.*)"/ do |first,last,email|
@@ -121,20 +125,21 @@ end
 
 Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,last,attribs|
   customer = find_customer first,last
-  dummy = Customer.new
   attribs.hashes.each do |attr|
     name,val = attr[:attribute], attr[:value]
-    customer.send(name).should == Customer.columns_hash[name].cast_type.type_cast_from_database(val)
+    column_type = Customer.column_for_attribute(name).type
+    object_after_cast = ActiveRecord::Type.lookup(column_type).cast(val)
+    expect(customer.send(name)).to eq(object_after_cast)
   end
 end
 
 Then /^customer "(.*) (.*)" should have a birthday of "(.*)"$/ do |first,last,date|
-  find_customer(first,last).birthday.should ==
-    Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR)
+  bday = find_customer(first,last).birthday
+  expect(bday).to eq(Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR))
 end
 
 Then /^customer "(.*) (.*)" should have the "(.*)" role$/ do |first,last,role|
-  find_customer(first,last).role_name.should == role
+  expect(find_customer(first,last).role_name).to eq(role)
 end
 
 When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|

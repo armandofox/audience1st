@@ -33,5 +33,6 @@ Scenario: door list shouldn't contain the comments from deleted redeemed ticekts
 
   When I visit the home page for customer "Tom Foolery"
   And I cancel 2 "#voucher_1" reservations
-  And I go to the door list page for May 3, 2010, 8:00pm
+  Then customer "Tom Foolery" should have 0 of 2 open subscriber vouchers for "Hairspray"
+  When I go to the door list page for May 3, 2010, 8:00pm
   Then I should not see "2 wheelchairs needed"

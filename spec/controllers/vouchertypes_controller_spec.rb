@@ -6,13 +6,13 @@ describe VouchertypesController do
   end
   describe "default season" do
     it "is remembered  after #index" do
-      get :index, :season => '2019'
-      get :index, :season => '2020'
+      get :index, :params => {:season => '2019'}
+      get :index, :params => {:season => '2020'}
       get :index
       expect(assigns(:season)).to eq(2020)
     end
     it "is used as default on new vouchertype" do
-      get :index, :season => '2020'
+      get :index, :params => {:season => '2020'}
       get :new
       expect(assigns(:vouchertype).season).to eq(2020)
     end
@@ -32,12 +32,12 @@ describe VouchertypesController do
     end
     it "should fail if vouchertype has any associated vouchers" do
       create(:revenue_voucher, :vouchertype => @vtype)
-      delete :destroy, :id => @vtype.id
+      delete :destroy, :params => {:id => @vtype.id}
       expect(response).to redirect_to vouchertypes_path(:season => @vtype.season)
       expect(flash[:alert]).to match(/1 of them have already been issued/)
     end
     it "should succeed if vouchertype has no associated vouchers or vouchertypes" do
-      post :destroy, :id => @vtype.id
+      post :destroy, :params => {:id => @vtype.id}
       expect(Vouchertype.find_by_id(@vtype.id)).to be_nil
       expect(response).to redirect_to vouchertypes_path(:season => @vtype.season)
     end

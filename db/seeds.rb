@@ -112,7 +112,7 @@ class Audience1stSeeder
       :stylesheet_url => nil,
       :stripe_key => 'Replace with real Stripe key',
       :stripe_secret => 'Replace with real Stripe secret',
-      :sender_domain => '',
+      :sender_domain => 'example.com',
       :staff_access_only => false
     )
     option.save!

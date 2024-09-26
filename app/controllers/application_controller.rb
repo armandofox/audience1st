@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   helper :all
 
-  protect_from_forgery
+  protect_from_forgery :prepend => true
 
   if Rails.env.production?
     force_ssl
@@ -138,7 +138,7 @@ class ApplicationController < ActionController::Base
 
   def temporarily_unavailable
     flash[:alert] = "Sorry, this function is temporarily unavailable."
-    redirect_to :back
+    redirect_back(:fallback_location => root_path)
   end
 
   %w(staff walkup boxoffice boxoffice_manager admin).each do |r|

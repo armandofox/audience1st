@@ -1,12 +1,6 @@
 class ValidVouchersController < ApplicationController
 
-  before_filter :is_boxoffice_filter
-  before_filter(:is_boxoffice_manager_filter,:except => :show)
-
-  def show
-    @valid_voucher = ValidVoucher.find(params[:id])
-    @showdate = @valid_voucher.showdate
-  end
+  before_action :is_boxoffice_manager_filter
 
   def new
     @show = Show.find params[:show_id]

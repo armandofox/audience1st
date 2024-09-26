@@ -1,4 +1,5 @@
 @wip
+@javascript
 Feature: Import customer list
 
   As a box office manager

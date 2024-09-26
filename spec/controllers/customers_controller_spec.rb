@@ -5,7 +5,7 @@ describe CustomersController do
     before(:each) do
       @params = attributes_for(:customer)
       login_as_boxoffice_manager
-      post :create, {:customer => @params}
+      post :create, :params => {:customer => @params}
     end
     it "should create the customer" do
       expect(Customer.find_by_email(@params[:email])).not_to be_nil
@@ -15,7 +15,7 @@ describe CustomersController do
     end
     it "should not clear created-by-admin flag if admin updates record" do
       customer = Customer.find_by_email(@params[:email])
-      put :update, {:id => customer, :customer => {:first_name => 'Bobby'}}
+      put :update, :params => {:id => customer, :customer => {:first_name => 'Bobby'}}
       customer.reload
       expect(customer).to be_created_by_admin
     end
@@ -24,7 +24,7 @@ describe CustomersController do
     before(:each) do
       @params = attributes_for(:customer)
       login_as(nil)
-      post :user_create, {:customer => @params}
+      post :user_create, :params => {:customer => @params}
     end
     it "should create the customer" do
       expect(Customer.find_by_email(@params[:email])).not_to be_nil
@@ -40,12 +40,12 @@ describe CustomersController do
       login_as @customer
     end
     it "should be cleared on successful update" do
-      put :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
+      put :update, :params => {:id => @customer, :customer => {:first_name => "Bobby"}}
       @customer.reload
       expect(@customer).not_to be_created_by_admin
     end
     it "should not be cleared if update fails" do
-      put :update, {:id => @customer, :customer => {:first_name => ''}}
+      put :update, :params => {:id => @customer, :customer => {:first_name => ''}}
       @customer.reload
       expect(@customer).to be_created_by_admin
     end
@@ -64,7 +64,7 @@ describe CustomersController do
       before(:each) do
         params = {:id => @customer, :customer => {:street => "100 Embarcadero",   :zip => "94100",
             :email => "nobody@noplace.com"}}
-        put :update, params
+        put :update, :params => params
       end
       it "should not update the password" do
         expect(@customer.crypted_password_changed?).to be_falsey

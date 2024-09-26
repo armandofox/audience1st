@@ -1,6 +1,6 @@
 class ShowsController < ApplicationController
 
-  before_filter :is_boxoffice_manager_filter
+  before_action :is_boxoffice_manager_filter
 
   def index
     @superadmin = current_user.is_admin

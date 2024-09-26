@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController
-  before_filter :is_boxoffice_filter
+  before_action :is_boxoffice_filter
 
   def index
     @customer = Customer.find params[:customer_id]

@@ -1,6 +1,6 @@
 class SeatingZonesController < ApplicationController
 
-  before_filter :is_boxoffice_manager_filter
+  before_action :is_boxoffice_manager_filter
 
   def index
     @seating_zones = SeatingZone.all

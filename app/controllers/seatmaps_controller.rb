@@ -94,7 +94,7 @@ class SeatmapsController < ApplicationController
     if error_message
       render(:status => :bad_request, :plain => error_message)
     else
-      render(:status => :ok, :nothing => true)
+      head :ok
     end
   end
 

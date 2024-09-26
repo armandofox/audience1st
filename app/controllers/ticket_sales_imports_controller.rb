@@ -1,6 +1,6 @@
 class TicketSalesImportsController < ApplicationController
 
-  before_filter :is_boxoffice_filter
+  before_action :is_boxoffice_filter
 
   # View all imports, also provides a form to create a new import by uploading a file.
   # The view provides a dropdown populated from TicketSalesImporter::IMPORTERS, which
@@ -62,9 +62,9 @@ class TicketSalesImportsController < ApplicationController
     begin
       i = TicketSalesImport.find params[:id]
       i.destroy
-      request.xhr? ? render(:status => :ok, :nothing => true) : redirect_to(ticket_sales_imports_path, :notice => t('import.import_cancelled', :filename => i.filename))
+      request.xhr? ? head :ok  : redirect_to(ticket_sales_imports_path, :notice => t('import.import_cancelled', :filename => i.filename))
     rescue ActiveRecord::RecordNotFound
-      request.xhr? ? render(:status => :ok, :nothing => true) : redirect_to(ticket_sales_imports_path, :notice => t('import.was_cancelled'))
+      request.xhr? ? head :ok  : redirect_to(ticket_sales_imports_path, :notice => t('import.was_cancelled'))
     end
   end
 

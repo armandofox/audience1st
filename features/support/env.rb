@@ -1,3 +1,4 @@
+$VERBOSE=nil
 require 'simplecov' # automatically reads APP_ROOT/.simplecov for config options
 SimpleCov.start 'rails'
 if ENV['CI']
@@ -18,9 +19,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 TEST_FILES_DIR = File.join(Rails.root, 'spec', 'test_files') unless defined?(TEST_FILES_DIR)
 
 require 'cucumber/rails'
-require 'webdrivers'
-
-# This is email_spec
+require 'selenium-webdriver'
 require 'email_spec/cucumber'
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
@@ -29,6 +28,7 @@ require 'email_spec/cucumber'
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 Capybara.server = :webrick
+<<<<<<< HEAD
 Capybara.register_driver :selenium do |app|
   # Webdrivers::Chromedriver.required_version = '123.0.6312.58'
   # Webdrivers::Chromedriver.required_version = '126.0.6478.126'
@@ -39,6 +39,30 @@ Capybara.register_driver :selenium do |app|
   # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
   # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
   options.unhandled_prompt_behavior = :accept
+=======
+# must have compatible versions of chromedriver and chrome-for-testing (headless) installed:
+#  Download a specific Chrome for Testing version:
+#  npx @puppeteer/browsers install chrome@124.0.6367.91
+#  Download a specific ChromeDriver version:
+#  npx @puppeteer/browsers install chromedriver@124.0.6367.91
+#  (Note: these 'installs' just put stuff in the $cwd. brew install may be better)
+
+Capybara.register_driver :selenium_chrome_headless do |app|
+  options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+    opts.add_argument '--headless'
+    opts.add_argument '--no-sandbox'
+    opts.add_argument '--disable-gpu'
+    opts.add_argument '--window-size=1024,1024'
+    # opts.binary = File.join(Rails.root, 'tmp', 'Google Chrome for Testing.app')
+    # When an "unexpected" alert/confirm is displayed, accept it (ie user clicks OK).
+    # Expected ones can be handled with accept_alert do...end or accept_confirm do...end
+    opts.unhandled_prompt_behavior = :accept
+  end
+
+  #service = Selenium::WebDriver::Service.chrome(path: File.join(Rails.root, 'tmp', 'chromedriver'))
+
+  
+>>>>>>> rails5
   Capybara::Selenium::Driver.new(
     app,
     browser: :chrome,
@@ -46,6 +70,7 @@ Capybara.register_driver :selenium do |app|
     clear_session_storage: true,
     clear_local_storage: true)
 end
+Capybara.javascript_driver = :selenium_chrome_headless
 
 # If you set this to false, any error raised from within your app will bubble
 # up to your step definition and out to cucumber unless you catch it somewhere
@@ -70,10 +95,11 @@ ActionController::Base.allow_rescue = false
 # after each scenario, which can lead to hard-to-debug failures in
 # subsequent scenarios. If you do this, we recommend you create a Before
 # block that will explicitly put your database in a known state.
-Cucumber::Rails::World.use_transactional_fixtures = false
+Cucumber::Rails::World.use_transactional_tests = true
 
+DatabaseCleaner.clean_with :truncation
 DatabaseCleaner.strategy = :transaction
-Cucumber::Rails::Database.javascript_strategy = :truncation
+#Cucumber::Rails::Database.javascript_strategy = :truncation
 
 World(RSpec::Mocks::ExampleMethods)
 
@@ -87,6 +113,7 @@ Before do
   end
 
   # static seed data - root user, venue options, etc.
+  DatabaseCleaner.clean
   load File.join(Rails.root, 'db', 'seeds.rb')
 
   # make rspec mocks/stubs work
