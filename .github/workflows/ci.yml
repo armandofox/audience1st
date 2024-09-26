@@ -11,11 +11,8 @@ jobs:
       TZ: America/Los_Angeles
       
     steps:
-    - uses: actions/checkout@v2
-
-    - uses: browser-actions/setup-chrome@v1
-      with:
-        install-chromedriver: true
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: install libxslt
       run: |
@@ -42,16 +39,27 @@ jobs:
       run: |
         bundle install --without production
         
+    - name: Install Chrome For Testing and Chromedriver
+      uses: browser-actions/setup-chrome@v1
+      id:  install-chromedriver
+      with:
+        chrome-version: stable
+        install-chromedriver: true
+        install-dependencies: true
+
+    - name: run Cucumber tests and capture coverage
+      env:
+        GITHUB_ACTIONS_CHROMEDRIVER_PATH: ${{ steps.install-chromedriver.outputs.chromedriver-path }} 
+        GITHUB_ACTIONS_CHROME_FOR_TESTING_PATH: ${{ steps.install-chromedriver.outputs.chrome-path }} 
+      run: |
+        bundle exec cucumber --retry 2  2>/dev/null
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+  
     - name: run RSpec tests and capture coverage
       run: |
         bundle exec rspec
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
         
-    - name: run Cucumber tests and capture coverage
-      run: |
-        bundle exec cucumber --retry 2  2>/dev/null
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
-  
     - name: Publish code coverage
       run: |
         export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"

@@ -35,9 +35,11 @@ Capybara.server = :webrick
 #  npx @puppeteer/browsers install chromedriver@124.0.6367.91
 #  (Note: these 'installs' just put stuff in the $cwd. brew install may be better)
 
-path_to_chromedriver =       `find ~+/tmp -type f -name 'chromedriver'`.chomp
-#path_to_chrome_for_testing = `find ~+/tmp -type f -name 'chrome'`.chomp
-path_to_chrome_for_testing = `find ~+/tmp -type f -name 'Google Chrome for Testing'`.chomp
+path_to_chromedriver =       ENV['GITHUB_ACTIONS_CHROMEDRIVER_PATH'] ||
+                             `find ~+/tmp -type f -name 'chromedriver'`.chomp
+
+path_to_chrome_for_testing = ENV['GITHUB_ACTIONS_CHROME_FOR_TESTING_PATH'] ||
+                             `find ~+/tmp -type f -name 'Google Chrome for Testing'`.chomp
 
 Capybara.register_driver :selenium_chrome_headless do |app|
   options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|

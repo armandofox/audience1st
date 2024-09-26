@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
 
   def set_secure_headers
     if request.ssl?
-      # :rails4: can be omitted for rails >=5
+      # :rails5: can be omitted for rails >=5
       response.headers['Strict-Transport-Security'] = "max-age=31536000; includeSubDomains"
     end
     response.headers['X-Robots-Tag'] = 'none' # equivalent to 'noindex,nofollow'
