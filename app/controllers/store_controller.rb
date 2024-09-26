@@ -1,14 +1,6 @@
 class StoreController < ApplicationController
 
   include StoreHelper
-<<<<<<< HEAD
-  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
-
-  before_filter :set_customer, :except => %w[process_donation]
-  before_filter :is_logged_in, :only => %w[checkout place_order]
-  before_filter :order_is_not_empty, :only => %w[shipping_address checkout place_order]
-
-=======
   
   skip_before_action :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
@@ -16,7 +8,6 @@ class StoreController < ApplicationController
   before_action :is_logged_in, :only => %w[checkout place_order]
   before_action :order_is_not_empty, :only => %w[shipping_address checkout place_order]
   
->>>>>>> rails5
   #        ACTION                      INVARIANT BEFORE ACTION
   #        ------                      -----------------------
   # index, subscribe, donate_to_fund    valid @customer
@@ -50,13 +41,8 @@ class StoreController < ApplicationController
     redirect_customer = resolve_customer_in_url(logged_in_user, specified_customer)
     if redirect_customer == specified_customer # ok to proceed as is
       @customer = specified_customer
-<<<<<<< HEAD
-    else
-      redirect_to url_for(params.merge(:customer_id => redirect_customer.id, :only_path => true))
-=======
     else      
       redirect_to url_for(params.to_unsafe_h.merge(:customer_id => redirect_customer.id, :only_path => true))
->>>>>>> rails5
     end
   end
 
@@ -117,19 +103,11 @@ class StoreController < ApplicationController
     redirect_to(store_path(@customer), :alert => "There are no subscriptions on sale at this time.") if @subs_to_offer.empty?
   end
 
-<<<<<<< HEAD
   def donate_to_fund_redirect
     # redirect donate_to_fund route to quickdonate for potential printed material with donate_to_fund url
     fund_code = params[:id]
     fund_code = Donation.default_code.code if fund_code.blank?
     redirect_to quick_donate_url(account_code_string: fund_code)
-=======
-  def donate_to_fund
-    return_after_login params.to_unsafe_hash.except(:customer_id)
-    @account_code = AccountCode.find_by_code(params[:id]) ||
-      AccountCode.find_by_id(params[:id]) ||
-      AccountCode.default_account_code
->>>>>>> rails5
   end
 
   # Serve quick_donate page; POST calls #process_donation
@@ -161,20 +139,11 @@ class StoreController < ApplicationController
     if params[:customer_id].blank?
       customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
       @customer = Customer.for_donation(customer_params)
-<<<<<<< HEAD
-      @customer.errors.empty? or return redirect_to(
-        quick_donate_path(
-          :customer => params[:customer],
-          :account_code_string => @account_code.code,
-          :donation => @amount),
-          :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}")
-=======
       unless @customer.errors.empty?
         flash[:alert] = "Incomplete or invalid donor information: #{@customer.errors.as_html}"
         render 'donate'
         return
       end
->>>>>>> rails5
     else     # we got here via a logged-in customer
       @customer = Customer.find params[:customer_id]
     end
