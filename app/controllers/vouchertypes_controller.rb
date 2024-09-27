@@ -86,6 +86,11 @@ class VouchertypesController < ApplicationController
                 :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable,
                 :subscription, :comments, :account_code_id, :account_code,
                 :included_vouchers => included_voucher_keys)
+    # we MUST explicityl convert included_vouchers to a Hash for serialization - otherwise the
+    # thing that gets serialized is an ActionController::Params, which causes an error on deserialize.
+    # https://stackoverflow.com/questions/48773769/existing-data-serialized-as-hash-produces-error-when-upgrading-to-rails-5
+    #vouchertype_update_params[:included_vouchers] = vouchertype_update_params[:included_vouchers].to_unsafe_h
+
     valid_voucher_update_params = params.permit(:valid_voucher => [:max_sales_for_type, :start_sales, :end_sales, :promo_code])
     @num_vouchers = @vouchertype.vouchers.count
     unless @vouchertype.included_vouchers.is_a?(Hash)
@@ -105,6 +110,7 @@ class VouchertypesController < ApplicationController
         flash[:notice] = 'Vouchertype was successfully updated.'
         redirect_to vouchertypes_path, :season => @vouchertype.season
       rescue StandardError => e
+        byebug
         flash[:alert] = "Update failed: #{e.message}"
         redirect_to edit_vouchertype_path(@vouchertype)
       end
