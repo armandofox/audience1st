@@ -26,22 +26,10 @@ module Audience1st
     config.active_record.default_timezone = :local
     
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
-    # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = 'en'
 
-    config.autoload_paths << Rails.root.join('lib')
-
     config.assets.enabled = true
-
-    # Add additional load paths for your own custom dirs
-    additional_paths = Dir.glob(File.join Rails.root, "app/models/**/*").select { |f| File.directory? f }
-    config.eager_load_paths += additional_paths
-    # for autoload, also include stuff in services/, but don't eager-load that since it
-    # references autoloadable stuff and gives the weird 'has been removed from the module tree
-    # but is still active' error
-    additional_paths += Dir.glob(File.join Rails.root, "app/services/**/*").select { |f| File.directory? f }
-    config.autoload_paths += additional_paths
-    
+    config.eager_load = true
 
     config.after_initialize do
       config.action_mailer.delivery_method = :smtp
