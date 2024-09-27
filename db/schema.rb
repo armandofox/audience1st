@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20240927053328) do
+ActiveRecord::Schema.define(version: 20240927062746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -355,6 +355,7 @@ ActiveRecord::Schema.define(version: 20240927053328) do
     t.integer  "account_code_id",                 default: 1,     null: false
     t.integer  "display_order",                   default: 0,     null: false
     t.integer  "seating_zone_id"
+    t.datetime "updated_at"
     t.index ["account_code_id"], name: "index_vouchertypes_on_account_code_id", using: :btree
   end
 
