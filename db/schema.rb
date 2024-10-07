@@ -12,9 +12,6 @@
 
 ActiveRecord::Schema.define(version: 20240927062746) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 255, default: "", null: false
     t.string "code",            limit: 255
@@ -65,13 +62,13 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.string   "token"
     t.datetime "token_created_at"
     t.integer  "ticket_sales_import_id"
-    t.index ["ticket_sales_import_id"], name: "index_customers_on_ticket_sales_import_id", using: :btree
+    t.index ["ticket_sales_import_id"], name: "index_customers_on_ticket_sales_import_id"
   end
 
   create_table "customers_labels", id: false, force: :cascade do |t|
     t.integer "customer_id"
     t.integer "label_id"
-    t.index ["customer_id", "label_id"], name: "index_customers_labels_on_customer_id_and_label_id", unique: true, using: :btree
+    t.index ["customer_id", "label_id"], name: "index_customers_labels_on_customer_id_and_label_id", unique: true
   end
 
   create_table "items", force: :cascade do |t|
@@ -96,15 +93,15 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.datetime "sold_on"
     t.integer  "recurring_donation_id"
     t.string   "state"
-    t.index ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
-    t.index ["bundle_id"], name: "index_items_on_bundle_id", using: :btree
-    t.index ["customer_id"], name: "index_items_on_customer_id", using: :btree
-    t.index ["finalized"], name: "index_items_on_finalized", using: :btree
-    t.index ["order_id"], name: "index_items_on_order_id", using: :btree
-    t.index ["processed_by_id"], name: "index_items_on_processed_by_id", using: :btree
-    t.index ["seat"], name: "index_items_on_seat", using: :btree
-    t.index ["showdate_id"], name: "index_items_on_showdate_id", using: :btree
-    t.index ["vouchertype_id"], name: "index_items_on_vouchertype_id", using: :btree
+    t.index ["account_code_id"], name: "index_items_on_account_code_id"
+    t.index ["bundle_id"], name: "index_items_on_bundle_id"
+    t.index ["customer_id"], name: "index_items_on_customer_id"
+    t.index ["finalized"], name: "index_items_on_finalized"
+    t.index ["order_id"], name: "index_items_on_order_id"
+    t.index ["processed_by_id"], name: "index_items_on_processed_by_id"
+    t.index ["seat"], name: "index_items_on_seat"
+    t.index ["showdate_id"], name: "index_items_on_showdate_id"
+    t.index ["vouchertype_id"], name: "index_items_on_vouchertype_id"
   end
 
   create_table "labels", force: :cascade do |t|
@@ -222,11 +219,11 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.integer  "ticket_sales_import_id"
     t.string   "type",                               default: "Order", null: false
     t.text     "from_import"
-    t.index ["customer_id"], name: "index_orders_on_customer_id", using: :btree
-    t.index ["external_key"], name: "index_orders_on_external_key", using: :btree
-    t.index ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
-    t.index ["purchaser_id"], name: "index_orders_on_purchaser_id", using: :btree
-    t.index ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id", using: :btree
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["external_key"], name: "index_orders_on_external_key"
+    t.index ["processed_by_id"], name: "index_orders_on_processed_by_id"
+    t.index ["purchaser_id"], name: "index_orders_on_purchaser_id"
+    t.index ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id"
   end
 
   create_table "recurring_donations", force: :cascade do |t|
@@ -271,8 +268,8 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.text     "access_instructions"
     t.text     "long_description"
     t.string   "house_seats",         limit: 8192
-    t.index ["seatmap_id"], name: "index_showdates_on_seatmap_id", using: :btree
-    t.index ["show_id"], name: "index_showdates_on_show_id", using: :btree
+    t.index ["seatmap_id"], name: "index_showdates_on_seatmap_id"
+    t.index ["show_id"], name: "index_showdates_on_show_id"
   end
 
   create_table "shows", force: :cascade do |t|
@@ -301,7 +298,7 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.string   "filename"
     t.boolean  "completed",          default: false
     t.datetime "created_at"
-    t.index ["processed_by_id"], name: "index_ticket_sales_imports_on_processed_by_id", using: :btree
+    t.index ["processed_by_id"], name: "index_ticket_sales_imports_on_processed_by_id"
   end
 
   create_table "txns", force: :cascade do |t|
@@ -316,12 +313,12 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.string   "comments",       limit: 255
     t.integer  "order_id"
     t.string   "txn_type",       limit: 255
-    t.index ["customer_id"], name: "index_txns_on_customer_id", using: :btree
-    t.index ["entered_by_id"], name: "index_txns_on_entered_by_id", using: :btree
-    t.index ["order_id"], name: "index_txns_on_order_id", using: :btree
-    t.index ["show_id"], name: "index_txns_on_show_id", using: :btree
-    t.index ["showdate_id"], name: "index_txns_on_showdate_id", using: :btree
-    t.index ["voucher_id"], name: "index_txns_on_voucher_id", using: :btree
+    t.index ["customer_id"], name: "index_txns_on_customer_id"
+    t.index ["entered_by_id"], name: "index_txns_on_entered_by_id"
+    t.index ["order_id"], name: "index_txns_on_order_id"
+    t.index ["show_id"], name: "index_txns_on_show_id"
+    t.index ["showdate_id"], name: "index_txns_on_showdate_id"
+    t.index ["voucher_id"], name: "index_txns_on_voucher_id"
   end
 
   create_table "valid_vouchers", force: :cascade do |t|
@@ -335,8 +332,8 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.datetime "updated_at",                                       null: false
     t.integer  "min_sales_per_txn",               default: 1
     t.integer  "max_sales_per_txn",               default: 100000
-    t.index ["showdate_id"], name: "index_valid_vouchers_on_showdate_id", using: :btree
-    t.index ["vouchertype_id"], name: "index_valid_vouchers_on_vouchertype_id", using: :btree
+    t.index ["showdate_id"], name: "index_valid_vouchers_on_showdate_id"
+    t.index ["vouchertype_id"], name: "index_valid_vouchers_on_vouchertype_id"
   end
 
   create_table "vouchertypes", force: :cascade do |t|
@@ -356,7 +353,7 @@ ActiveRecord::Schema.define(version: 20240927062746) do
     t.integer  "display_order",                   default: 0,     null: false
     t.integer  "seating_zone_id"
     t.datetime "updated_at"
-    t.index ["account_code_id"], name: "index_vouchertypes_on_account_code_id", using: :btree
+    t.index ["account_code_id"], name: "index_vouchertypes_on_account_code_id"
   end
 
 end

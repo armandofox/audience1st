@@ -12,7 +12,8 @@ class ConvertStrongParamsToHashInDatabase < ActiveRecord::Migration[5.0]
     total_records = vt.count
     say "Updating #{total_records} vouchertypes:"
     vt.each_with_index do |vtype,index|
-      unless vtype.included_vouchers.is_a?(ActiveSupport::HashWithIndifferentAccess)
+      unless (vtype.included_vouchers.is_a?(ActiveSupport::HashWithIndifferentAccess) ||
+              vtype.included_vouchers.is_a?(Hash))
         say "converting #{index+1} of #{total_records} (id=#{vtype.id})"
         vtype.included_vouchers = vtype.included_vouchers.to_unsafe_h
         vtype.included_vouchers_will_change!
