@@ -5,15 +5,13 @@ class RecurringDonation < Item
   belongs_to :customer
   belongs_to :account_code
 
+  attr_accessor :payment_intent
+
   validates_associated :account_code
   validates_presence_of :account_code_id
 
   validates :state, :inclusion => { :in => %w(preparing pending active stopped) }, :allow_blank => true
-  validates :amount, :numericality => { :only_integer => true, :greater_than => 0 }
-
-  attr_reader :checkout_session # for stripe only, not persisted
-  attr_reader :checkout_url # ditto
-
+  validates :amount, :numericality => { :greater_than => 0 }
 
   def first_donation
     Donation.where(recurring_donation_id: id).order(sold_on: :asc).first
@@ -26,6 +24,23 @@ class RecurringDonation < Item
 
   def total_amount_received
     Donation.where(recurring_donation_id: id).sum(:amount)
+  end
+
+  # Create payment intent on stripe side; record any errors
+  def create_payment_intent
+    return nil unless self.valid? # requires amount, account code, start state
+    Store::Payment.set_api_key
+    params = {
+      payment_method_types: ['card'],
+      amount: (self.amount * 100).to_i,
+      currency: 'usd'
+    }
+    begin
+      self.payment_intent = Stripe::PaymentIntent.create(params)
+    rescue Stripe::StripeError => e
+      self.errors.add(:base, "Stripe: #{e.error.message}")
+    end
+    self
   end
 
   def prepare_checkout(callback_host)

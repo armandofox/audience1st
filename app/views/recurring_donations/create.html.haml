@@ -1,0 +1,27 @@
+%h1 Confirm your recurring donation
+
+%p
+  Your credit card will be charged
+  %strong $#{@recurring_donation.amount.to_i}
+  now, and that same amount each month, until you contact #{Option.venue}
+  to cancel.
+
+
+%form#payment-form{'data-secret': @recurring_donation.payment_intent.client_secret }
+  %div#payment-element
+    <!-- Stripe will fill in element here -->
+  %button.btn.btn-primary#submit Pay
+  = link_to 'Cancel', customer_path(@recurring_donation.customer), :class => 'btn btn-danger'
+  %div{id: 'error-message'}
+
+:javascript
+  const stripe = Stripe('pk_r4PGCY80GiTt3jgzNgOZDR6Iw47YE');
+  const options = {
+    clientSecret: "#{@recurring_donation.payment_intent.client_secret}"
+  };
+  const elements = stripe.elements(options);
+  const paymentElement = elements.create('payment');
+  paymentElement.mount('#payment-element');
+
+  
+   
