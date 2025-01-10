@@ -47,6 +47,10 @@ class Option < ActiveRecord::Base
   validates_format_of :help_email,
                       :with => URI::MailTo::EMAIL_REGEXP, :allow_blank => false,
                       :allow_nil => false, :message => 'must be a valid email address'
+  validates_format_of :recurring_donation_contact_emails,
+                      :if => :allow_recurring_donations?,
+                      :with => URI::MailTo::EMAIL_REGEXP, :allow_blank => false,
+                      :allow_nil => false, :message => 'must be a valid email address'
 
   validate :transactional_bcc_email_list
 
@@ -68,7 +72,7 @@ class Option < ActiveRecord::Base
   validate :html_email_template_checks
 
   validates_format_of :stylesheet_url, :if => Proc.new { Rails.env.production? }, :allow_blank => true, :with => /\A#{URI::DEFAULT_PARSER.regexp[:ABS_URI]}\z/, :message => 'must be a valid URI beginning with "https://"'
-  
+
   def availability_levels_monotonically_increase
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
   end

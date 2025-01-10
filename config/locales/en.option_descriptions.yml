@@ -488,8 +488,8 @@ en:
 
     recurring_donation_contact_emails: >
 
-      Comma-separated list of theater contact email addresses to contact
-      regarding recurring donation activity.
+      Email address to contact regarding recurring donation activity.  If recurring donations are enabled,
+      this must be a nonblank valid email address.
 
     notify_theater_about_new_recurring_donation: >
       

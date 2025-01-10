@@ -1,3 +1,18 @@
+= themed
+
+%h2 Monthly Recurring Donation For #{@customer.full_name}
+
+.info
+  %p
+    We'll charge your credit card or other payment method once a month, starting today.
+
+  %p
+    You can contact us by email (#{Option.recurring_donation_contact_emails}) or phone
+    to change or cancel your recurring donation anytime.
+
+%p Your custom text can go here...
+  
+
 .form#recurring-donation
   = form_for [@customer,@recurring_donation], :method => :post, :class => 'form' do |f|
     = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'

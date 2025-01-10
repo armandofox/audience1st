@@ -7,9 +7,10 @@ class RecurringDonationsController < ApplicationController
     @page_title = 'Set up new recurring donation'
     @account_codes = AccountCode.all
     @existing_recurring_donations = @customer.recurring_donations
+    params.permit(:amount)
     @recurring_donation = @customer.recurring_donations.build(
       :account_code => AccountCode.default_account_code,
-      :amount => 50)
+      :amount => params[:amount].to_i)
   end
 
   def show
