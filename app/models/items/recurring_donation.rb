@@ -36,7 +36,7 @@ class RecurringDonation < Item
                           helpers.stripe_callback_recurring_donation_failure_path(self))
     
     # how the recurring donation description will appear in Stripe dashboard
-    recurring_donation_stripe_name = "$#{amount.to_i} monthly #{customer.full_name_with_email}"
+    recurring_donation_stripe_name = "recurring donation to #{Option.venue} from #{customer.full_name_with_email}"
 
     # create the Price object and find/create the Product object for a recurring donation
     Store::Payment.set_api_key
