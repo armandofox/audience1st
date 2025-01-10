@@ -29,6 +29,7 @@ module Audience1st
     # config.i18n.default_locale = 'en'
 
     config.assets.enabled = true
+    config.assets.js_compressor = Uglifier.new(:harmony => true) # enable ES6 syntax for asset compilation
     config.eager_load = true
 
     config.after_initialize do
