@@ -1,2 +1,2 @@
 # Netlify redirect: visited url => actual path served
-/playcafe           /
+/playcafe           /?utm_source=playcafe
