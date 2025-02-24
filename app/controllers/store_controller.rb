@@ -229,7 +229,7 @@ class StoreController < ApplicationController
       render :action => :shipping_address
       return
     end
-    @recipient.created_by_admin = @gAdminDisplay if @recipient.new_record?
+    @recipient.created_by_admin = true if @recipient.new_record?
     @recipient.save!
     @gOrderInProgress.customer = @recipient
     @gOrderInProgress.save!

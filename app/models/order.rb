@@ -340,10 +340,10 @@ class Order < ActiveRecord::Base
     errors.add(:base, 'Shopping cart is empty') if cart_empty?
     errors.add(:base, "You must specify the enrollee's name for classes") if
       includes_enrollment? && comments.blank?
-    check_purchaser_info unless processed_by.try(:is_boxoffice)
+    check_purchaser_info
     if Purchasemethod.valid_purchasemethod?(purchasemethod)
       errors.add(:base,'Invalid credit card transaction') if
-        purchase_args && purchase_args[:credit_card_token].blank?       &&
+        purchase_args && purchase_args[:credit_card_token].blank?  &&
         purchase_medium == :credit_card
       errors.add(:base,'Zero amount') if
         total_price.zero? && Purchasemethod.must_be_nonzero_amount(purchasemethod)
