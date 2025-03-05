@@ -52,7 +52,25 @@ class Customer < ActiveRecord::Base
   # | GiftRecipient   | giftee of someone else       | nonblank first,last; nonblank email OR phone |
   # | Imported        | import from 3rd party        | none, but all fields FORCED valid on create  |
 
+  #  To make all error messages begin with the name of the customer, to disambiguate
+  #  which customer is failing validation for operations involving mulitple customers:
+  #  use a custom subclass of ActiveModel::Errors.
 
+  class CustomErrors < ActiveModel::Errors
+    def full_message(attribute, message)
+      return super if attribute == :base # Keep base errors unchanged
+      customer_name =
+        if    !@base.full_name.blank? then @base.full_name
+        elsif @base.new_record? then 'New unnamed customer'
+        else  "Customer ID #{@base.id}"
+        end
+      "#{customer_name}: #{super(attribute, message)}"
+    end
+  end
+  def errors # override Customer#errors to use custom class instead of ActiveMessage::Errors
+    @custom_errors ||= CustomErrors.new(self)
+  end
+  
   VALID_EMAIL_REGEXP = /\A\S+@\S+\z/
   validates_format_of :email, :if => :self_created?, :with => VALID_EMAIL_REGEXP
 

@@ -72,6 +72,24 @@ describe Customer do
       end
     end
   end
+  describe "validation message" do
+    it "includes first or last name if available" do
+      expect(@c = Customer.new(:first_name => 'Joe')).not_to be_valid
+      expect(@c.errors.full_messages).to include_match_for(/^Joe\s*:/)
+    end
+    it "includes ID if no name available" do
+      @c = create(:customer)
+      @c.last_name = @c.first_name = ''
+      expect(@c).not_to be_valid
+      expect(@c.errors.full_messages).to include_match_for(/^Customer ID #{@c.id}\s*: .*/)
+    end
+    it "includes no identifier if new record" do
+      @c = build(:customer)
+      @c.first_name = @c.last_name = ''
+      expect(@c).not_to be_valid
+      expect(@c.errors.full_messages).to include_match_for(/^New unnamed customer: .*/)
+    end
+  end
   describe "address validations" do
     context "with no mailing address" do
       before(:each) do
