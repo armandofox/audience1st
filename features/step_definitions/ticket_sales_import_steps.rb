@@ -13,7 +13,7 @@ When /I upload a "Goldstar" will-call file for (.*) with the following orders:/ 
   t.hashes.each do |ord|
     (y['orders'][ord['type']] ||= []) << "#{ord['name']}, #{ord['qty']}"
   end
-  erb = IO.read File.join(Rails.root, 'lib', 'tasks', 'goldstar.json.erb')
+  erb = IO.read File.join(Rails.root, 'app', 'lib', 'tasks', 'goldstar.json.erb')
   out = ERB.new(erb,0,'>').result(binding)
   # file = Tempfile.new(['import', '.json']) { |f| f.puts out }
   file = File.open("/tmp/f.json", "w") { |f| f.puts out }
@@ -61,6 +61,6 @@ end
 
 When /I cancel the ticket sales import/ do
   accept_confirm { click_button 'Cancel Import' }
-  sleep 1
+  sleep 3
 end
 

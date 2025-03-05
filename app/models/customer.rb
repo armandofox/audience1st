@@ -315,7 +315,8 @@ class Customer < ActiveRecord::Base
 
   def valid_as_purchaser?
     # must have full address and full name
-    valid_mailing_address? && !first_name.blank? && !last_name.blank?
+    created_by_admin ||
+      (valid_mailing_address? && !first_name.blank? && !last_name.blank?)
   end
   def update_for_purchase_from(other_customer)
     %w(first_name last_name street city state zip).each do |field|

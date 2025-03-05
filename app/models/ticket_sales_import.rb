@@ -77,6 +77,7 @@ class TicketSalesImport < ActiveRecord::Base
           else                  # create new customer
             customer = Customer.new(:first_name => io.first, :last_name => io.last,
                                     :email => io.email, :ticket_sales_import => self)
+            customer.created_by_admin = true # needed to bypass some validations
             order.finalize_with_new_customer!(customer, self.processed_by, sold_on)
             self.new_customers += 1
           end
