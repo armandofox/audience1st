@@ -47,6 +47,11 @@ jobs:
         install-chromedriver: true
         install-dependencies: true
 
+    - name: run RSpec tests and capture coverage
+      run: |
+        bundle exec rspec
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+        
     - name: run Cucumber tests and capture coverage
       env:
         CHROMEDRIVER_PATH: ${{ steps.install-chromedriver.outputs.chromedriver-path }} 
@@ -55,11 +60,6 @@ jobs:
         bundle exec cucumber --retry 2  2>/dev/null
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
   
-    - name: run RSpec tests and capture coverage
-      run: |
-        bundle exec rspec
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
-        
     - name: Publish code coverage
       run: |
         export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
