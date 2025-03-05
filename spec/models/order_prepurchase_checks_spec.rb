@@ -23,11 +23,11 @@ describe 'Order pre-purchase checks' do
     allow(@order.purchaser).to receive_message_chain(:errors, :full_messages => ['ERROR'])
     verify_error /ERROR/
   end
-  it 'should pass if purchaser invalid but order is placed by admin' do
+  it 'should fail if purchaser invalid even if order is placed by admin' do
     @order.processed_by = create(:customer, :role => :boxoffice)
     allow(@order.purchaser).to receive(:valid_as_purchaser?).and_return(nil)
     allow(@order.purchaser).to receive_message_chain(:errors, :full_messages => ['ERROR'])
-    expect(@order).to be_ready_for_purchase
+    verify_error /ERROR/
   end
   it 'should fail if no recipient' do
     @order.customer = nil
