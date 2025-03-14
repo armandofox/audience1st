@@ -5,7 +5,7 @@ ruby '2.7.7'
 # basic app components
 gem 'pg', '0.20'                # Rails5: OK to upgrade to latest version
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
-gem 'rails', '5.0.1'
+gem 'rails', '5.1'
 
 gem 'builder'
 gem 'bundler', '1.17.3'
