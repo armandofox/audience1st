@@ -102,7 +102,7 @@ class CustomersController < ApplicationController
         :customer_id => @customer.id,
         :logged_in_id => current_user.id,
         :comments => notice)
-      if @customer.email_changed? && @customer.valid_email_address? && params[:dont_send_email].blank?
+      if @customer.saved_change_to_email? && @customer.valid_email_address? && params[:dont_send_email].blank?
         # send confirmation email
         email_confirmation(:confirm_account_change,@customer,"updated your email address in our system")
       end

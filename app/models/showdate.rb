@@ -77,7 +77,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def clear_house_seats_if_seatmap_changed
-    self.house_seats = [] if self.seatmap_id_changed?
+    self.house_seats = [] if self.saved_change_to_seatmap_id?
   end
 
   #  validations
@@ -108,7 +108,7 @@ class Showdate < ActiveRecord::Base
 
   def cannot_change_seating_type_if_existing_reservations
     return if total_sales.empty?
-    errors.add(:base, I18n.translate('showdates.validations.cannot_change_seating_type')) if (seatmap_id_was.nil? && !seatmap_id.nil?) || (!seatmap_id_was.blank? && seatmap_id.blank?)
+    errors.add(:base, I18n.translate('showdates.validations.cannot_change_seating_type')) if (seatmap_id_before_last_save.nil? && !seatmap_id.nil?) || (!seatmap_id_before_last_save.blank? && seatmap_id.blank?)
   end
   
   def seatmap_can_accommodate_existing_reservations

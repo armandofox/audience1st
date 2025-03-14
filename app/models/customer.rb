@@ -200,22 +200,22 @@ class Customer < ActiveRecord::Base
   # with external mailing list.
   # NOTE: This is an after-save hook, so customer is guaranteed to exist in database.
   def update_email_subscription
-    return unless (e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
+    return unless (saved_change_to_e_blacklist? || saved_change_to_email? || saved_change_to_first_name? || saved_change_to_last_name?)
     email_list = EmailList.new or return
     if e_blacklist      # opting out of email
       # do nothing, EXCEPT in the case where customer is transitioning from opt-in to opt-out,
       # AND they have a in which case unsubscribe them
-      if !e_blacklist_was and !email_was.blank?
-        email_list.unsubscribe(self, email_was)
+      if !e_blacklist_before_last_save and !email_before_last_save.blank?
+        email_list.unsubscribe(self, email_before_last_save)
       end
     else                        # opt in
-      if (email_changed? || first_name_changed? || last_name_changed?)
-        if email_was.blank?
+      if (saved_change_to_email? || saved_change_to_first_name? || saved_change_to_last_name?)
+        if email_before_last_save.blank?
           email_list.subscribe(self)
         elsif email.blank?
-          email_list.unsubscribe(self, email_was)
+          email_list.unsubscribe(self, email_before_last_save)
         else
-          email_list.update(self, email_was)
+          email_list.update(self, email_before_last_save)
         end
       else                      # with same email
         email_list.subscribe(self)

@@ -70,7 +70,7 @@ class Vouchertype < ActiveRecord::Base
 
   # can't change the category of an existing bundle
   def cannot_change_category
-    if category != category_was
+    if category != category_before_last_save
       self.errors.add(:category, I18n.t('vouchertypes.errors.cannot_change_category'))
       throw :abort
     end

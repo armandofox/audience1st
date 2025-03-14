@@ -67,7 +67,7 @@ describe CustomersController do
         put :update, :params => params
       end
       it "should not update the password" do
-        expect(@customer.crypted_password_changed?).to be_falsey
+        expect(@customer.saved_change_to_crypted_password?).to be_falsey
       end
       it "should update the address" do
         @customer.reload
