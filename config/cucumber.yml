@@ -1,9 +1,9 @@
 <%
-format = '-m -i --require features --format pretty --format rerun --out rerun.txt --color'
+format = '-m -i --require features --quiet --format pretty --format rerun --out rerun.txt --color'
 %>
-default: <%= format %> --tags '~@wip'
-no_javascript: <%= format %> --tags '~@javascript' '~@wip'
-javascript: <%= format %> --tags @javascript '~@wip'
-passing:  <%= format %> --tags '~@wip'
+default: <%= format %> --tags 'not @wip'
+no_javascript: <%= format %> --tags 'not @javascript and not @wip'
+javascript: <%= format %> --tags '@javascript and not @wip'
+passing:  <%= format %> --tags 'not @wip'
 cur:  --tags @cur <%= format %>
 default: --publish-quiet
