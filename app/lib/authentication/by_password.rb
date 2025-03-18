@@ -57,7 +57,7 @@ module Authentication
       def encrypt_password
         # allow using update_attribute to save crypted_password directly if it
         # has been changed. Otherwise the before_save will clobber it.
-        return if (password.blank? ||  saved_change_to_crypted_password?)
+        return if (password.blank? ||  will_save_change_to_crypted_password?)
         self.salt = self.class.make_token if new_record?
         self.crypted_password = encrypt(password)
       end

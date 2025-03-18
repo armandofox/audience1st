@@ -21,7 +21,7 @@ class Showdate < ActiveRecord::Base
       includes(:vouchers).where('items.finalized' => true).where('items.showdate_id' => self.id).
       joins(:vouchertypes).where('items.vouchertype_id = vouchertypes.id').
       where('vouchertypes.category != ?', 'nonticket').
-      uniq(true)
+      uniq
   end
   has_many :vouchertypes, -> { uniq(true) }, :through => :vouchers
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers

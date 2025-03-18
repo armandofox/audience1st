@@ -104,16 +104,16 @@ describe StoreController do
   end
   it 'redirects to donate route with fund code' do
     fund_code = @new_account_code.code
-    get :donate_to_fund_redirect, {:id => fund_code, :customer_id => @anon}
+    get :donate_to_fund_redirect, params: {:id => fund_code, :customer_id => @anon}
     expect(response).to redirect_to(quick_donate_path(account_code_string: fund_code))
   end
   it 'sets the fund code to default code when it is missing' do
-    get :donate_to_fund_redirect, { :customer_id => @anon }
+    get :donate_to_fund_redirect, params: { :customer_id => @anon }
     expect(response).to redirect_to(quick_donate_path(account_code_string: Donation.default_code.code))
   end
   it 'sets the fund code to default code when it is invalid' do
     invalid_fund_code = ' '
-    get :donate_to_fund_redirect, { id: invalid_fund_code, :customer_id => @anon }
+    get :donate_to_fund_redirect, params: { id: invalid_fund_code, :customer_id => @anon }
     expect(response).to redirect_to(quick_donate_path(account_code_string: Donation.default_code.code))
   end
 end

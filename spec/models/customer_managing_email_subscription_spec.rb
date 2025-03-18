@@ -51,7 +51,7 @@ describe "email sub" do
         @customer.e_blacklist = true # so it's marked dirty
       end
       it "should be unsubscribed using old email" do
-        expect(@customer.saved_change_to_email?).to be_falsy
+        expect(@customer.will_save_change_to_email?).to be_falsy
         stub_list
         expect(@list).to receive(:unsubscribe).with(@customer,'n@ai')
         @customer.save!

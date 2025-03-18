@@ -21,7 +21,8 @@ describe Showdate do
       expect(@result).not_to be_nil
     end
     it 'is the correct class' do
-      expect(@result).to be_a_kind_of(Customer::ActiveRecord_Relation)
+      byebug
+      expect(@result).to be_a_kind_of(Customer.const_get(:ActiveRecord_Relation))
     end
     it 'dereferences Customers correctly' do
       customers_from_vouchers = @showdate.finalized_vouchers.map(&:customer).uniq.select { |c| ! c.special_customer? }

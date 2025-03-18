@@ -67,9 +67,10 @@ describe CustomersController do
         put :update, :params => params
       end
       it "should not update the password" do
-        expect(@customer.saved_change_to_crypted_password?).to be_falsey
+        expect(@customer.will_save_change_to_crypted_password?).to be_falsey
       end
       it "should update the address" do
+        expect(@customer.will_save_change_to_street?).to be_truthy
         @customer.reload
         expect(@customer.street).to eq("100 Embarcadero")
         expect(@customer.zip).to eq("94100")
