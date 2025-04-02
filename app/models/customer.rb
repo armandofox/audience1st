@@ -162,7 +162,6 @@ class Customer < ActiveRecord::Base
       self.last_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
       self.email = nil unless valid_and_nonexistent(email)
     end
-    true
   end
 
   def valid_and_nonexistent(email)
