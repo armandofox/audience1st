@@ -21,7 +21,6 @@ describe Showdate do
       expect(@result).not_to be_nil
     end
     it 'is the correct class' do
-      byebug
       expect(@result).to be_a_kind_of(Customer.const_get(:ActiveRecord_Relation))
     end
     it 'dereferences Customers correctly' do

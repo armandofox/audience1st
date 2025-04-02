@@ -64,13 +64,17 @@ describe CustomersController do
       before(:each) do
         params = {:id => @customer, :customer => {:street => "100 Embarcadero",   :zip => "94100",
             :email => "nobody@noplace.com"}}
+        @old_password = @customer.crypted_password
         put :update, :params => params
       end
       it "should not update the password" do
-        expect(@customer.will_save_change_to_crypted_password?).to be_falsey
+        # this logic must differ from the one for not updating the address, due to the janky
+        # way that authentication/by_password.rb works :-(
+        @customer.reload
+        expect(@customer.crypted_password).to eq(@old_password)
       end
       it "should update the address" do
-        expect(@customer.will_save_change_to_street?).to be_truthy
+        expect(@customer.saved_change_to_street?).to be_truthy
         @customer.reload
         expect(@customer.street).to eq("100 Embarcadero")
         expect(@customer.zip).to eq("94100")

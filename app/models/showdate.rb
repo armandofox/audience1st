@@ -21,7 +21,7 @@ class Showdate < ActiveRecord::Base
       includes(:vouchers).where('items.finalized' => true).where('items.showdate_id' => self.id).
       joins(:vouchertypes).where('items.vouchertype_id = vouchertypes.id').
       where('vouchertypes.category != ?', 'nonticket').
-      uniq
+      distinct
   end
   has_many :vouchertypes, -> { uniq(true) }, :through => :vouchers
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
@@ -108,7 +108,13 @@ class Showdate < ActiveRecord::Base
 
   def cannot_change_seating_type_if_existing_reservations
     return if total_sales.empty?
-    errors.add(:base, I18n.translate('showdates.validations.cannot_change_seating_type')) if (seatmap_id_before_last_save.nil? && !seatmap_id.nil?) || (!seatmap_id_before_last_save.blank? && seatmap_id.blank?)
+    return unless will_save_change_to_seatmap_id?
+    # if it was blank (general adm) before and is now not...
+    if (seatmap_id.blank? && !(seatmap_id_in_database.blank?)) ||
+       # or vice versa...
+       (!(seatmap_id.blank?) && seatmap_id_in_database.blank?)
+      errors.add(:base, I18n.translate('showdates.validations.cannot_change_seating_type'))
+    end
   end
   
   def seatmap_can_accommodate_existing_reservations
