@@ -10,6 +10,7 @@ gem 'rails', '5.1'
 gem 'builder'
 gem 'bundler', '1.17.3'
 gem 'figaro'
+gem 'ffi', '1.16.3'             # or github actions won't run. https://github.com/ffi/ffi/issues/1103
 gem 'sslrequirement'
 gem 'haml'
 gem 'gibbon'
