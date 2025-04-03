@@ -133,6 +133,7 @@ class Customer < ActiveRecord::Base
         ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
       end
     rescue StandardError => e
+      byebug
       c0.errors.add :base,"Customers NOT merged: #{e.message}"
     end
     return ok
