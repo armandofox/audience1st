@@ -109,7 +109,7 @@ class Customer < ActiveRecord::Base
         msg = Customer.update_foreign_keys_from_to(old, new)
         # Add/merge labels from old record to new
         label_count = (c1.labels - c0.labels).size
-        c0.labels += c1.labels
+        c0.labels |= c1.labels
         msg << "#{label_count} labels"
         # Definitively propagate provenance (either ticket_sales_import_id, or nil)
         # from the older record.
@@ -133,7 +133,6 @@ class Customer < ActiveRecord::Base
         ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
       end
     rescue StandardError => e
-      byebug
       c0.errors.add :base,"Customers NOT merged: #{e.message}"
     end
     return ok
