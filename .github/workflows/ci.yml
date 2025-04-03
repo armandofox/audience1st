@@ -52,12 +52,12 @@ jobs:
         bundle exec rspec
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
         
-    - name: run Cucumber tests and capture coverage
+    - name: run Cucumber tests using config/cucumber.yml options, and capture coverage
       env:
         CHROMEDRIVER_PATH: ${{ steps.install-chromedriver.outputs.chromedriver-path }} 
         CHROME_FOR_TESTING_PATH: ${{ steps.install-chromedriver.outputs.chrome-path }} 
       run: |
-        bundle exec cucumber --retry 2 --quiet --backtrace  2>/dev/null
+        bundle exec cucumber 2>/dev/null
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
   
     - name: Publish code coverage
