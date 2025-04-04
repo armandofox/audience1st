@@ -1,8 +1,9 @@
 <%
-format = '-m -i --require features --retry 2 --quiet --format summary --format rerun --out rerun.txt'
+common = %q{-m -i --require features --tags 'not @wip'}
 %>
-default: <%= format %> --tags 'not @wip'
-no_javascript: <%= format %> --tags 'not @javascript and not @wip'
-javascript: <%= format %> --tags '@javascript and not @wip'
-passing:  <%= format %> --tags 'not @wip'
-cur:  --tags @cur <%= format %>
+default:   <%= common %> --format pretty --format rerun --out rerun.txt 
+ci-report: <%= common %> --format pretty --retry 2 --publish
+ci:        <%= common %> --quiet --retry 2 --format summary
+no_javascript: <%= common %> --tags 'not @javascript and not @wip'
+javascript: <%= common %> --tags '@javascript and not @wip'
+cur:   <%= common %> --tags @cur
