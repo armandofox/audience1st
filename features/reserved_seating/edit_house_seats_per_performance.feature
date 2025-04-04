@@ -17,8 +17,8 @@ Feature: edit house seats per performance
   Scenario: add house seats when some house seats are already occupied
 
     When I choose seat "Reserved-B1"
-    Then the "House seats" field should contain "A2, B1"
-    And the "Occupied house seats" field should contain "B2"
+    Then the "Occupied house seats" field should contain "B2"
+    And  the "House seats" field should contain "A2, B1"
     When I press "Save Changes"
     Then that performance's house seats should be: A2, B1, B2
 

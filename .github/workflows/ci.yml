@@ -57,7 +57,7 @@ jobs:
         CHROMEDRIVER_PATH: ${{ steps.install-chromedriver.outputs.chromedriver-path }} 
         CHROME_FOR_TESTING_PATH: ${{ steps.install-chromedriver.outputs.chrome-path }} 
       run: |
-        bundle exec cucumber --profile ci 2>/dev/null
+        bundle exec cucumber --profile ci-report 2>/dev/null
         $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
   
     - name: Publish code coverage

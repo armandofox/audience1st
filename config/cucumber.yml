@@ -1,7 +1,7 @@
 <%
 common = %q{-m -i --require features --tags 'not @wip'}
 %>
-default:   <%= common %> --format pretty --format rerun --out rerun.txt 
+default:   <%= common %> --format pretty --format rerun --out rerun.txt --publish
 ci-report: <%= common %> --format pretty --retry 2 --publish
 ci:        <%= common %> --quiet --retry 2 --format summary
 no_javascript: <%= common %> --tags 'not @javascript and not @wip'
