@@ -13,7 +13,7 @@ module ScenarioHelpers
       @order.add_tickets_without_capacity_checks(vv, qty.to_i, seats)
       @order.purchasemethod = Purchasemethod.get_type_by_name('none') if @order.total_price.zero?
       @order.finalize!
-      showdate.reload           # so other steps will see the changes
+      showdate.&:reload           # so other steps will see the changes
     end
   end
 end
