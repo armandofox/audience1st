@@ -50,7 +50,7 @@ staging = namespace :staging do
     Apartment::Tenant.create StagingHelper::TENANT
     StagingHelper.switch_to_staging!
     load File.join(Rails.root, 'db', 'seeds.rb')
-    Option.first.update_attributes!(
+    Option.first.update!(
       :venue => StagingHelper::TENANT.humanize.name_capitalize,
       :season_start_month => (1.month.ago).month)
   end
@@ -58,7 +58,7 @@ staging = namespace :staging do
   desc "Set staging API keys STRIPE_SECRET, STRIPE_KEY from Figaro"
   task :api_keys => :environment do
     StagingHelper::switch_to_staging!
-    Option.first.update_attributes!(
+    Option.first.update!(
       :stripe_key => Figaro.env.STRIPE_KEY,
       :stripe_secret => Figaro.env.STRIPE_SECRET,
       :sender_domain => '')   # domain blank disables email sending

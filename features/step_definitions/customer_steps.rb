@@ -84,7 +84,7 @@ end
 
 Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
   c = find_or_create_customer first,last
-  c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
+  c.update!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
 Given /^customer "(.*) (.*)" has no email address$/ do |first,last|
@@ -96,7 +96,7 @@ end
 
 Given /^customer "(.*) (.*)" has no contact info$/ do |first,last|
   @customer = find_customer first,last
-  @customer.update_attributes!(:street => nil, :city => nil, :state => nil, :zip => nil)
+  @customer.update!(:street => nil, :city => nil, :state => nil, :zip => nil)
 end
 
 Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
@@ -116,11 +116,11 @@ end
 
 Given /^customer "(.*) (.*)" has a birthday on "(.*)"/ do |first,last,date|
     @customer = find_customer first,last
-    @customer.update_attributes!(:birthday => Date.parse(date))
+    @customer.update!(:birthday => Date.parse(date))
 end
 
 Given /^my birthday is set to "(.*)"/ do |date|
-  @customer.update_attributes!(:birthday => Date.parse(date))
+  @customer.update!(:birthday => Date.parse(date))
 end
 
 Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,last,attribs|
@@ -156,7 +156,7 @@ Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answe
     @customer.secret_question.should == get_secret_question_index(question)
     @customer.secret_answer.should == answer
   else
-    @customer.update_attributes(
+    @customer.update(
       :secret_question => get_secret_question_index(question),
       :secret_answer => answer)
   end

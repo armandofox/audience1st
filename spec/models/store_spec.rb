@@ -8,8 +8,8 @@ describe Store, "landing page" do
   context 'for patron' do
     before(:each) do ; @u = create(:customer) ; end
     it 'orders shows by first showdate, not by listing date' do
-      @sd1.show.update_attributes!(:listing_date => 3.weeks.ago) # earlier listing date, later showdate
-      @sd2.show.update_attributes!(:listing_date => 1.day.ago)
+      @sd1.show.update!(:listing_date => 3.weeks.ago) # earlier listing date, later showdate
+      @sd2.show.update!(:listing_date => 1.day.ago)
       @s = Store::Flow.new(nil, @u, nil, {})
       @s.setup
       expect(@s.all_shows).to eq([@sd2.show, @sd1.show])
@@ -31,7 +31,7 @@ describe Store, "landing page" do
     end
     describe 'with valid but not-yet-listed show' do
       before(:each) do
-        @sd1.show.update_attributes!(:listing_date => 1.week.from_now)
+        @sd1.show.update!(:listing_date => 1.week.from_now)
         @s = Store::Flow.new(@u, @u, nil, {:showdate_id => @sd1.id })
         @s.setup
       end
@@ -42,7 +42,7 @@ describe Store, "landing page" do
   context 'for admin' do
     before(:each) do ; @u = create(:boxoffice) ; end
     it 'lists not-yet-listed show' do
-      @sd1.show.update_attributes!(:listing_date => 1.week.from_now)
+      @sd1.show.update!(:listing_date => 1.week.from_now)
       @s = Store::Flow.new(@u, @u, true, {:showdate_id => @sd1.id })
       @s.setup
       expect(@s.all_shows).to include(@sd1.show)

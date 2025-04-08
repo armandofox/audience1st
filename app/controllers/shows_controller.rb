@@ -48,7 +48,7 @@ class ShowsController < ApplicationController
   def update
     @show = Show.find(params[:id])
     @showdates = @show.showdates
-    if @show.update_attributes(show_params)
+    if @show.update(show_params)
       redirect_to edit_show_path(@show), :notice => 'Show details successfully updated.'
     else
       flash[:alert] = ["Show details could not be updated: ", @show.errors.as_html]

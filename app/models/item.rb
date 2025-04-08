@@ -1,7 +1,7 @@
 class Item < ActiveRecord::Base
 
   belongs_to :customer
-  belongs_to :order
+  belongs_to :order, optional: true
 
   # BUG: not every Item subclass logically has a Vouchertype or Showdate, but the association is
   # needed at this level in order for the Accounting Report to avoid an n+1 query problem,
@@ -12,10 +12,10 @@ class Item < ActiveRecord::Base
   validates_associated :order
   delegate :purchaser, :purchasemethod, :to => :order
   
-  belongs_to :processed_by, :class_name => 'Customer'
+  belongs_to :processed_by, :class_name => 'Customer', optional: true
   validates_presence_of :processed_by_id
 
-  belongs_to :account_code
+  belongs_to :account_code, optional: true
   validates_presence_of :account_code_id, :if => Proc.new { |a| a.amount > 0 }
 
   has_one :refunded_item, :foreign_key => 'bundle_id' # if item gets refunded

@@ -30,7 +30,7 @@ class ValidVouchersController < ApplicationController
       :max_sales_for_type, :min_sales_per_txn, :max_sales_per_txn,
       :promo_code, :start_sales, :end_sales)
     set_arg_defaults_if_blank!(args)
-    if @valid_voucher.update_attributes(args)
+    if @valid_voucher.update(args)
       redirect_to edit_show_path(@valid_voucher.showdate.show), :notice => 'Update successful.'
     else
       redirect_to edit_valid_voucher_path(@valid_voucher), :alert => @valid_voucher.errors.as_html

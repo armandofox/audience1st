@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe VouchertypesHelper do
   def stub_month_and_day(month,day)
-    Option.first.update_attributes!(:season_start_month => month, :season_start_day => day)
+    Option.first.update!(:season_start_month => month, :season_start_day => day)
   end
   describe "seasons helper when it's 2009 season" do
     before(:each) do ; allow(Time).to receive(:this_season).and_return(2009) ; end

@@ -70,7 +70,7 @@ class ShowdatesController < ApplicationController
     seatmap_changed = (@showdate.seatmap_id.to_i != params[:showdate][:seatmap_id].to_i)
     show = @showdate.show
     parms = showdate_params()
-    if @showdate.update_attributes(parms)
+    if @showdate.update(parms)
       flash[:notice] = 'Changes saved.'
       redirect_to (seatmap_changed ?
                      edit_show_showdate_path(show,@showdate) :

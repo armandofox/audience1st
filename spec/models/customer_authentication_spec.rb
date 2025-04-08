@@ -5,12 +5,12 @@ describe Customer, 'authentication' do
     @quentin = create :customer, first_name: 'quentin', last_name: 'q', email: 'quentin@example.com', password: 'monkey', password_confirmation: 'monkey', created_at: 5.days.ago, remember_token_expires_at: 1.day.from_now, remember_token: '77de68daecd823babbb58edb1c8e14d7106e83bb'
   end
   it 'resets password' do
-    expect(@quentin.update_attributes!(:password => 'new password', :password_confirmation => 'new password')).not_to be_falsey
+    expect(@quentin.update!(:password => 'new password', :password_confirmation => 'new password')).not_to be_falsey
     expect(Customer.authenticate(@quentin.email, 'new password')).to eq(@quentin)
   end
 
   it 'does not rehash password' do
-    expect(@quentin.update_attributes(:email => 'quentin2@email.com')).not_to be_falsey
+    expect(@quentin.update(:email => 'quentin2@email.com')).not_to be_falsey
     expect(Customer.authenticate('quentin2@email.com', 'monkey')).to eq(@quentin)
   end
 

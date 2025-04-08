@@ -69,7 +69,7 @@ class Audience1stSeeder
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
     id = a.id
     # set it as default account code for various things
-    Option.first.update_attributes!( {
+    Option.first.update!( {
       :default_donation_account_code => a.id,
       :default_donation_account_code_with_subscriptions => a.id,
       :default_retail_account_code => a.id,

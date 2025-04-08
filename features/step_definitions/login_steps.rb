@@ -65,7 +65,7 @@ end
 
 Given /customer with email "(.*)" activates a valid forgot-password link/ do |email|
   @customer = Customer.find_by!(:email => email)
-  @customer.update_attributes!(:token => 'TEST', :token_created_at => Time.current)
+  @customer.update!(:token => 'TEST', :token_created_at => Time.current)
   visit reset_token_customers_path(@customer, :token => 'TEST')
 end
 

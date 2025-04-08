@@ -15,12 +15,12 @@ describe 'Order adding tickets' do
       @params = ActionController::Parameters.new({@vv.id => 3})
     end
     it 'can add tickets even if beyond max sales limit' do
-      @vv.showdate.update_attributes!(:max_advance_sales => 2)
+      @vv.showdate.update!(:max_advance_sales => 2)
       expect { @order.add_tickets_from_params(@params, @boxoffice_user) }.to change { @order.ticket_count }.to(3)
       expect(@order.errors).to be_empty
     end
     it 'can add tickets beyond vouchertype sales limit' do
-      @vv.update_attributes!(:max_sales_for_type => 2)
+      @vv.update!(:max_sales_for_type => 2)
       expect { @order.add_tickets_from_params(@params, @boxoffice_user) }.to change { @order.ticket_count }.to(3)
       expect(@order.errors).to be_empty
     end

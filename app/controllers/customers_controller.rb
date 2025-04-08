@@ -89,7 +89,7 @@ class CustomersController < ApplicationController
       end
       # update generic attribs
       @customer.created_by_admin = @gAdminDisplay # to skip validations if admin is editing
-      @customer.update_attributes! customer_params
+      @customer.update! customer_params
       if @gAdminDisplay
         @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
       else
@@ -119,7 +119,7 @@ class CustomersController < ApplicationController
     return if request.get?
     customer_params = params.require(:customer).permit(:password, :password_confirmation)
     @customer.must_revalidate_password = true
-    if @customer.update_attributes(customer_params)
+    if @customer.update(customer_params)
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id, :comments => 'Change password')
       redirect_to customer_path(@customer), :notice => "Password change confirmed."
     else
@@ -130,7 +130,7 @@ class CustomersController < ApplicationController
   def change_secret_question
     return if request.get?
     customer_params = params.require(:customer).permit(:secret_question,:secret_answer)
-    if @customer.update_attributes(customer_params)
+    if @customer.update(customer_params)
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
         :comments => 'Change secret question or answer')
       redirect_to customer_path(@customer), :notice => 'Secret question change confirmed.'

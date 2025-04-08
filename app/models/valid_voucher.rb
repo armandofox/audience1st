@@ -16,7 +16,7 @@ class ValidVoucher < ActiveRecord::Base
   class InvalidRedemptionError < RuntimeError ;  end
   class InvalidProcessedByError < RuntimeError ; end
 
-  belongs_to :showdate
+  belongs_to :showdate, optional: true # no associated showdate if this valid_voucher is for a Bundle
   belongs_to :vouchertype
   # validate :self_service_comps_must_have_promo_code
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }

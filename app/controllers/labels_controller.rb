@@ -23,7 +23,7 @@ class LabelsController < ApplicationController
 
   def update
     @label = Label.find(params[:id])
-    if @label.update_attributes(label_params)
+    if @label.update(label_params)
       redirect_to labels_path
     else
       redirect_to labels_path, :alert => @label.errors.as_html

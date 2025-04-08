@@ -1,6 +1,6 @@
  Given /the season start date is (.*)$/ do |date|
    d = Date.parse(date)
-   Option.first.update_attributes!(:season_start_month => d.month, :season_start_day => d.day)
+   Option.first.update!(:season_start_month => d.month, :season_start_day => d.day)
  end
 
  When /^I fill in all valid options$/ do
@@ -21,7 +21,7 @@
 
  Given /^the (boolean )?setting "(.*)" is "(.*)"$/ do |bool,opt,val|
    val = !!(val =~ /true/i) if bool
-   Option.first.update_attributes!(opt.downcase.gsub(/\s+/, '_') => val)
+   Option.first.update!(opt.downcase.gsub(/\s+/, '_') => val)
  end
 
  When /I upload the email template "(.*)"/ do |filename|

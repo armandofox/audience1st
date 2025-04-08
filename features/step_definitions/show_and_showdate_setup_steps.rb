@@ -13,7 +13,7 @@ end
 
 Given /^show "(.*)" (has|should have) description "(.*)"$/ do |name,exists,desc|
   if exists
-    Show.find_by_name!(name).update_attributes!(:description => desc)
+    Show.find_by_name!(name).update!(:description => desc)
   else
     expect(Show.find_by_name!(name).description).to eq(desc)
   end
@@ -21,7 +21,7 @@ end
 
 Given /^a class "(.*)" available for enrollment now$/ do |name|
   steps %Q{Given a show "#{name}" with tickets on sale for today}
-  @show.update_attributes!(:event_type => "Class")
+  @show.update!(:event_type => "Class")
 end
 
 Given /^there is a show named "([^\"]+)"$/ do |name|
@@ -153,7 +153,7 @@ Given /^there are (\d+) "(.*)" tickets and (\d+) total seats available$/ do |per
          :vouchertype => vtype,
          :showdate => @showdate,
          :max_sales_for_type => per_ticket_limit)
-  @showdate.update_attributes!(:max_advance_sales => seat_limit)
+  @showdate.update!(:max_advance_sales => seat_limit)
 end
 
 # Types of showdates: GA in theater, RS in theater, live stream, stream anytime

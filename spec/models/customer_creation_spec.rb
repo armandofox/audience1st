@@ -124,20 +124,20 @@ describe Customer do
     end
     context "with email domain restriction" do
       it "rejects nonmatching address" do
-        Option.first.update_attributes!(:restrict_customer_email_to_domain => 'audience1st.com')
+        Option.first.update!(:restrict_customer_email_to_domain => 'audience1st.com')
         @customer.email = 'bob@not.gmail.com'
         expect(@customer).not_to be_valid
         expect(@customer.errors[:email]).to include_match_for(/must end in 'audience1st.com'/)
       end
       it "allows matching address" do
-        Option.first.update_attributes!(:restrict_customer_email_to_domain => 'audience1st.com')
+        Option.first.update!(:restrict_customer_email_to_domain => 'audience1st.com')
         @customer.email = 'bob_joyc123@Audience1st.COM'
         expect(@customer).to be_valid
       end
       it "exempts existing customers" do
         @customer.email = 'bob@not-gmail.com'
         @customer.save!
-        Option.first.update_attributes!(:restrict_customer_email_to_domain => 'audience1st.com')
+        Option.first.update!(:restrict_customer_email_to_domain => 'audience1st.com')
         @customer.last_name = 'Jones'
         expect(@customer).to be_valid
         expect { @customer.save! }.not_to raise_error

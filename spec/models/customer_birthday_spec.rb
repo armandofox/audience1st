@@ -5,8 +5,8 @@ describe Customer, "birthdays" do
   before :each do
     @c1 = create(:customer)
     @c2 = create(:customer)
-    @c1.update_attributes!(:birthday => 'Jan 5, 1968')
-    @c2.update_attributes!(:birthday => 'Feb 4, 1974')
+    @c1.update!(:birthday => 'Jan 5, 1968')
+    @c2.update!(:birthday => 'Feb 4, 1974')
   end
   describe "setting" do
     before :each do ; @birthday = Time.zone.parse("Jan 21, 1973") ; end
@@ -31,20 +31,20 @@ describe Customer, "birthdays" do
   end
   describe "no email should be created" do
     before :each do
-      Option.first.update_attributes!(:send_birthday_reminders => 5,
+      Option.first.update!(:send_birthday_reminders => 5,
         :box_office_email => 'n@ai')
       expect(Mailer).not_to receive(:upcoming_birthdays)
     end
     specify 'when feature is turned off' do
-      Option.first.update_attributes!(:send_birthday_reminders => 0)
+      Option.first.update!(:send_birthday_reminders => 0)
       Customer.notify_upcoming_birthdays
     end
     specify 'when every-n value is negative' do
-      Option.first.update_attributes!(:send_birthday_reminders => -2)
+      Option.first.update!(:send_birthday_reminders => -2)
       Customer.notify_upcoming_birthdays
     end
     specify 'when day modulo n doesn\'t match up' do
-      Option.first.update_attributes!(:send_birthday_reminders => 3,
+      Option.first.update!(:send_birthday_reminders => 3,
         :box_office_email => 'n@ai')
       Timecop.travel('Jan 1, 2012') do
         Customer.notify_upcoming_birthdays
@@ -62,7 +62,7 @@ describe Customer, "birthdays" do
       @days = 5
       @boxoffice_email = 'n@ai'
       expect(Customer).to receive(:birthdays_in_range).and_return([@c1,@c2])
-      Option.first.update_attributes!(
+      Option.first.update!(
         :send_birthday_reminders => @days,
         :box_office_email => @boxoffice_email)
       Timecop.travel('Jan 5, 2012') do

@@ -2,13 +2,13 @@ Given /^(\d+) "(.*)" comps are available for "(.*)" on "([^\"]+)"(?: with promo 
   show_date = Time.zone.parse(date)
   @showdate = setup_show_and_showdate(show_name,show_date)
   @comp = Vouchertype.find_by(:name => comp_type) || create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
-  @comp.update_attributes!(:offer_public => Vouchertype::ANYONE) if code
+  @comp.update!(:offer_public => Vouchertype::ANYONE) if code
   make_valid_tickets(@showdate, @comp, num, code)
 end
 
 Given /an advance sales limit of (\d+) for the (.*) performance/ do |limit,thedate|
   @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
-  @showdate.update_attributes!(:max_advance_sales => limit)
+  @showdate.update!(:max_advance_sales => limit)
 end
 
 Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
@@ -18,7 +18,7 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
     # if sales cutoff time is specified, modify the valid-voucher once created
     if (cutoff = t[:sales_cutoff])
       vv = ValidVoucher.find_by!(:showdate => @showdate, :vouchertype => Vouchertype.find_by!(:name => t[:type]))
-      vv.update_attributes(:end_sales => @showdate.thedate - cutoff.to_i.minutes)
+      vv.update(:end_sales => @showdate.thedate - cutoff.to_i.minutes)
     end
   end
 end
@@ -37,14 +37,14 @@ end
 Given /"(.*)" tickets for that performance must be purchased at least (\d+) and at most (\d+) at a time/ do |vtype,min,max|
   expect(@showdate).to be_a_kind_of Showdate
   vv = ValidVoucher.find_by!(:showdate => @showdate, :vouchertype => Vouchertype.find_by!(:name => vtype))
-  vv.update_attributes!(:min_sales_per_txn => min.to_i, :max_sales_per_txn => max.to_i)
+  vv.update!(:min_sales_per_txn => min.to_i, :max_sales_per_txn => max.to_i)
 end
 
 Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
   vouchertype = Vouchertype.find_by_name! ticket_type
   showdate = Showdate.find_by_thedate! Time.zone.parse date
   ValidVoucher.find_by_vouchertype_id_and_showdate_id(vouchertype.id, showdate.id).
-    update_attributes!(:promo_code => promo)
+    update!(:promo_code => promo)
 end
 
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
@@ -78,7 +78,7 @@ Given /the "(.*)" redemption for "(.*)" ends sales at "(.*)"/ do |vtype_name, sh
   vouchertype = Vouchertype.find_by!(:name => vtype_name)
   showdate = Showdate.find_by!(:thedate => Time.zone.parse(showdate_s))
   new_end_sales = Time.zone.parse(end_sales_s)
-  ValidVoucher.find_by!(:showdate => showdate, :vouchertype => vouchertype).update_attributes!(:end_sales => new_end_sales)
+  ValidVoucher.find_by!(:showdate => showdate, :vouchertype => vouchertype).update!(:end_sales => new_end_sales)
 end
 
 Then /^ticket sales should be as follows:$/ do |tickets|

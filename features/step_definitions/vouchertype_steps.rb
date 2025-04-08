@@ -1,6 +1,6 @@
 Given /^the display orders of "(.*)" and "(.*)" are set to (\d+) and (\d+)$/ do |v1_name,v2_name,d1,d2|
-  Vouchertype.find_by_name!(v1_name).update_attributes!(:display_order => d1)
-  Vouchertype.find_by_name!(v2_name).update_attributes!(:display_order => d2)
+  Vouchertype.find_by_name!(v1_name).update!(:display_order => d1)
+  Vouchertype.find_by_name!(v2_name).update!(:display_order => d2)
 end
 
 Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,price,season|

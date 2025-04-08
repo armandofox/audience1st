@@ -120,7 +120,7 @@ describe Customer, "merging" do
         expect(Customer.boxoffice_daemon.forget!).to be_nil
       end
       it "should not change any of special customer's attribute values" do
-        @cust.update_attributes!(:blacklist => false, :e_blacklist => false)
+        @cust.update!(:blacklist => false, :e_blacklist => false)
         @cust.forget!
         expect(Customer.anonymous_customer.blacklist).to be_truthy
         expect(Customer.anonymous_customer.e_blacklist).to be_truthy
@@ -224,8 +224,8 @@ describe Customer, "merging" do
     end
     describe "successfully" do
       it "should keep password based on most recent" do
-        @old.update_attributes!(:password => 'olderpass', :password_confirmation => 'olderpass')
-        @new.update_attributes!(:password => 'newerpass', :password_confirmation => 'newerpass')
+        @old.update!(:password => 'olderpass', :password_confirmation => 'olderpass')
+        @new.update!(:password => 'newerpass', :password_confirmation => 'newerpass')
         salt = @new.salt
         pass = @new.crypted_password
         expect(@old.merge_automatically!(@new)).not_to be_nil

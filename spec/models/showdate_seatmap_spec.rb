@@ -47,7 +47,7 @@ describe Showdate do
         expect(@showdate.occupied_seats).to eq %w(B1 B2)
       end
       specify 'as occupied once sale is complete' do
-        @v1.update_attributes!(:finalized => true)
+        @v1.update!(:finalized => true)
         expect(@showdate.occupied_seats).to eq %w(B1 B2)
       end
       specify 'as free if voucher is canceled' do

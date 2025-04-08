@@ -262,7 +262,7 @@ class Customer < ActiveRecord::Base
   end
 
   def record_login!
-    self.update_attributes!(:last_login => Time.current)
+    self.update!(:last_login => Time.current)
   end
 
   def has_ever_logged_in?

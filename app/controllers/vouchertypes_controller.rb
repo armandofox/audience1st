@@ -102,9 +102,9 @@ class VouchertypesController < ApplicationController
         if !(valid_voucher_update_params.empty?)
           # subscription/bundle vouchers have start/end/max sales params editable on same screen
           valid_voucher = @vouchertype.valid_vouchers.first
-          valid_voucher.update_attributes!(valid_voucher_update_params[:valid_voucher])
+          valid_voucher.update!(valid_voucher_update_params[:valid_voucher])
         end
-        @vouchertype.update_attributes!(vouchertype_update_params)
+        @vouchertype.update!(vouchertype_update_params)
         Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
           :comments => "Modify voucher type #{@vouchertype.name}")
         flash[:notice] = 'Vouchertype was successfully updated.'
