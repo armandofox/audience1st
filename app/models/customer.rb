@@ -41,7 +41,7 @@ class Customer < ActiveRecord::Base
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,recurring_donations,retail_items
 
-  belongs_to :ticket_sales_import
+  belongs_to :ticket_sales_import, optional: true
 
   # There are multiple 'flavors' of customers with different validation requirements.
   # These should be factored out into subclasses.

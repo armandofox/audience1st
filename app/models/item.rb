@@ -2,13 +2,12 @@ class Item < ActiveRecord::Base
 
   belongs_to :customer
   belongs_to :order
-  belongs_to :account_code
 
   # BUG: not every Item subclass logically has a Vouchertype or Showdate, but the association is
   # needed at this level in order for the Accounting Report to avoid an n+1 query problem,
   # since it fetches a whole bunch of Item records and will dereference Vouchertype.
-  belongs_to :vouchertype
-  belongs_to :showdate
+  belongs_to :vouchertype, optional: true
+  belongs_to :showdate, optional: true
 
   validates_associated :order
   delegate :purchaser, :purchasemethod, :to => :order

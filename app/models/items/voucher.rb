@@ -1,5 +1,5 @@
 class Voucher < Item
-  belongs_to :showdate
+  belongs_to :showdate, optional: true
 
   class ReservationError < StandardError ;  end
 
