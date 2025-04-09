@@ -109,7 +109,7 @@ class DonationsController < ApplicationController
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.current
       c = current_user.email rescue "(??)"
-      t.update(:letter_sent => now,
+      t.update!(:letter_sent => now,
         :processed_by => current_user)
       Txn.add_audit_record(:customer_id => t.customer_id,
         :logged_in_id => current_user.id,

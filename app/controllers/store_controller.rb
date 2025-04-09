@@ -266,7 +266,7 @@ class StoreController < ApplicationController
     end
     if params.has_key?(:customer)
       customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
-      @gOrderInProgress.purchaser.update(customer_params)
+      @gOrderInProgress.purchaser.update!(customer_params)
     end
     unless @gOrderInProgress.ready_for_purchase?
       flash[:alert] = @gOrderInProgress.errors.as_html
