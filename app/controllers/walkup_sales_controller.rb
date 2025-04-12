@@ -22,7 +22,7 @@ class WalkupSalesController < ApplicationController
   end
 
   def create
-    @order = Order.create(
+    @order = Order.create!(
       :walkup => true,
       :customer => Customer.walkup_customer,
       :purchaser => Customer.walkup_customer,

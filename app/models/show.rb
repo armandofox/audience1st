@@ -29,14 +29,18 @@ class Show < ActiveRecord::Base
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
     select('DISTINCT shows.*', 'showdates.*').
-    order('showdates.thedate ASC NULLS LAST')
+    order(Arel.sql('showdates.thedate ASC NULLS LAST'))
   }
 
   scope :for_seasons, ->(from,to) {  where(:season => from..to) }
 
   scope :with_showdates, -> { joins(:showdates) }
 
-  scope :sorted, -> {  includes(:showdates).order('showdates.thedate ASC NULLS LAST', 'shows.name')  }
+  scope :sorted, -> {
+    includes(:showdates).
+      order(Arel.sql('showdates.thedate ASC NULLS LAST, shows.name'))
+  }
+    
   
   def opening_date
     first_showdate = showdates.order('thedate').first

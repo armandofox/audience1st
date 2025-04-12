@@ -68,7 +68,7 @@ class DonationsController < ApplicationController
   end
 
   def create
-    @order = Order.create(:purchaser => @customer, :customer => @customer, :processed_by => current_user)
+    @order = Order.create!(:purchaser => @customer, :customer => @customer, :processed_by => current_user)
     @donation = Donation.from_amount_and_account_code_id(
       params[:amount].to_f, params[:fund].to_i, params[:comments].to_s)
     @order.add_donation(@donation)

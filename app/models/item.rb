@@ -1,6 +1,6 @@
 class Item < ActiveRecord::Base
 
-  belongs_to :customer
+  belongs_to :customer, optional: true
   belongs_to :order, optional: true
 
   # BUG: not every Item subclass logically has a Vouchertype or Showdate, but the association is

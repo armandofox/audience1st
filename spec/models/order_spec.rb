@@ -35,7 +35,7 @@ describe Order do
 
   describe 'marshalling' do
     it 'donation' do
-      @order = create(:order, :processed_by => create(:customer))
+      @order = create!(:order, :processed_by => create(:customer))
       @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
       @order.save!
       @unserialized = Order.find(@order.id)

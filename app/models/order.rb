@@ -1,7 +1,7 @@
 class Order < ActiveRecord::Base
-  belongs_to :customer
-  belongs_to :purchaser, :class_name => 'Customer'
-  belongs_to :processed_by, :class_name => 'Customer'
+  belongs_to :customer,                               optional: true
+  belongs_to :purchaser, :class_name => 'Customer',   optional: true
+  belongs_to :processed_by, :class_name => 'Customer',optional: true
   has_many :items, :autosave => true, :dependent => :destroy
   has_many :vouchers, :autosave => true,  :dependent => :destroy
   has_many :donations, :autosave => true, :dependent => :destroy
