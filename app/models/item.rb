@@ -37,14 +37,9 @@ class Item < ActiveRecord::Base
     refund_item = RefundedItem.from_cancellation(self) if amount > 0
     self.comments = "[CANCELED #{by_whom.full_name} #{Time.current.to_formatted_s :long}] #{description_for_audit_txn}"
     self.type = 'CanceledItem'
-    original_updated_at = self.updated_at.clone
     Item.transaction do
       refund_item.save! if refund_item
-      self.save!
-      # we have to explicitly do this to preserve updated_at.
-      # Rails 5 would allow touch:false on save! to avoid updating :rails4:
-      self.updated_at = original_updated_at
-      self.save
+      self.save!(:touch => false) # preserve updated_at time
     end
     CanceledItem.find(self.id)  #  !
   end
