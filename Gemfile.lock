@@ -325,10 +325,10 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
-    simplecov-cobertura (2.1.0)
-      rexml
-      simplecov (~> 0.19)
     simplecov-html (0.13.1)
+    simplecov-json (0.2.3)
+      json
+      simplecov
     simplecov_json_formatter (0.1.4)
     sinatra (3.2.0)
       mustermann (~> 3.0)
@@ -380,7 +380,7 @@ PLATFORMS
 DEPENDENCIES
   attr_encrypted (< 4.0.0)
   builder
-  bundler (= 1.17.3)
+  bundler
   byebug
   capybara
   chronic
@@ -420,7 +420,7 @@ DEPENDENCIES
   sassc-rails
   selenium-webdriver
   simplecov
-  simplecov-cobertura
+  simplecov-json
   sprockets-rails
   sqlite3 (= 1.4)
   sslrequirement

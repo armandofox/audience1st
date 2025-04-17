@@ -42,9 +42,9 @@ jobs:
     - name: test run Rspec
       run: |
         bundle exec rspec spec/controllers/store_controller_spec.rb:18
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type json
         bundle exec cucumber features/customers/edit_labels.feature --profile ci-report
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type json
 
     - name: Install Chrome For Testing and Chromedriver
       uses: browser-actions/setup-chrome@v1

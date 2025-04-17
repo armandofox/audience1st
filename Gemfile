@@ -8,7 +8,7 @@ gem 'ros-apartment', require: 'apartment'     # multi-tenancy: see README.md
 gem 'rails', '6.0.6.1'
 
 gem 'builder'
-gem 'bundler', '1.17.3'
+gem 'bundler'
 gem 'figaro'
 gem 'ffi', '1.16.3'             # or github actions won't run. https://github.com/ffi/ffi/issues/1103
 gem 'sslrequirement'
@@ -49,10 +49,10 @@ group :test do
   gem 'faker'
   gem 'fake_stripe'
   gem 'selenium-webdriver', require: false
-  gem 'simplecov-cobertura'
   gem 'rspec-json_expectations'
   gem 'rails-controller-testing' # for assigns()
   gem 'simplecov'
+  gem 'simplecov-json', :require => false
   gem 'timecop'
   gem 'webmock'
   gem 'vcr'
