@@ -1,7 +1,12 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'simplecov'
 SimpleCov.start 'rails'
-SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
+if ENV['CC_TEST_REPORTER_ID']   # running in CI
+  require "simplecov_json_formatter"
+  SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
+else
+  SimpleCov.formatter = SimpleCov::Formatter::HTMLFormatter
+end
 
 require 'spec_helper'
 require File.expand_path('../../config/environment', __FILE__)
