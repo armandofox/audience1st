@@ -31,7 +31,8 @@ describe TicketSalesImportsController do
     context 'create with a mix of permitted and unpermitted params' do
       before :each do
         # don't actually parse
-        TicketSalesImport.any_instance.stub_chain(:parser, :parse).and_return(true)
+        allow_any_instance_of(TicketSalesImport).to receive_message_chain(:parser, :parse => true)
+        #TicketSalesImport.any_instance.stub_chain(:parser, :parse).and_return(true)
         post :create, :params => mixed_params
         @post_tsi = TicketSalesImport.find(1)
       end
