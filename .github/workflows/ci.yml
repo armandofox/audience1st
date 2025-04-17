@@ -38,6 +38,11 @@ jobs:
     - name: install gems
       run: |
         bundle install --without production
+
+    - name: run RSpec tests and capture coverage
+      run: |
+        bundle exec rspec
+        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
         
     - name: Install Chrome For Testing and Chromedriver
       uses: browser-actions/setup-chrome@v1
@@ -47,11 +52,6 @@ jobs:
         install-chromedriver: true
         install-dependencies: true
 
-    - name: run RSpec tests and capture coverage
-      run: |
-        bundle exec rspec
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type cobertura
-        
     - name: run Cucumber tests using config/cucumber.yml options, and capture coverage
       env:
         CHROMEDRIVER_PATH: ${{ steps.install-chromedriver.outputs.chromedriver-path }} 
