@@ -301,7 +301,7 @@ class Customer < ActiveRecord::Base
       errors.add :base,"First and last name must be provided"
       valid = false
     end
-    if invalid_mailing_address?
+    unless valid_mailing_address?
       errors.add :base,"Valid mailing address must be provided for #{self.full_name}"
       valid = false
     end
@@ -381,7 +381,7 @@ class Customer < ActiveRecord::Base
     errors.add(:zip, 'must be between 5 and 10 characters') if !zip.blank? && !zip.to_s.length.between?(5,10)
     errors.empty?
   end
-  def invalid_mailing_address? ; !valid_mailing_address? ; end
+
   def blank_mailing_address?
     street.blank? && city.blank? && zip.blank?
   end
