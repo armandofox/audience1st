@@ -4,10 +4,13 @@ FactoryBot.define do
     transient do
       vouchers_count { 0 }
       contains_donation { false }
+      purchaser_or_customer { create :customer }
     end
-    association :purchaser, :factory => :customer
+
+    purchaser { purchaser_or_customer }
+    customer  { purchaser_or_customer }
+
     association :processed_by, :factory => :customer
-    association :customer
     walkup { nil }
     purchasemethod { Purchasemethod.get_type_by_name(:box_cash) }
 
@@ -25,6 +28,10 @@ FactoryBot.define do
         #order.items << create(:donation, :customer => order.customer)
         order.add_donation(create(:donation, :customer => order.customer))
       end
+    end
+
+    trait :gift do
+      purchaser { create :customer }
     end
 
     factory :order_from_vouchers do
