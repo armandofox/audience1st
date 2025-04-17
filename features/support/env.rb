@@ -2,6 +2,7 @@ $VERBOSE=nil
 require 'simplecov' # automatically reads APP_ROOT/.simplecov for config options
 SimpleCov.start 'rails'
 if ENV['CI']
+  require 'simplecov-cobertura'
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 
