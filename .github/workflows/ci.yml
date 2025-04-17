@@ -59,7 +59,7 @@ jobs:
     #   run: |
     #     bundle exec cucumber --profile ci-report
     #     $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
-  
+
     - name: test run Rspec
       run: |
         bundle exec rspec spec/controllers/store_controller_spec.rb:18
