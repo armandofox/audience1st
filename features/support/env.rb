@@ -1,7 +1,7 @@
 $VERBOSE=nil
 require 'simplecov' # automatically reads APP_ROOT/.simplecov for config options
 SimpleCov.start 'rails'
-if ENV['CC_TEST_REPORTER_ID']   # running in CI
+if ENV['CCTR']   # running in CI
   require "simplecov_json_formatter"
   SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
 else
