@@ -20,6 +20,11 @@ module Audience1st
     config.load_defaults 6.0
     config.autoloader = :classic
 
+    # allow ACtiveRecord to hash-serialize models that include non-primitive classes.
+    # see https://discuss.rubyonrails.org/t/cve-2022-32224-possible-rce-escalation-bug-with-serialized-columns-in-active-record/81017
+    # it's safe here because we're constructing the input ourselves
+    config.active_record.use_yaml_unsafe_load = true
+
     config.active_storage.service = :local
     
     # Settings in config/environments/* take precedence over those specified here.

@@ -2,7 +2,7 @@ class ImportedOrder < Order
 
   def haml_object_ref ; 'order' ; end # so Haml treats as parent class when creating view elts
   
-  belongs_to :ticket_sales_import
+  belongs_to :ticket_sales_import, optional: true
   
   # This subclass captures the abstraction of "an order that is almost ready to be imported,
   # once we ascertain which customer should get it".  In addition to the regular Order fields:
@@ -33,7 +33,7 @@ class ImportedOrder < Order
   validates_uniqueness_of :external_key, :allow_blank => true, conditions: -> { where.not(:sold_on => nil) }
   validates_presence_of :processed_by
   
-  serialize :from_import
+  serialize :from_import, JSON
   after_initialize :initialize_import_info
 
   class ImportInfo

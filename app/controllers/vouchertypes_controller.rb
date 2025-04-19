@@ -110,7 +110,6 @@ class VouchertypesController < ApplicationController
         flash[:notice] = 'Vouchertype was successfully updated.'
         redirect_to vouchertypes_path, :season => @vouchertype.season
       rescue StandardError => e
-        byebug
         flash[:alert] = "Update failed: #{e.message}"
         redirect_to edit_vouchertype_path(@vouchertype)
       end
