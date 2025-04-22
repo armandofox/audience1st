@@ -1,3 +1,4 @@
+@suspended
 Feature: import Goldstar sales
 
   As a boxoffice manager

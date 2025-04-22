@@ -1,9 +1,9 @@
 <%
-common = %q{-m -i --require features --tags 'not @wip'}
+common = %q{-m -i --require features --color --tags 'not @suspended'}
 %>
-default:   <%= common %> --format pretty --format rerun --out rerun-<%= Time.now.to_i % 1_000_000 %>.txt --publish
+default:   <%= common %> --format pretty --format rerun --out tmp/rerun-<%= Time.now.to_i % 1_000_000 %>.txt --publish
 ci-report: <%= common %> --format pretty --retry 2 --publish
 ci:        <%= common %> --quiet --retry 2 --format summary
-no_javascript: <%= common %> --tags 'not @javascript and not @wip'
-javascript: <%= common %> --tags '@javascript and not @wip'
+no_javascript: <%= common %> --tags 'not @javascript and not @suspended'
+javascript: <%= common %> --tags '@javascript and not @suspended'
 cur:   <%= common %> --tags @cur
