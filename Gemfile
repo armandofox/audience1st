@@ -1,11 +1,11 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '2.7.7'
+ruby '3.1.2'
 
 # basic app components
-gem 'pg', '0.20'                # Rails5: OK to upgrade to latest version
+gem 'pg'
 gem 'ros-apartment', require: 'apartment'     # multi-tenancy: see README.md
-gem 'rails', '6.0.6.1'
+gem 'rails', '6.1.7.7'
 
 gem 'builder'
 gem 'bundler'
@@ -78,5 +78,5 @@ group :development, :test do
   gem 'rspec-html-matchers'
   gem 'rspec-collection_matchers' # should have(n).items, etc
   gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
-  gem 'sqlite3', '1.4'
+  gem 'sqlite3', '~> 1.4'
 end
