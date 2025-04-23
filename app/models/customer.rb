@@ -56,24 +56,49 @@ class Customer < ActiveRecord::Base
   #  which customer is failing validation for operations involving mulitple customers:
   #  use a custom subclass of ActiveModel::Errors.
 
-  class CustomErrors < ActiveModel::Errors
-    def full_message(attribute, message)
-      return super if attribute == :base # Keep base errors unchanged
-      customer_name =
-        if    !@base.full_name.blank? then @base.full_name
-        elsif @base.new_record? then 'New unnamed customer'
-        else  "Customer ID #{@base.id}"
+  # class CustomErrors < ActiveModel::Errors
+  #   def full_message(attribute, message)
+  #     byebug
+  #     return super if attribute == :base # Keep base errors unchanged
+  #     customer_name =
+  #       if    object.full_name.blank? then object.full_name
+  #       elsif object.new_record? then 'New unnamed customer'
+  #       else  "Customer ID #{object.id}"
+  #       end
+  #     "#{customer_name}: #{super(attribute, message)}"
+  #   end
+  # end
+  # # For 6.1, we also have to modify how the model is initialized to use our custom error
+  # # class instead of ActiveModel::Errors
+  # def initialize(*args)
+  #   super
+  #   @errors = CustomErrors.new(self)
+  # end
+  # def errors # override Customer#errors to use custom class instead of ActiveMessage::Errors
+  #   @errors ||= CustomErrors.new(self)
+  # end
+
+  def errors
+    @_errors ||= super.tap do |errors_object|
+      model = self
+      class << errors_object
+        define_method(:full_message) do |attribute, message|
+          byebug
+          return super if attribute == :base
+          customer_name =
+            if    model.full_name.blank? then model.full_name
+            elsif model.new_record? then 'New unnamed customer'
+            else  "Customer ID #{model.id}"
+            end
+          "#{customer_name}: #{super(attribute, message)}"      
         end
-      "#{customer_name}: #{super(attribute, message)}"
+      end
     end
-  end
-  def errors # override Customer#errors to use custom class instead of ActiveMessage::Errors
-    @custom_errors ||= CustomErrors.new(self)
   end
   
   VALID_EMAIL_REGEXP = /\A\S+@\S+\z/
   validates_format_of :email, :if => :self_created?, :with => VALID_EMAIL_REGEXP
-
+  
   def restricted_email
     return if (domain = Option.restrict_customer_email_to_domain.to_s).blank?
     errors.add(:email, "must end in '#{domain}'") if

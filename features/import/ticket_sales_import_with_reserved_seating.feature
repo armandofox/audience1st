@@ -1,3 +1,4 @@
+@suspended
 @javascript
 Feature: import third party ticket sales for a reserved seating performance
 

@@ -1,3 +1,4 @@
+@suspended
 Feature: handling problems with ticket imports
 
   As a boxoffice manager

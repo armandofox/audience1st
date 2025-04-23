@@ -70,8 +70,6 @@ group :development, :test do
   # the following really belong in a separate 'staging' environment
   gem 'factory_bot_rails'
   gem 'byebug'                  # 4
-  #gem 'faye-websocket'
-  #gem 'rb-readline'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'rspec-its'
