@@ -125,7 +125,7 @@ class Store
     end
     def showdate_from_show_params
       (s = Show.find_by_id(@params[:show_id])) &&
-        (s.upcoming_showdates.first || s.showdates.first)
+        (s.upcoming_showdates.first)
     end
     def showdate_from_default ; Showdate.current_or_next(:type => @params[:what]) ; end
 
