@@ -1,4 +1,7 @@
 Rails.application.configure do
+
+  config.hosts << "a1-staging.lvh.me"
+  
   # Settings specified here will take precedence over those in config/environment.rb
   
   # In the development environment your application's code is reloaded on

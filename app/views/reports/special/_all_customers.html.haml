@@ -1,4 +1,4 @@
 %div
   List customers who were <strong>added</strong> to the database 
   during these dates:
-  = select_date_with_shortcuts 'new_customer_dates', :from => Time.new('2007-01-01'), :to => Time.current
+  = select_date_with_shortcuts 'new_customer_dates', :from => Time.parse('2007-01-01'), :to => Time.current
