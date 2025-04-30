@@ -3,10 +3,7 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery :prepend => true
 
-  if Rails.env.production?
-    force_ssl
-    before_action :set_secure_headers
-  end
+  before_action :set_robots_tag
 
   include AuthenticatedSystem
 
@@ -29,11 +26,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_secure_headers
-    if request.ssl?
-      # :rails5: can be omitted for rails >=5
-      response.headers['Strict-Transport-Security'] = "max-age=31536000; includeSubDomains"
-    end
+  def set_robots_tag
     response.headers['X-Robots-Tag'] = 'none' # equivalent to 'noindex,nofollow'
   end
 
