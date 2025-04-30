@@ -31,10 +31,10 @@ gem 'will_paginate'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem 'sassc-rails'
 gem 'uglifier'
+gem 'puma'
 
 group :production do
   gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
-  gem 'puma'
 end
 
 group :test do
@@ -59,6 +59,7 @@ group :test do
 end
 
 group :development do
+  gem 'foreman'
   # gem 'derailed_benchmarks'
   # gem 'query_trail'
   # gem 'ruby-prof'
