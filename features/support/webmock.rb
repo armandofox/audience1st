@@ -10,7 +10,8 @@ WebMock.disable_net_connect!(
     'googlechromelabs.github.io',
     'edgedl.me.gvt1.com',
     'https://messages.cucumber.io',
-    /cucumber-messages-app-.*/
+    /cucumber-messages-app-.*/,
+    /cucumber-reports-anonymous.*/
   ]
 )
 
