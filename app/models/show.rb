@@ -25,10 +25,11 @@ class Show < ActiveRecord::Base
   validates_length_of :patron_notes,           :maximum => 255
 
   scope :current_and_future, -> {
+    Show.
     includes(:showdates).
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
-    select('DISTINCT shows.*', 'showdates.*').
+    distinct.
     order(Arel.sql('showdates.thedate ASC NULLS LAST'))
   }
 
