@@ -27,7 +27,7 @@ Rails.application.configure do
   # store uploaded files on local filesystem - see config/storage.yml
   config.active_storage.service = :local
 
-  # config.log_level = :debug
+  config.log_level = :info
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

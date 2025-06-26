@@ -42,6 +42,9 @@ module Audience1st
     config.assets.enabled = true
     config.eager_load = true
 
+    # Rails 6 rake tasks don't eager-load by default
+    config.rake_eager_load = true
+    
     config.after_initialize do
       config.action_mailer.delivery_method = :smtp
       Time.include CoreExtensions::Time::ShowtimeDateFormats
