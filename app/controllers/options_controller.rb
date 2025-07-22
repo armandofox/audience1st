@@ -15,7 +15,7 @@ class OptionsController < ApplicationController
       option_params['advance_sales_cutoff'].to_i * params['before_or_after'].to_i
     # if there is a file upload for HTML template, get it
     option_params['html_email_template'] = params['html_email_template'].read unless params['html_email_template'].blank?
-    if (@o.update_attributes(option_params))
+    if (@o.update(option_params))
       redirect_to options_path, :notice => "Update successful."
     else
       flash.now[:alert] = @o.errors.as_html

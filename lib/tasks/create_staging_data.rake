@@ -50,7 +50,7 @@ staging = namespace :staging do
     Apartment::Tenant.create StagingHelper::TENANT
     StagingHelper.switch_to_staging!
     load File.join(Rails.root, 'db', 'seeds.rb')
-    Option.first.update_attributes!(
+    Option.first.update!(
       :venue => StagingHelper::TENANT.humanize.name_capitalize,
       :season_start_month => (1.month.ago).month)
   end
@@ -58,7 +58,7 @@ staging = namespace :staging do
   desc "Set staging API keys STRIPE_SECRET, STRIPE_KEY from Figaro"
   task :api_keys => :environment do
     StagingHelper::switch_to_staging!
-    Option.first.update_attributes!(
+    Option.first.update!(
       :stripe_key => Figaro.env.STRIPE_KEY,
       :stripe_secret => Figaro.env.STRIPE_SECRET,
       :sender_domain => '')   # domain blank disables email sending
@@ -178,7 +178,7 @@ staging = namespace :staging do
     customers = customers.sample(num_customers) # since will sell avg of 2 per pax
     print "Selling 1-4 subscriptions (usually 2) to #{customers.size} customers:  "
     customers.each do |customer|
-      o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
+      o = Order.create!(:purchaser => customer, :processed_by => customer, :customer => customer,
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
       o.add_tickets_without_capacity_checks(sub_voucher, num_tix)
@@ -196,7 +196,7 @@ staging = namespace :staging do
     print "Recording 1-3 donations (usually 1) of $20-$150 apiece for #{num_customers} customers"
     Customer.regular_customers.sample(num_customers).each do |customer|
       [1,1,1,1,2,2,3].sample.times do
-        o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
+        o = Order.create!(:purchaser => customer, :processed_by => customer, :customer => customer,
           :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
         o.add_donation(Donation.from_amount_and_account_code_id(20 + 15 * rand(10), AccountCode.default_account_code_id))
         o.finalize!
@@ -227,7 +227,7 @@ staging = namespace :staging do
         # pick which price point they'll use
         valid_voucher = valid_vouchers.sample
         # buy it
-        o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
+        o = Order.create!(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
         o.add_tickets_without_capacity_checks(valid_voucher, num_tix)
         begin
           o.finalize!

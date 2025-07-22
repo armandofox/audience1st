@@ -16,6 +16,17 @@ Bundler.require(*Rails.groups)
 
 module Audience1st
   class Application < Rails::Application
+
+    config.load_defaults 6.0
+    config.autoloader = :classic
+
+    # allow ACtiveRecord to hash-serialize models that include non-primitive classes.
+    # see https://discuss.rubyonrails.org/t/cve-2022-32224-possible-rce-escalation-bug-with-serialized-columns-in-active-record/81017
+    # it's safe here because we're constructing the input ourselves
+    config.active_record.use_yaml_unsafe_load = true
+
+    config.active_storage.service = :local
+    
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -31,6 +42,9 @@ module Audience1st
     config.assets.enabled = true
     config.eager_load = true
 
+    # Rails 6 rake tasks don't eager-load by default
+    config.rake_eager_load = true
+    
     config.after_initialize do
       config.action_mailer.delivery_method = :smtp
       Time.include CoreExtensions::Time::ShowtimeDateFormats

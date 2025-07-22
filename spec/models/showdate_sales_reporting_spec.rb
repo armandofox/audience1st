@@ -94,7 +94,7 @@ describe Showdate do
         expect(@showdate.saleable_seats_left).to eq(0)
       end
       it 'shows sold-out if max sales is zero' do
-        @showdate.update_attributes!(:max_advance_sales => 0)
+        @showdate.update!(:max_advance_sales => 0)
         expect(@showdate).to be_sold_out
       end
     end

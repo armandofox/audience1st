@@ -89,7 +89,7 @@ class TicketSalesImportsController < ApplicationController
     permitted = params.permit(:vendor, :file)
     {
       vendor: permitted[:vendor],
-      raw_data: permitted[:file].read,
+      raw_data: permitted[:file].read.force_encoding('UTF-8'),
       filename: permitted[:file].original_filename,
       completed: false, processed_by: current_user,
       existing_customers: 0,

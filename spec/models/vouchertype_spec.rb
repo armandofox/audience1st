@@ -148,7 +148,7 @@ describe Vouchertype do
     end
     describe 'attempting to change to a non-bundle after creation' do
       before :each do
-        @result = @v.update_attributes(:category => 'revenue')
+        @result = @v.update(:category => 'revenue')
       end
       it 'should fail' do ; expect(@result).to be_falsey ; end
       it 'should explain why' do

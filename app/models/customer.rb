@@ -41,7 +41,7 @@ class Customer < ActiveRecord::Base
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,recurring_donations,retail_items
 
-  belongs_to :ticket_sales_import
+  belongs_to :ticket_sales_import, optional: true
 
   # There are multiple 'flavors' of customers with different validation requirements.
   # These should be factored out into subclasses.
@@ -55,25 +55,11 @@ class Customer < ActiveRecord::Base
   #  To make all error messages begin with the name of the customer, to disambiguate
   #  which customer is failing validation for operations involving mulitple customers:
   #  use a custom subclass of ActiveModel::Errors.
-
-  class CustomErrors < ActiveModel::Errors
-    def full_message(attribute, message)
-      return super if attribute == :base # Keep base errors unchanged
-      customer_name =
-        if    !@base.full_name.blank? then @base.full_name
-        elsif @base.new_record? then 'New unnamed customer'
-        else  "Customer ID #{@base.id}"
-        end
-      "#{customer_name}: #{super(attribute, message)}"
-    end
-  end
-  def errors # override Customer#errors to use custom class instead of ActiveMessage::Errors
-    @custom_errors ||= CustomErrors.new(self)
-  end
+  #  Look in config/initializers/rails_6_customer_validation_errors.rb for that.
   
   VALID_EMAIL_REGEXP = /\A\S+@\S+\z/
   validates_format_of :email, :if => :self_created?, :with => VALID_EMAIL_REGEXP
-
+  
   def restricted_email
     return if (domain = Option.restrict_customer_email_to_domain.to_s).blank?
     errors.add(:email, "must end in '#{domain}'") if
@@ -262,7 +248,7 @@ class Customer < ActiveRecord::Base
   end
 
   def record_login!
-    self.update_attributes!(:last_login => Time.current)
+    self.update!(:last_login => Time.current)
   end
 
   def has_ever_logged_in?
@@ -301,7 +287,7 @@ class Customer < ActiveRecord::Base
       errors.add :base,"First and last name must be provided"
       valid = false
     end
-    if invalid_mailing_address?
+    unless valid_mailing_address?
       errors.add :base,"Valid mailing address must be provided for #{self.full_name}"
       valid = false
     end
@@ -381,7 +367,7 @@ class Customer < ActiveRecord::Base
     errors.add(:zip, 'must be between 5 and 10 characters') if !zip.blank? && !zip.to_s.length.between?(5,10)
     errors.empty?
   end
-  def invalid_mailing_address? ; !valid_mailing_address? ; end
+
   def blank_mailing_address?
     street.blank? && city.blank? && zip.blank?
   end

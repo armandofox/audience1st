@@ -9,7 +9,7 @@ Feature: setup recurring donation
     Given I am logged in as customer "Tom Foolery"
 
   @stubs_successful_recurring_payment
-  @wip
+  @suspended
   Scenario: successfully create new recurring donation
 
     When I visit the recurring donations setup page

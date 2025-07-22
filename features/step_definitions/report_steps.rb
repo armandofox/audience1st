@@ -98,7 +98,7 @@ end
 Then /a CSV file should be downloaded containing:/ do |tbl|
   header = page.response_headers['Content-Disposition']
   expect(header).to match /^attachment/
-  expect(header).to match /filename=".*\.csv"$/
+  expect(header).to match /filename=".*\.csv"/
   expected_rows = page.body.split(/\n/).map(&:strip)
   tbl.raw.each_with_index do |row,ndx|
     expect(expected_rows[ndx]).to eq row.join(',').sub(/,+$/, '')

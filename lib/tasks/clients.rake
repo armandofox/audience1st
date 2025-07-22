@@ -34,7 +34,7 @@ a1client = namespace :a1client  do
     Audience1stRakeTasks.check_vars!
     tenant = ENV['TENANT']
     Apartment::Tenant.switch(tenant) do
-      Option.first.update_attributes!(
+      Option.first.update!(
         :sender_domain      => "mail.audience1st.com",
         :venue              => ENV['VENUE_FULLNAME'].gsub(/_/,' '),
         :box_office_email   => "boxoffice@#{tenant}.org",
@@ -42,7 +42,7 @@ a1client = namespace :a1client  do
         :staff_access_only  => true )
       admin_pw = ENV['ADMIN_PASSWORD'] || ('a'..'z').to_a.shuffle[0,8].join
       Customer.find_by(:first_name => 'Super', :last_name => 'Administrator').
-        update_attributes!(:password => admin_pw)
+        update!(:password => admin_pw)
     end
     puts "Sender domain configured, venue full name/help email/boxoffice email set up (educated guesses), admin password randomized, and staff-only access enabled for #{ENV['VENUE_FULLNAME']} (#{tenant})"
   end

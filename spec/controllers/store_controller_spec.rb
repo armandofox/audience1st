@@ -44,7 +44,7 @@ describe StoreController do
       end
       it 'lets you view store as yourself' do
         get :index, :params => @extra.merge(:customer_id => @c.id)
-        expect(response).to be_success
+        expect(response).to be_successful
       end
       it 'redirects if URL explicitly mentions anonymous customer' do
         get :index, :params => @extra.merge(:customer_id => Customer.anonymous_customer.id)
@@ -62,7 +62,7 @@ describe StoreController do
       end
       it 'redirects to another customer' do
         get :index, :params => @extra.merge(:customer_id => @c)
-        expect(response).to be_success
+        expect(response).to be_successful
       end
       it 'redirects to logged-in staff if URL explicitly mentions anonymous customer' do
         get :index, :params => @extra.merge(:customer_id => Customer.anonymous_customer.id)

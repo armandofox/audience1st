@@ -23,7 +23,7 @@ class SeatmapsController < ApplicationController
   def update
     return destroy if params[:commit] =~ /delete/i
     @seatmap = Seatmap.find params[:id]
-    if @seatmap.update_attributes(seatmaps_update_params)
+    if @seatmap.update(seatmaps_update_params)
       flash[:notice] = 'Seatmap successfully updated.'
     else
       flash[:alert] = "Seatmap was NOT updated because of errors: #{seatmap.errors.as_html}"

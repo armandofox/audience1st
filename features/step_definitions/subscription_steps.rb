@@ -38,7 +38,7 @@ Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |
     :account_code => AccountCode.default_account_code,
     :season => Time.current.at_beginning_of_season.year
     )
-  @sub.valid_vouchers.first.update_attributes!(
+  @sub.valid_vouchers.first.update!(
     :start_sales => Time.current.at_beginning_of_season,
     :end_sales   => Time.current.at_end_of_season,
     :max_sales_for_type => nil

@@ -1,6 +1,6 @@
 class RefundedItem < Item
   belongs_to :account_code
-  belongs_to :canceled_item, :foreign_key => 'bundle_id'
+  belongs_to :canceled_item, :foreign_key => 'bundle_id', optional: true
   validates_associated :canceled_item, :on => :create
   
   def shortdesc ; "[REFUND for item #{canceled_item.id}]" ; end

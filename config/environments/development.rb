@@ -1,4 +1,7 @@
 Rails.application.configure do
+
+  config.hosts << "a1-staging.lvh.me"
+  
   # Settings specified here will take precedence over those in config/environment.rb
   
   # In the development environment your application's code is reloaded on
@@ -15,12 +18,16 @@ Rails.application.configure do
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
+  config.caceh_store = :null_store
 
   config.action_mailer.delivery_method = :file
   config.action_mailer.raise_delivery_errors = true
   config.active_job.queue_adapter = :inline
-  
-  # config.log_level = :debug
+
+  # store uploaded files on local filesystem - see config/storage.yml
+  config.active_storage.service = :local
+
+  config.log_level = :info
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

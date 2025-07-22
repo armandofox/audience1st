@@ -27,7 +27,7 @@ describe Showdate do
     end
     describe "for General Admission" do
       it "must be specified" do
-        @s.update_attributes!(:house_capacity => 73, :max_advance_sales => 70)
+        @s.update!(:house_capacity => 73, :max_advance_sales => 70)
         expect(@s.house_capacity).to eq(73)
       end
       it "must be >= max advance sales" do
@@ -47,7 +47,7 @@ describe Showdate do
         expect(@s).to be_valid
       end
       it "overrides static value" do
-        @s.update_attributes!(:house_capacity => 100)
+        @s.update!(:house_capacity => 100)
         expect(@s.house_capacity).to eq(4)
       end
     end
@@ -81,7 +81,7 @@ describe Showdate do
     }
     cases.each do |c,grade|
       specify "with thresholds #{c.join ','}" do
-        Option.first.update_attributes(
+        Option.first.update(
           :limited_availability_threshold => c[0],
           :nearly_sold_out_threshold => c[1])
         expect(@sd.availability_grade).to eq(grade)

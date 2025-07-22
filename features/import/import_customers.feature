@@ -1,4 +1,4 @@
-@wip
+@suspended
 @javascript
 Feature: Import customer list
 

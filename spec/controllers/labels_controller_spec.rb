@@ -34,8 +34,8 @@ describe LabelsController do
     end
     describe "bad update label" do
       it "should be a bad update due to a possible db issue" do
-        # Force an error with update_attributes for branch coverage
-        allow_any_instance_of(Label).to receive(:update_attributes).and_return(false)
+        # Force an error with update for branch coverage
+        allow_any_instance_of(Label).to receive(:update).and_return(false)
 
         response = put :update, :params => { :id => @lab.id, :label_name => "update name" }
         expect(@lab.name).to eq("valid name")

@@ -4,7 +4,7 @@ describe RetailItem do
   before :each do
     @account1 = AccountCode.create!(:code => "5678", :name => "Default")
     @account2 = AccountCode.create!(:code => "1234", :name => "Fake")
-    Option.first.update_attributes!(:default_retail_account_code => @account1.id)
+    Option.first.update!(:default_retail_account_code => @account1.id)
   end
   describe 'new' do
     it 'gets default account code' do

@@ -4,7 +4,7 @@ describe Order do
   before :each do
     @the_customer = create(:customer)
     @the_processed_by = create(:customer)
-    @order = Order.create!(:processed_by => @the_processed_by)
+    @order = create(:order, :processed_by => @the_processed_by)
   end
   describe 'new order' do
     subject { Order.new }
@@ -35,7 +35,7 @@ describe Order do
 
   describe 'marshalling' do
     it 'donation' do
-      @order = Order.create!(:processed_by => create(:customer))
+      @order = create(:order)
       @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
       @order.save!
       @unserialized = Order.find(@order.id)
@@ -54,7 +54,7 @@ describe Order do
 
   describe 'guest checkout' do
     before :each do
-      @order = Order.create!(:processed_by => Customer.anonymous_customer)
+      @order = create(:order, :processed_by => Customer.anonymous_customer)
       @order.add_tickets_without_capacity_checks(create(:valid_voucher), 2)
     end
     context 'allowed when includes' do
@@ -89,7 +89,7 @@ describe Order do
       @s2 = create(:show)
       @v1 = create(:valid_voucher, :showdate => create(:showdate, :show => @s1))
       @v2 = create(:valid_voucher, :showdate => create(:showdate, :show => @s2))
-      @o = Order.create!(:processed_by => create(:boxoffice))
+      @o = create(:order, :processed_by => create(:boxoffice))
     end
     it 'includes de-duplicated patron notes' do
       @o.add_tickets_without_capacity_checks(@v1, 2)
@@ -127,7 +127,7 @@ describe Order do
 
   describe 'walkup confirmation' do
     before :each do
-      @o = Order.create!(:processed_by => create(:boxoffice))
+      @o = create(:order, :processed_by => create(:boxoffice))
       allow(@o).to receive(:purchase_medium).and_return("Cash")
       @v = create(:revenue_vouchertype,:price => 7)
       @vv = create(:valid_voucher, :vouchertype => @v)

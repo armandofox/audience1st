@@ -1,5 +1,5 @@
 class Voucher < Item
-  belongs_to :showdate
+  belongs_to :showdate, optional: true
 
   class ReservationError < StandardError ;  end
 
@@ -51,7 +51,7 @@ class Voucher < Item
       uniq.join('; ')
     Voucher.transaction do
       to_leave_reserved.each do |v|
-        v.update_attributes!(:comments => preserved_comments)
+        v.update!(:comments => preserved_comments)
       end
       to_cancel.each do |v|
         Txn.add_audit_record(:txn_type => 'res_cancl',
@@ -223,8 +223,8 @@ class Voucher < Item
   def transfer_to_customer(customer)
     cid = customer.id
     Voucher.transaction do
-      update_attributes!(:customer_id => cid)
-      bundled_vouchers.each { |v| v.update_attributes!(:customer_id => cid) } 
+      update!(:customer_id => cid)
+      bundled_vouchers.each { |v| v.update!(:customer_id => cid) } 
     end
   end
 
@@ -277,7 +277,7 @@ class Voucher < Item
   # operations on vouchers:
 
   def assign_seat(seat)
-    self.update_attributes(:seat => seat)
+    self.update(:seat => seat)
     # relies on caller to check for nil return/validation failure
   end
 
@@ -303,7 +303,7 @@ class Voucher < Item
     self
   end
   def reserve!(desired_showdate, new_comments='')
-    update_attributes!(:comments => new_comments, :showdate => desired_showdate)
+    update!(:comments => new_comments, :showdate => desired_showdate)
   end
 
   #
@@ -343,11 +343,11 @@ class Voucher < Item
       vouchers = voucher_ids.map { |v| Voucher.find v }
       Voucher.transaction do
         vouchers.each do |v|
-          v.update_attributes!(:customer => to_customer, :processed_by => logged_in_customer)
+          v.update!(:customer => to_customer, :processed_by => logged_in_customer)
           total += 1
           if v.bundle?
             bundled = v.bundled_vouchers
-            bundled.each { |b| b.update_attributes!(:customer => to_customer, :processed_by => logged_in_customer) }
+            bundled.each { |b| b.update!(:customer => to_customer, :processed_by => logged_in_customer) }
             total += bundled.length
           end
         end

@@ -21,10 +21,10 @@ Given /^the following account codes exist:$/ do |tbl|
     used_for = acc_code["used_for"]
     case used_for
     when /donations/i
-      Option.first.update_attributes!(:default_donation_account_code => ac.id)
+      Option.first.update!(:default_donation_account_code => ac.id)
     else
       used_for.to_s.split(/\s*,\s*/).each do |vtype_name|
-        Vouchertype.find_by!(:name => vtype_name).update_attributes!(:account_code => ac)
+        Vouchertype.find_by!(:name => vtype_name).update!(:account_code => ac)
       end
     end
   end

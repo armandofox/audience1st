@@ -39,7 +39,7 @@ Given /^an order of (\d+) "(.*)" comp subscriptions for customer "(.*) (.*)"$/ d
 end
 
 Given /^that order has the comment "(.*)"$/ do |comment|
-  @order.update_attributes!(:comments => comment)
+  @order.update!(:comments => comment)
 end
 
 Then /^I should see the following details for that order:$/ do |table|

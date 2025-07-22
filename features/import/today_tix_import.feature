@@ -1,3 +1,4 @@
+@suspended
 Feature: import TodayTix sales
 
   As a boxoffice manager

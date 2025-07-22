@@ -1,9 +1,9 @@
 class Txn < ActiveRecord::Base
-  belongs_to :show
-  belongs_to :showdate
-  belongs_to :customer
-  belongs_to :order
-  belongs_to :voucher
+  belongs_to :show,    optional: true
+  belongs_to :showdate,optional: true
+  belongs_to :customer,optional: true
+  belongs_to :order,   optional: true
+  belongs_to :voucher, optional: true
   
   Txn::TYPES = {
     "other" => "Other",

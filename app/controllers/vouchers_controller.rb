@@ -72,7 +72,7 @@ class VouchersController < ApplicationController
     comment = @params[:comments].to_s
     vouchers = Voucher.find(@params[:voucher_ids].split(","))
     vouchers.each do |v|
-      v.update_attributes(:comments => comment, :processed_by => current_user)
+      v.update!(:comments => comment, :processed_by => current_user)
     end
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,

@@ -68,7 +68,7 @@ class DonationsController < ApplicationController
   end
 
   def create
-    @order = Order.create(:purchaser => @customer, :customer => @customer, :processed_by => current_user)
+    @order = Order.create!(:purchaser => @customer, :customer => @customer, :processed_by => current_user)
     @donation = Donation.from_amount_and_account_code_id(
       params[:amount].to_f, params[:fund].to_i, params[:comments].to_s)
     @order.add_donation(@donation)
@@ -109,7 +109,7 @@ class DonationsController < ApplicationController
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.current
       c = current_user.email rescue "(??)"
-      t.update_attributes(:letter_sent => now,
+      t.update!(:letter_sent => now,
         :processed_by => current_user)
       Txn.add_audit_record(:customer_id => t.customer_id,
         :logged_in_id => current_user.id,
@@ -127,7 +127,7 @@ class DonationsController < ApplicationController
     begin
       donation = Donation.find(params[:id])
       comments = params[:comments]
-      donation.update_attributes!(:comments => comments)
+      donation.update!(:comments => comments)
       Txn.add_audit_record(:customer_id => donation.customer_id, :logged_in_id => current_user.id,
         :order_id => donation.order_id,
         :comments => comments,

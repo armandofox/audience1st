@@ -45,8 +45,11 @@ describe 'selecting Customers' do
       end
     end
     it 'should select zero customers if conditions are contradictory' do
-      intersection = (Customer.seen_any_of([@s1,@s2]) & Customer.seen_none_of([@s1,@s2]))
-      expect(intersection).to be_empty
+      seen_none = Customer.seen_none_of([@s1,@s2])
+      puts seen_none.first.inspect
+      seen_any = Customer.seen_any_of([@s1,@s2])
+      puts seen_any.first.inspect
+      expect(seen_any.merge(seen_none)).to be_empty
     end
   end
   describe 'based on purchases' do

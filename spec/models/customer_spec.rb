@@ -124,7 +124,7 @@ describe Customer do
         @customer = Customer.new(:first_name => "John", :last_name => "Doe",
           :day_phone => "555-1212",
           :eve_phone => "666-2323")
-        allow(@customer).to receive(:invalid_mailing_address?).and_return(false)
+        allow(@customer).to receive(:valid_mailing_address?).and_return(true)
         allow(@customer).to receive(:valid_email_address?).and_return(true)
       end
       it "should be valid with valid attributes" do
@@ -143,7 +143,7 @@ describe Customer do
         expect(@customer).not_to be_valid_as_gift_recipient
       end
       it "should have a valid mailing address" do
-        allow(@customer).to receive(:invalid_mailing_address?).and_return(true)
+        allow(@customer).to receive(:valid_mailing_address?).and_return(false)
         expect(@customer).not_to be_valid_as_gift_recipient
       end
       it "should have email if no day phone or eve phone" do

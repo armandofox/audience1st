@@ -1,22 +1,21 @@
 class Item < ActiveRecord::Base
 
-  belongs_to :customer
-  belongs_to :order
-  belongs_to :account_code
+  belongs_to :customer, optional: true
+  belongs_to :order, optional: true
 
   # BUG: not every Item subclass logically has a Vouchertype or Showdate, but the association is
   # needed at this level in order for the Accounting Report to avoid an n+1 query problem,
   # since it fetches a whole bunch of Item records and will dereference Vouchertype.
-  belongs_to :vouchertype
-  belongs_to :showdate
+  belongs_to :vouchertype, optional: true
+  belongs_to :showdate, optional: true
 
   validates_associated :order
   delegate :purchaser, :purchasemethod, :to => :order
   
-  belongs_to :processed_by, :class_name => 'Customer'
+  belongs_to :processed_by, :class_name => 'Customer', optional: true
   validates_presence_of :processed_by_id
 
-  belongs_to :account_code
+  belongs_to :account_code, optional: true
   validates_presence_of :account_code_id, :if => Proc.new { |a| a.amount > 0 }
 
   has_one :refunded_item, :foreign_key => 'bundle_id' # if item gets refunded
@@ -38,14 +37,9 @@ class Item < ActiveRecord::Base
     refund_item = RefundedItem.from_cancellation(self) if amount > 0
     self.comments = "[CANCELED #{by_whom.full_name} #{Time.current.to_formatted_s :long}] #{description_for_audit_txn}"
     self.type = 'CanceledItem'
-    original_updated_at = self.updated_at.clone
     Item.transaction do
       refund_item.save! if refund_item
-      self.save!
-      # we have to explicitly do this to preserve updated_at.
-      # Rails 5 would allow touch:false on save! to avoid updating :rails4:
-      self.updated_at = original_updated_at
-      self.save
+      self.save!(:touch => false) # preserve updated_at time
     end
     CanceledItem.find(self.id)  #  !
   end

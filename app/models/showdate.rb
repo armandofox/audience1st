@@ -3,7 +3,7 @@ class Showdate < ActiveRecord::Base
   include Comparable
   
   belongs_to :show
-  belongs_to :seatmap
+  belongs_to :seatmap, optional: true
   
   delegate :patron_notes, :name, :event_type, :to => :show
 

@@ -28,7 +28,7 @@ class AccountCodesController < ApplicationController
 
   def update
     @account_code = AccountCode.find(params[:id])
-    if @account_code.update_attributes(account_code_params)
+    if @account_code.update(account_code_params)
       flash[:notice] = 'AccountCode was successfully updated.'
     else
       flash[:alert] = ['AccountCode could not be updated:', @account_code.errors.as_html]

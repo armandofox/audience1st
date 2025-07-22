@@ -13,7 +13,7 @@ class Donation < Item
   validates_presence_of :account_code_id
   
   belongs_to :customer
-  belongs_to :recurring_donation
+  belongs_to :recurring_donation, optional: true
 
   validates_numericality_of :amount
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"

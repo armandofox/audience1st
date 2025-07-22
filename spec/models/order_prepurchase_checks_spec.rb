@@ -49,9 +49,9 @@ describe 'Order pre-purchase checks' do
     verify_error /Invalid credit card transaction/i
   end
   it 'should fail if recipient not a valid recipient' do
-    allow(@order.customer).to receive(:valid_as_gift_recipient?).and_return(nil)
-    allow(@order.customer).to receive_message_chain('errors.as_html').and_return(['Recipient error'])
-    verify_error /Recipient error/
+    @order.customer = create(:customer) # make it a gift order
+    @order.customer.update!(:created_by_admin => true, :street => '')
+    verify_error /Valid mailing address must be provided/
   end
   it 'should fail if no purchase method' do
     @order.purchasemethod = nil

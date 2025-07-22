@@ -58,7 +58,7 @@ describe Customer do
     end
     context 'when there is a secret question' do
       before(:each) do
-        @c.update_attributes(:secret_answer => 'The Foo   bar', :secret_question => 1)
+        @c.update(:secret_answer => 'The Foo   bar', :secret_question => 1)
       end
       it 'should always be wrong if blank' do
         expect(@c.check_secret_answer('')).to be_nil
@@ -75,7 +75,7 @@ describe Customer do
     end
     context 'when there is no secret question' do
       before(:each) do
-        @c.update_attributes(:secret_answer => 'foo', :secret_question => 0)
+        @c.update(:secret_answer => 'foo', :secret_question => 0)
       end
       it 'should always be wrong' do
         expect(@c.check_secret_answer('foo')).to be_nil

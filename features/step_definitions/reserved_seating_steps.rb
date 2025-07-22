@@ -20,7 +20,7 @@ Given /the following seats are occupied for that performance: (.*)/ do |seats|
 end
 
 Given /the following are house seats for that performance: (.*)/ do |seats|
-  @showdate.update_attributes!(:house_seats => seats.split(/\s*,\s*/))
+  @showdate.update!(:house_seats => seats.split(/\s*,\s*/))
 end
 
 Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl|

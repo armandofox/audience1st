@@ -168,7 +168,7 @@ class StoreController < ApplicationController
   end
 
   def process_cart
-    @gOrderInProgress = Order.create(:processed_by => current_user)
+    @gOrderInProgress = Order.create!(:processed_by => current_user)
     @gOrderInProgress.add_comment params[:comments].to_s
     @gOrderInProgress.add_tickets_from_params params[:valid_voucher], current_user, :promo_code => params[:promo_code], :seats => view_context.seats_from_params(params)
     add_retail_items_to_cart
@@ -266,7 +266,7 @@ class StoreController < ApplicationController
     end
     if params.has_key?(:customer)
       customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
-      @gOrderInProgress.purchaser.update_attributes(customer_params)
+      @gOrderInProgress.purchaser.update!(customer_params)
     end
     unless @gOrderInProgress.ready_for_purchase?
       flash[:alert] = @gOrderInProgress.errors.as_html

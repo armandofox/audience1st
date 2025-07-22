@@ -33,20 +33,28 @@ class Customer < ActiveRecord::Base
   #   Customer.all - Customer.purchased_any_vouchertypes(vouchertype_ids)
   # end
 
+  # scope :seen_any_of, ->(show_ids) {
+  #   joins(:vouchers, :showdates).
+  #     references(:items, :showdates).
+  #     where('items.showdate_id = showdates.id').
+  #     where('items.customer_id = customers.id').
+  #     where('items.finalized' => true,
+  #           'items.type' => 'Voucher',
+  #           'showdates.show_id' => show_ids)
+  # }
+
   scope :seen_any_of, ->(show_ids) {
-    joins(:vouchers, :showdates).
-    where('items.customer_id = customers.id').
-    where('items.showdate_id = showdates.id').
-    where('items.finalized' => true,
-      'items.type' => 'Voucher',
-      'showdates.show_id' => show_ids)
+    where(
+      :id => Voucher.joins(:showdate)
+               .where(:showdates => { :show_id => show_ids })
+               .select(:customer_id))
   }
-  
+
   scope :seen_none_of, ->(show_ids) {
-    Customer.
-      includes(:vouchers, :showdates).
-      where.not(:showdates => {:show_id => show_ids}).
-      references(:items)
+    where.not(
+      :id => Voucher.joins(:showdate)
+               .where(:showdates => { :show_id => show_ids })
+               .select(:customer_id))
   }
 
   scope :with_open_subscriber_vouchers, ->(vtypes) {

@@ -17,7 +17,7 @@ describe AccountCode do
   describe "deleting a default account code" do
     before :each do
       @a = create(:account_code)
-      Option.first.update_attributes!(:default_donation_account_code => @a.code)
+      Option.first.update!(:default_donation_account_code => @a.code)
     end
     it 'includes error message' do
       @a.destroy

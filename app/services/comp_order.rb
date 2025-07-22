@@ -14,11 +14,13 @@ class CompOrder
   def leave_open? ; showdate_id.blank? ; end
   
   def finalize
-    order_params = { :comments => comments, :processed_by => processed_by,
-      :purchasemethod => Purchasemethod.get_type_by_name('none') }
+    order_params = { :comments => comments,
+                     :processed_by => processed_by,
+                     :customer => customer,
+                     :purchaser => customer,
+                     :purchasemethod => Purchasemethod.get_type_by_name('none') }
     begin
       @order = Order.create!(order_params)
-      @order.customer = @order.purchaser = customer
       if leave_open?
         @order.add_open_vouchers_without_capacity_checks(@vouchertype, howmany.to_i)
         @confirmation_message = "Added #{howmany} '#{@vouchertype.name}' comps and customer can choose the show later."
