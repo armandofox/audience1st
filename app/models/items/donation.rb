@@ -27,7 +27,7 @@ class Donation < Item
 
   def self.to_csv
     CSV.generate(:headers => true) do |csv|
-      csv << %w(order_number last first street city state zip email amount date code fund letter_sent letter_sent_by comments)
+      csv << %w(order_number last first street city state zip email day_phone eve_phone amount date code fund letter_sent letter_sent_by comments)
       all.each do |d|
         csv << [
           d.order.id,
@@ -38,6 +38,8 @@ class Donation < Item
           d.customer.state,
           d.customer.zip,
           d.customer.email,
+          d.customer.day_phone,
+          d.customer.eve_phone,
           d.amount,
           d.sold_on.to_formatted_s(:db),
           d.account_code.code,
