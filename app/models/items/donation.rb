@@ -29,6 +29,7 @@ class Donation < Item
     CSV.generate(:headers => true) do |csv|
       csv << %w(order_number last first street city state zip email day_phone eve_phone amount date code fund letter_sent letter_sent_by comments)
       all.each do |d|
+        donation_comment,order_comment = d.comments.to_s, d.order.comments.to_s
         csv << [
           d.order.id,
           d.customer.last_name.name_capitalize,
@@ -46,7 +47,9 @@ class Donation < Item
           d.account_code.name,
           d.letter_sent,
           (d.letter_sent ? d.processed_by.full_name : ''),
-          [d.comments.to_s, d.order.comments.to_s].join('; ')
+          donation_comment.blank? ?
+            order_comment :
+            (order_comment.blank? ? donation_comment : "#{donation_comment}; #{order_comment}")
         ]
       end
     end

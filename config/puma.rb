@@ -3,7 +3,7 @@
 # footprint of a single dyno.  The values here can be overridden by
 # setting envariables.
 
-WORKERS_FOR_BASIC_DYNOS = 1
+WORKERS_FOR_BASIC_DYNOS = 0 # avoids overhead of cluster manager
 WORKERS_FOR_STANDARD_DYNOS = 2
 workers WORKERS_FOR_BASIC_DYNOS
 threads_count = 1
