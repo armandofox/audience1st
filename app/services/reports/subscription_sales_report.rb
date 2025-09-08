@@ -22,15 +22,17 @@ class SubscriptionSalesReport
              where(:subscription => true).
              map(&:id)
 
+    # note that 'vouchertypes' below must be aliased as 'vouchertypes_items' because of the
+    # way ARel 6 generates SQL.
+    # https://www.perplexity.ai/search/the-following-query-fails-on-r-BGP7VWDuRo29_79MI7.TpA
     customers = Customer.
                   unscoped.
                   joins(:vouchers => :vouchertype).
                   where('items.finalized' => true).
-                  where('vouchertypes.id' => subs).
-                  select('customers.*, vouchertypes.name AS vouchertype_name, vouchertypes.price AS vouchertype_price, COUNT(vouchertypes.id) AS qty').
+                  where('vouchertypes_items.id' => subs).
+                  select('customers.*, vouchertypes_items.name AS vouchertype_name, vouchertypes_items.price AS vouchertype_price, COUNT(vouchertypes_items.id) AS qty').
                   order('customers.last_name,customers.id').
-                  group('customers.id','vouchertypes.id')
-
+                  group('customers.id','vouchertypes_items.id')
     @csv = CSV.generate(:headers => true) do |csv|
       csv << Customer.csv_header + %w(Subscription Price Quantity)
       customers.each do |c|
