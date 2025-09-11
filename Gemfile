@@ -18,7 +18,7 @@ gem 'i18n'
 gem 'jbuilder', '~> 2.5'
 gem 'json', '>= 2.0'            # see https://github.com/flori/json/issues/399 - avoid deprecation warning with json 1.8.6
 gem 'logger'
-# gem 'newrelic_rpm'
+gem 'newrelic_rpm'
 gem 'nokogiri', '< 1.16.0'
 gem 'platform-api'                # for restart task
 #gem 'responders', '~> 2.0'
