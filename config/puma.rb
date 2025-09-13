@@ -5,8 +5,8 @@
 
 WORKERS_FOR_BASIC_DYNOS = 0 # avoids overhead of cluster manager
 WORKERS_FOR_STANDARD_DYNOS = 2
-#workers WORKERS_FOR_BASIC_DYNOS
-workers WORKERS_FOR_STANDARD_DYNOS
+workers WORKERS_FOR_BASIC_DYNOS
+#workers WORKERS_FOR_STANDARD_DYNOS
 threads_count = 1
 threads threads_count, threads_count
 
