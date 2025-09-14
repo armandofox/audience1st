@@ -17,7 +17,10 @@ class StaleOrderSweeper
     unless (pending = Order.pending_but_paid.abandoned_since(2.minutes.ago)).empty?
       # raise a flare
       stale_order_err = Order::StaleOrderError.new("Stale order ids: #{pending.map(&:id).join(',')}")
-      NewRelic::Agent.notice_error(stale_order_err)
+      if defined?(NewRelic)
+        NewRelic::Agent.notice_error(stale_order_err)
+      end
+      
       # mark those order(s) as errored, so they don't trigger the warning again
       pending.update_all(:authorization => Order::ERRORED)
     end
