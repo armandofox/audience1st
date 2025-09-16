@@ -5,7 +5,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      CCTR: ./cc-test-reporter
       BUNDLE_WITHOUT: production
       BUNDLE_BUILD__NOKOGIRI: --use-system-libraries
       TZ: America/Los_Angeles
@@ -29,12 +28,6 @@ jobs:
         gpg --pinentry-mode loopback --batch --passphrase "${{ secrets.GPG_SYMMETRIC_KEY }}" -d -o config/application.yml config/application.yml.asc
         cp config/database.yml.test config/database.yml
         
-    - name: Setup CodeClimate test-reporter
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
-        chmod +x $CCTR
-        $CCTR before-build
-
     - name: install gems
       run: |
         bundle install --without production
@@ -42,7 +35,6 @@ jobs:
     - name: run RSpec tests and capture coverage
       run: |
         bundle exec rspec
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
         
     - name: Install Chrome For Testing and Chromedriver
       uses: browser-actions/setup-chrome@v1
@@ -58,14 +50,6 @@ jobs:
         CHROME_FOR_TESTING_PATH: ${{ steps.install-chromedriver.outputs.chrome-path }} 
       run: |
         bundle exec cucumber --profile ci-report
-        $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
-
-    - name: Publish code coverage
-      run: |
-        export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
-        $CCTR sum-coverage coverage/codeclimate.*.json
-        $CCTR upload-coverage --id ${{ secrets.CC_TEST_REPORTER_ID }}
-        $CCTR after-build --id ${{ secrets.CC_TEST_REPORTER_ID }}
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4.0.1
