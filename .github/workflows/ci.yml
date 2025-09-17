@@ -59,3 +59,9 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/.resultset.json
+
+    - name: Upload coverage reports to Qlty
+      uses: qltysh/qlty-action/coverage@v2
+      with:
+        token: {{secrets.QLTY_COVERAGE_TOKEN}}
+        files: coverage/.resultset.json    - nam
