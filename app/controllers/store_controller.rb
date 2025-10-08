@@ -155,7 +155,7 @@ class StoreController < ApplicationController
     @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
     @gOrderInProgress.purchase_args = {:credit_card_token => params[:credit_card_token]}
     @gOrderInProgress.processed_by = @customer
-    @gOrderInProgress.comments = params[:comments].to_s
+    @gOrderInProgress.add_comment params[:comments].to_s
     @gOrderInProgress.ready_for_purchase? or return redirect_to(redirect_route, :alert => @gOrderInProgress.errors.as_html)
     if finalize_order(@gOrderInProgress, send_email_confirmation: @gOrderInProgress.purchaser.valid_email_address?)
       # forget customer after successful guest checkout
@@ -262,7 +262,7 @@ class StoreController < ApplicationController
     @recipient = @gOrderInProgress.customer
     if ! @gOrderInProgress.gift?
       # record 'who will pickup' field if necessary
-      @gOrderInProgress.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
+      @gOrderInProgress.add_comment("Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
     if params.has_key?(:customer)
       customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)

@@ -15,8 +15,10 @@ Background:
 Scenario:  Add regular tickets to my order with no donation
 
   When I select "3" from "General - $15.00"
+  And I fill in "comments" with "No stairs"
   And I proceed to checkout
-  Then the billing customer should be "Tom Foolery"
+  Then I should see "No stairs" within "#order_notes"
+  And the billing customer should be "Tom Foolery"
   And the cart total price should be $45.00
   And the cart should contain 3 "General" tickets for "October 1, 2010, 7:00pm"
   And the cart should not contain a donation

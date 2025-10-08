@@ -49,9 +49,9 @@
         .a1-cart-amount= number_to_currency(item.amount)
 
   - unless @gOrderInProgress.comments.blank?
-    #order_notes.row.border-top.bg-secondary.text-light.a1-cart-comments
+    .row.border-top.bg-secondary.text-light.a1-cart-comments
       .col-md-5.h5 Notes
-      .col-md-7.h5= @gOrderInProgress.comments
+      #order_notes.col-md-7.h5= sanitize(@gOrderInProgress.comments)
 
   .row.bg-primary.text-white.a1-total
     .a1-cart-total-label.col-md-2.offset-md-8.h3 Total

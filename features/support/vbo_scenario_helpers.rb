@@ -67,10 +67,12 @@ module VboScenarioHelpers
     tickets_hashes = {}
     show = nil
     showdate = nil
+    comments = ''
     hashes.each do |t|
       thedate = Time.zone.parse t[:showdate]
       show ||= t[:show]
       showdate ||= thedate
+      comments += t[:comments]
       sd = Showdate.find_by_thedate(thedate) ||
         create(:showdate, :thedate => Time.zone.parse(t[:showdate]), :show_name => t[:show])
       vt = Vouchertype.find_by_name(t[:type]) ||
@@ -89,6 +91,7 @@ module VboScenarioHelpers
     end
     select show, :from => 'Show'
     select_date_matching showdate, :from => 'Date'
+    fill_in "comments", :with => comments
     tickets_hashes.each_pair do |type,qty|
       begin
         select qty.to_s, :from => type

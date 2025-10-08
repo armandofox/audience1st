@@ -9,7 +9,6 @@ class Order < ActiveRecord::Base
   has_many :retail_items, :autosave => true, :dependent => :destroy
 
   attr_accessor :purchase_args
-  attr_accessor :comments
   attr_reader :donation
 
   # pending and errored states of a CC order (pending = payment has occurred but order has not
@@ -108,13 +107,18 @@ class Order < ActiveRecord::Base
 
 
   def add_comment(arg)
-    self.comments ||= ''
-    self.comments += arg
+    if self.comments.blank?
+      self.comments = arg
+    else
+      self.comments += "; #{arg}"
+    end
+    self.comments
   end
 
   def clear_contents!
     self.vouchers.destroy_all
     self.donation_data = {}
+    self.comments = nil
   end
 
   def cart_empty?

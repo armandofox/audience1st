@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_09_27_062746) do
+ActiveRecord::Schema.define(version: 2025_10_08_215934) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -257,6 +257,7 @@ ActiveRecord::Schema.define(version: 2024_09_27_062746) do
     t.integer "ticket_sales_import_id"
     t.string "type", default: "Order", null: false
     t.text "from_import"
+    t.string "comments", default: "", null: false
     t.index ["authorization"], name: "index_orders_on_authorization"
     t.index ["authorization"], name: "public_orders_authorization0_idx"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
