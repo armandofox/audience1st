@@ -72,7 +72,7 @@ module VboScenarioHelpers
       thedate = Time.zone.parse t[:showdate]
       show ||= t[:show]
       showdate ||= thedate
-      comments += t[:comments]
+      comments += t[:comments].to_s
       sd = Showdate.find_by_thedate(thedate) ||
         create(:showdate, :thedate => Time.zone.parse(t[:showdate]), :show_name => t[:show])
       vt = Vouchertype.find_by_name(t[:type]) ||
