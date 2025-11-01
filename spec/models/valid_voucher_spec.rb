@@ -10,6 +10,19 @@ describe ValidVoucher do
     end
   end
 
+  describe "for reserved-seating performance" do
+    context "with zone-limited voucher" do
+      it "must specify a zone that exists in the seatmap" do
+        @sh = create(:reserved_seating_showdate) # seat map has zone named 'res'
+        @vt = create(:revenue_vouchertype, :seating_zone => (z = create(:seating_zone))) # a new zone
+        @v = build(:valid_voucher, :vouchertype => @vt, :showdate => @sh)
+        expect(@v).not_to be_valid
+        expect(@v.errors.full_messages).to include_match_for /Voucher type is limited to zone ".*", which does not exist in seat map ".*"/
+      end
+    end
+  end
+  
+
   it "has a friendly error message for min/max_sales_per_txn" do
     @v = build(:valid_voucher)
     @v.min_sales_per_txn = @v.max_sales_per_txn = -1
