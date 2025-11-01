@@ -116,7 +116,10 @@ class Seatmap < ActiveRecord::Base
   
   # Enumerate the seat numbers in a particular zone
   def seats_in_zone(zone)
-    self.zones[zone.short_name]
+    # NOTE: if a seatmap is asked to report the number of seats in a zone it doesn't have,
+    #  the right thing to do is return the empty list; but validations should minimize
+    #  the likelihood of this occurring.
+    self.zones[zone.short_name] || []
   end
   
   # Seats excluded from a zone (ie, any seats NOT in that zone
