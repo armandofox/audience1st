@@ -33,7 +33,7 @@ class ImportedOrder < Order
   validates_uniqueness_of :external_key, :allow_blank => true, conditions: -> { where.not(:sold_on => nil) }
   validates_presence_of :processed_by
   
-  serialize :from_import, JSON
+  serialize :from_import
   after_initialize :initialize_import_info
 
   class ImportInfo
