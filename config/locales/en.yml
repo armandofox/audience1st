@@ -74,6 +74,27 @@ en:
       invalid: >
         No performances were added, because the %{date} performance had errors: %{errors}
 
+  valid_vouchers:
+    errors:
+      min_sales:
+        exceeds_max_type: >
+          cannot be greater than max allowed sales of this type
+        exceeds_max_purchase: >
+          cannot be greater than maximum purchase per transaction
+      start_sales:
+        exceeds_end_sales: >
+          Start sales time cannot be later than end sales time
+      vouchertype:
+        wrong_season: >
+          Voucher type '%{name}' is valid for the season ending %{season},
+          but you've indicated sales should continue later than that (until %{end_sales}).
+        no_seatmap: >
+          Voucher type "%{name}" is limited to seating zone "%{zone}",
+          but this performance is general seating.
+        no_such_zone_in_seatmap: >
+          Voucher type "%{name}" is limited to seating zone "%{zone}",
+          which does not exist in seat map "%{seatmap}".
+
   donations:
     errors:
       invalid_amounts: >

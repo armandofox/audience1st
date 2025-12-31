@@ -10,14 +10,29 @@ describe ValidVoucher do
     end
   end
 
-  describe "for reserved-seating performance" do
-    context "with zone-limited voucher" do
-      it "must specify a zone that exists in the seatmap" do
+  describe "using zone-limited voucher" do
+    it "is invalid for general-seating performance" do
+      sd = create(:showdate)
+      vt = create(:revenue_vouchertype, :seating_zone => create(:seating_zone))
+      @v = build(:valid_voucher, :vouchertype => vt, :showdate => sd)
+      expect(@v).not_to be_valid
+      expect(@v.errors.full_messages).to include_match_for(/this performance is general seating/)
+    end
+    context "for reserved-seating performance" do
+      before(:each) do
         @sh = create(:reserved_seating_showdate) # seat map has zone named 'res'
-        @vt = create(:revenue_vouchertype, :seating_zone => (z = create(:seating_zone))) # a new zone
+        @vt = create(:revenue_vouchertype)
+      end
+      it "is invalid if zone doesn't exist in seatmap" do
+        @vt.seating_zone = create(:seating_zone) # a new zone that isn't in the show's seatmap
         @v = build(:valid_voucher, :vouchertype => @vt, :showdate => @sh)
         expect(@v).not_to be_valid
-        expect(@v.errors.full_messages).to include_match_for /Voucher type is limited to zone ".*", which does not exist in seat map ".*"/
+        expect(@v.errors.full_messages).to include_match_for /Voucher type ".*" is limited to seating zone ".*", which does not exist in seat map ".*"/
+      end
+      it "is valid if zone exists in seatmap" do
+        @vt.seating_zone = @sh.seatmap.seating_zones.first
+        @v = build(:valid_voucher, :vouchertype => @vt, :showdate => @sh)
+        expect(@v).to be_valid
       end
     end
   end

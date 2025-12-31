@@ -35,7 +35,8 @@ class ValidVoucher < ActiveRecord::Base
   def sales_unlimited?   ; max_sales_for_type >= INFINITE ; end
 
   validate :check_dates
-
+  validate :zone_exists_in_seatmap
+  
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance", :unless => lambda { |s| s.showdate_id.nil? }
 
@@ -104,6 +105,25 @@ class ValidVoucher < ActiveRecord::Base
 
   private
 
+  # For reserved seating performance, zone-limited voucher must specify a zone that
+  # exists in the seatmap
+  def zone_exists_in_seatmap
+    return unless (zone = vouchertype.seating_zone)
+    # there must exist a seatmap...
+    unless (seatmap = showdate.seatmap)
+      errors.add(:base, I18n.t('valid_vouchers.errors.vouchertype.no_seatmap',
+                          :name => vouchertype.name, :zone => zone.name))
+      return
+    end
+    # ...and it must include the seating zone specified by the voucher
+    unless seatmap.seating_zones.include?(zone)
+      errors.add(:base, I18n.t('valid_vouchers.errors.vouchertype.no_such_zone_in_seatmap',
+                               :name => vouchertype.name, :zone => zone.name,
+                               :seatmap => seatmap.name))
+    end
+  end
+       
+
   # A zero-price vouchertype that is marked as "available to public"
   # MUST have a promo code
   def self_service_comps_must_have_promo_code
@@ -115,9 +135,9 @@ class ValidVoucher < ActiveRecord::Base
   # Min/max sales per transaction cannot contradict min/max sales for type.
   # This is checked *after* each attribute is individually range-checked
   def min_max_sales_constraints
-    errors.add :min_sales_per_txn, "cannot be greater than max allowed sales of this type"  if
+    errors.add :min_sales_per_txn, I18n.t('valid_vouchers.errors.min_sales.exceeds_max_type') if
       min_sales_per_txn > max_sales_for_type  &&  max_sales_for_type != 0
-    errors.add :min_sales_per_txn, "cannot be greater than maximum purchase per transaction" if
+    errors.add :min_sales_per_txn, I18n.t('valid_vouchers.errors.min_sales.exceeds_max_purchase') if
       min_sales_per_txn > max_sales_per_txn
     errors.empty?
   end
@@ -126,13 +146,14 @@ class ValidVoucher < ActiveRecord::Base
   # Vouchertype expiration date must not be earlier than valid_voucher end date
   def check_dates
     return if start_sales.blank? || end_sales.blank? || vouchertype.nil?
-    errors.add(:base,"Start sales time cannot be later than end sales time") and return if start_sales > end_sales
+    errors.add(:base, I18n.t('valid_vouchers.errors.start_sales.exceeds_end_sales')) and return if
+      start_sales > end_sales
     vt = self.vouchertype
     if self.end_sales > (end_of_season = Time.current.at_end_of_season(vt.season))
-      errors.add :base, "Voucher type '#{vt.name}' is valid for the
-        season ending #{end_of_season.to_formatted_s(:showtime_including_year)},
-        but you've indicated sales should continue later than that
-        (until #{end_sales.to_formatted_s(:showtime_including_year)})."
+      errors.add :base, I18n.t('valid_vouchers.errors.vouchertype.wrong_season',
+                               :name => vt.name,
+                               :season => end_of_season.to_formatted_s(:showtime_including_year),
+                               :end_sales => end_sales.to_formatted_s(:showtime_including_year))
     end
     self.end_sales = self.end_sales.rounded_to(:second)
   end
