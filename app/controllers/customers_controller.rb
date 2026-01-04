@@ -78,7 +78,6 @@ class CustomersController < ApplicationController
     else
       customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
     end
-    customer_params = workaround_rails_bug_28521!(customer_params)
     notice = ''
     begin
       if ((newrole = customer_params.delete(:role))  &&
@@ -374,18 +373,6 @@ class CustomersController < ApplicationController
   end
 
   private
-
-  def workaround_rails_bug_28521!(params)
-    # see https://github.com/rails/rails/issues/28521 - present until at least 5.1
-    # rails5.2: remove when upgrading to rails 5.2
-    # Rails 5.0, 5.1 sets default value of a discarded date_select field (in this case,
-    # the year) to 1, which messes up ACtiveRecord's date conversion.  since we ignore
-    # the year for birthdays anyway, we set it here to the same value that the birthday class
-    # sets it by default.  This has to be done BEFORE activerecord tries to cast the
-    # value, so it has to happen here before the mass assignment, NOT in a before-save call
-    params['birthday(1i)'] = Customer::BIRTHDAY_YEAR.to_s if params.has_key?('birthday(1i)')
-    params
-  end
 
   def generate_token
     length_of_token = 15
