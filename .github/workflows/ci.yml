@@ -37,7 +37,7 @@ jobs:
         bundle exec rspec
         
     - name: Install Chrome For Testing and Chromedriver
-      uses: browser-actions/setup-chrome@v1
+      uses: browser-actions/setup-chrome@v2
       id:  install-chromedriver
       with:
         chrome-version: stable
