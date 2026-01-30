@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 describe Showdate do
+  it "should be invalid if any house seats don't exist in seatmap" do
+    @s = create(:reserved_seating_showdate)
+    @s.house_seats = ['b1','C1','A1']
+    expect(@s).not_to be_valid
+    expect(@s.errors[:house_seats]).to include_match_for "One or more designated House Seats do not exist: b1, C1"
+  end
+
   describe "when changing seatmap fails" do
     before(:each) do
       @s = create(:reserved_seating_showdate)

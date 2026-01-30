@@ -40,8 +40,10 @@ class Showdate < ActiveRecord::Base
   validates :description, :length => {:maximum => 255}, :allow_blank => true
   validates :access_instructions, :presence => true, :if => :stream?
 
-  validate :cannot_change_seating_type_if_existing_reservations, :on => :update
-  validate :seatmap_can_accommodate_existing_reservations, :on => :update
+  validate :cannot_change_seating_type_if_existing_reservations, :on => :update,
+           unless: -> { total_sales.empty? }
+  validate :seatmap_can_accommodate_existing_reservations, :on => :update, :if => :has_reserved_seating?
+  validate :house_seats_must_exist, :if => :has_reserved_seating?
   validate :at_most_one_stream_anytime_performance
 
   require_dependency 'showdate/sales_reporting'
@@ -107,7 +109,6 @@ class Showdate < ActiveRecord::Base
   end
 
   def cannot_change_seating_type_if_existing_reservations
-    return if total_sales.empty?
     return unless will_save_change_to_seatmap_id?
     # if it was blank (general adm) before and is now not...
     if (seatmap_id.blank? && !(seatmap_id_in_database.blank?)) ||
@@ -118,7 +119,6 @@ class Showdate < ActiveRecord::Base
   end
   
   def seatmap_can_accommodate_existing_reservations
-    return if seatmap.blank?
     cannot_accommodate = seatmap.cannot_accommodate(self.vouchers)
     unless cannot_accommodate.empty?
       self.errors.add(:base,
@@ -127,6 +127,15 @@ class Showdate < ActiveRecord::Base
     end
   end
 
+  def house_seats_must_exist
+    not_included = house_seats.select { |seat| !(seatmap.includes_seat?(seat)) }
+    unless not_included.empty?
+      self.errors.add(:house_seats,
+                      I18n.translate('showdates.validations.house_seats_nonexistent',
+                                     :seats => not_included.join(', ')))
+    end
+  end
+  
   public
 
   Showdate::Sales = Struct.new(:vouchers, :revenue_per_seat, :total_offered_for_sale)

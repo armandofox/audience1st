@@ -70,6 +70,9 @@ en:
         that don't exist in the new seat map.  (Suggestion: Shift-click on each patron name to
         visit their My Tickets page in a new window.)
 
+      house_seats_nonexistent: >
+        One or more designated House Seats do not exist: %{seats}
+
     errors:
       invalid: >
         No performances were added, because the %{date} performance had errors: %{errors}

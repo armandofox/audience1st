@@ -44,7 +44,7 @@
         .col-md-3.text-right
           %label.col-form-label{:for => 'showdate_open_house_seats'} House seats
           = popup_help_for :house_seats_when_editing_performances
-        .col-md-9= text_field_tag 'showdate[open_house_seats]', display_seats(@showdate.open_house_seats), :class => 'showdate-house-seats a1-passive-text-input text-left form-control'
+        .col-md-9= text_field_tag 'showdate[open_house_seats]', display_seats(@showdate.open_house_seats), :readonly => 'readonly', :class => 'showdate-house-seats a1-passive-text-input text-left form-control'
       .form-row.py-1
         .col-md-3.text-right
           %label.col-form-label{:for => 'showdate_occupied_house_seats'} Occupied house seats
