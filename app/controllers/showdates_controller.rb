@@ -29,6 +29,10 @@ class ShowdatesController < ApplicationController
       warnings.push(t('showdates.already_exist', :dates => existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', ')))
     end
     new_showdates = Showdate.from_date_list(new_dates, cutoff, showdate_params)
+    if new_showdates.empty?
+      return redirect_to(new_show_showdate_path(show: @show), :alert => I18n.translate('showdates.errors.empty_date_range'))
+    end
+      
     Showdate.transaction do
       begin
         new_showdates.each { |showdate|  showdate.save! }

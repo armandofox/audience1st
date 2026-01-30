@@ -76,6 +76,8 @@ en:
     errors:
       invalid: >
         No performances were added, because the %{date} performance had errors: %{errors}
+      empty_date_range: >
+        No performances were added, because the recurring date range you specified would contain no performances.
 
   valid_vouchers:
     errors:
