@@ -25,12 +25,19 @@ class ShowdatesController < ApplicationController
     end
 
     existing_dates, new_dates = all_dates.partition { |date| Showdate.find_by(:thedate => date) }
-    unless existing_dates.empty?
+
+    if ! existing_dates.empty?
       warnings.push(t('showdates.already_exist', :dates => existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', ')))
+      if new_dates.empty?
+        # if there are new dates to be created, then the existing dates is just a warning.
+        # BUT if there are no NEW dates to be created, we're done.
+        warnings.push t('showdates.errors.all_dates_exist')
+        return redirect_to(new_show_showdate_path(show: @show), :alert => warnings.join('<br/>'.html_safe))
+      end
     end
     new_showdates = Showdate.from_date_list(new_dates, cutoff, showdate_params)
     if new_showdates.empty?
-      return redirect_to(new_show_showdate_path(show: @show), :alert => I18n.translate('showdates.errors.empty_date_range'))
+      return redirect_to(new_show_showdate_path(show: @show), :alert => t('showdates.errors.empty_date_range'))
     end
       
     Showdate.transaction do
@@ -39,7 +46,7 @@ class ShowdatesController < ApplicationController
       rescue StandardError => e
         sd = e.record
         return redirect_to(new_show_showdate_path(@show),
-          :alert => I18n.translate('showdates.errors.invalid', :date => sd.thedate.to_formatted_s(:showtime), :errors => sd.errors.as_html))
+          :alert => t('showdates.errors.invalid', :date => sd.thedate.to_formatted_s(:showtime), :errors => sd.errors.as_html))
       end
     end
     warnings.unshift(t('showdates.added', :count => new_showdates.size))
