@@ -35,13 +35,19 @@ class Show < ActiveRecord::Base
 
   scope :for_seasons, ->(from,to) {  where(:season => from..to) }
 
-  scope :with_showdates, -> { joins(:showdates) }
+  scope :with_showdates, -> { includes(:showdates) }
 
   scope :sorted, -> {
-    includes(:showdates).
-      order(Arel.sql('showdates.thedate ASC NULLS LAST, shows.name'))
+    order(
+      Arel.sql(
+        "(SELECT MIN(showdates.thedate)
+            FROM showdates
+            WHERE showdates.show_id = shows.id)
+          ASC NULLS LAST"
+      ),
+      :name
+    )
   }
-    
   
   def opening_date
     first_showdate = showdates.order('thedate').first

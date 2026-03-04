@@ -8,7 +8,7 @@ class ReportsController < ApplicationController
     # next showdate
     @next_showdate = Showdate.current_or_next
     # all show names
-    @all_shows = Show.all.order('listing_date DESC')
+    @all_shows = Show.all.sorted
     # currently playing show
     @current_show = @next_showdate.try(:show) || @all_shows.first
     # quick subscription stats
