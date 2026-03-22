@@ -33,8 +33,9 @@ class Seatmap < ActiveRecord::Base
       _unavailable = @unavailable.compact.map { |num| seatmap.hover_label_with_zone(num) }.to_json
       _selected = @selected.compact.map { |num| seatmap.hover_label_with_zone(num) }.to_json
       _holdback = @holdback.compact.map { |num| seatmap.hover_label_with_zone(num) }.to_json
-      # seat classes: 'r' = regular, 'a' = accessible
-      seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
+      # seat classes: 'r' = regular, 'a' = accessible, 'h' = holdback (house seat)
+      seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'},
+               'h' => {'classes' => 'holdback'}}.to_json
       %Q{ {"map": #{_seatmap},
 "rows": #{seatmap.rows},
 "columns": #{seatmap.columns},
@@ -45,6 +46,7 @@ class Seatmap < ActiveRecord::Base
 "hideZoneName": #{hide_zone_name},
 "image_url": #{image_url} }}
     end
+
   end
 
   validates :name, :presence => true, :uniqueness => true
@@ -60,6 +62,18 @@ class Seatmap < ActiveRecord::Base
 
   public
   
+  def reset_seat_type_for_house_seats!(seat_nums)
+    return unless Option.feature_enabled?('house_seats_different_color')
+    # Hack: a seat's 'type' as parsed in CSV ('r'egular or 'a'ccessible) determines its
+    # CSS class and color, and the seat appears in the list as 'r[zoneName-seatNum]', eg
+    # 'r[Premium-A105]'.  For house seats to show properly for boxoffice, we have to *replace*
+    # the 'r' or 'a' with an 'h' in the json itself. Ugh. See issue #171.
+    seat_nums.each do |house_seat_num|
+      regex = Regexp.new('[ra](?=\[' + self.hover_label_with_zone(house_seat_num) + ',)')
+      self.json.gsub!(regex, 'h')
+    end
+  end
+
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
@@ -71,8 +85,12 @@ class Seatmap < ActiveRecord::Base
     # if any preselected seats, show them as selected not occupied
     occupied = showdate.occupied_seats - selected
     occupied += sm.excluded_from_zone(restrict_to_zone) unless restrict_to_zone.blank?
-    # remove any seats that are held back by boxoffice
-    occupied += map.holdback unless is_boxoffice
+    # if this is boxoffice view, color house seats differently; if not, just show them as unavail
+    unless is_boxoffice
+      occupied += map.holdback
+    else
+      sm.reset_seat_type_for_house_seats!(map.holdback)
+    end
     map.unavailable = occupied.sort.uniq
     map.emit_json
   end

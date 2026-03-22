@@ -3,7 +3,7 @@
 .seatCharts-seat.unavailable {
     background-color: lightGrey;
 }
-/* Seats may be of type 'regular' or 'accessible'; we may add other types later */
+/* Seats may be 'regular', 'accessible', or 'holdback'; we may add other types later */
 /* Regular seats are green */
 .seatCharts-seat.selected.regular {
     background-color: green;
@@ -26,6 +26,18 @@
     border: 2px solid yellow;
     background-color: blue;
 }
+/* Holdback seats are red, but only in admin views - customers just see them as unavailable */
+.seatCharts-seat.selected.holdback {
+    background-color: #F4320B;
+}
+.seatCharts-seat.available.holdback {
+    background-color: #FCC6BB;
+}
+.seatCharts-seat.focused.holdback {
+    border: 2px solid yellow;
+    background-color: #F4320B;
+}
+
 /* Hovering over seat shows seat number */
 [data-seatnum] {
     position: relative;
