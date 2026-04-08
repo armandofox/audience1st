@@ -1,3 +1,19 @@
+A1.getSeatingOptionsForChangingSeat = function() {
+    var button = $(this);
+    var container = $(this).closest('.form-row'); // the enclosing element 
+    var seatmapUrl = '/ajax/seatmap/' + button.data('showdateid');
+    A1.seatmap.max = button.data('numseats');
+    A1.seatmap.allSeatsSelected = function() {};
+    A1.seatmap.resetAfterCancel = function() {};
+    A1.seatmap.onSelect = function() {};
+    $('#seating-charts-wrapper').insertAfter(container).removeClass('d-none').slideDown();
+    $.getJSON(seatmapUrl, function(json_data) {
+        A1.seatmap.configureFrom(json_data);
+        A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+        A1.seatmap.setupMap();
+    });
+}
+
 // triggered whenever showdate dropdown menu changes on subscriber reservations screen
 A1.getSeatingOptionsForSubscriberReservation = function() {
   var container = $(this).closest('.form-row'); // the enclosing element that contains the relevant form fields
@@ -63,6 +79,8 @@ A1.setupReservations = function() {
   if ($('body#customers_show').length > 0) { // only do these bindings on "My Tickets" page
     // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
     $('select.showdate').change(A1.getSeatingOptionsForSubscriberReservation);
+    // when a boxoffice worker hits 'Change...' to change seats on a reservation
+    $('a.change-seats').on('click',A1.getSeatingOptionsForChangingSeat);
     // updating staff comments field (form-remote)
     $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
     $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
