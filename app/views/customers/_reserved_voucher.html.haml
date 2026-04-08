@@ -15,8 +15,10 @@
           = button_tag('Change...', 
           type: 'button',
           class: 'change-seats btn btn-sm btn-outline-secondary mb-1', 
-          data:  { :showdateid => group.showdate.id, :numseats => group.size,
-          :changelabel => 'Change...', :confirmlabel => 'Confirm New Seats'})
+          data:  { :showdateid => group.showdate.id, :numseats => group.size } )
+          = button_tag('Confirm Change',
+          type: 'button',
+          class: 'd-none confirm-seats btn btn-sm btn-outline-success mb-1' )
       .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
 
 - else

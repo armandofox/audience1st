@@ -1,29 +1,24 @@
 A1.getSeatingOptionsForChangingSeat = function() {
-    var confirmButton = $(this);
+    var changeButton = $(this);
     var container = $(this).closest('.form-row'); // the enclosing element 
+    var confirmButton = container.find('.confirm-seats');
     var selectedSeats = container.find('.seat-display');
-    var seatmapUrl = '/ajax/seatmap/' + confirmButton.data('showdateid');
+    var seatmapUrl = '/ajax/seatmap/' + changeButton.data('showdateid');
     var setConfirmButton = function() {
-        return(confirmButton.
-               text(confirmButton.data('confirmlabel')).
-               removeClass('btn-outline-secondary').
-               addClass('btn-outline-success'));
+        changeButton.addClass('d-none')
+        confirmButton.removeClass('d-none');
     };
     var setChangeButton = function() {
-        return(confirmButton.
-               text(confirmButton.data('changelabel')).
-               addClass('btn-outline-secondary').
-               removeClass('btn-outline-success'));
+        confirmButton.addClass('d-none');
+        return(changeButton.removeClass('d-none'));
     };
-    A1.seatmap.max = confirmButton.data('numseats');
-    A1.seatmap.allSeatsSelected = function() {
-        setConfirmButton().prop('disabled', false)
-    };
+    A1.seatmap.max = changeButton.data('numseats');
+    A1.seatmap.allSeatsSelected = setConfirmButton;
     // if cancel seat selection, revert to previously-assigned seats
     A1.seatmap.existingSeats = selectedSeats.val();
     A1.seatmap.resetAfterCancel = function() {
         selectedSeats.val(A1.seatmap.existingSeats);
-        setChangeButton().prop('disabled', false);
+        setChangeButton().prop('disabled',false);
     };
     A1.seatmap.onSelect = function() {
         selectedSeats.val(A1.seatmap.selectedSeatsAsString);
