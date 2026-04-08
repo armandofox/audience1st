@@ -1,11 +1,34 @@
 A1.getSeatingOptionsForChangingSeat = function() {
-    var button = $(this);
+    var confirmButton = $(this);
     var container = $(this).closest('.form-row'); // the enclosing element 
-    var seatmapUrl = '/ajax/seatmap/' + button.data('showdateid');
-    A1.seatmap.max = button.data('numseats');
-    A1.seatmap.allSeatsSelected = function() {};
-    A1.seatmap.resetAfterCancel = function() {};
-    A1.seatmap.onSelect = function() {};
+    var selectedSeats = container.find('.seat-display');
+    var seatmapUrl = '/ajax/seatmap/' + confirmButton.data('showdateid');
+    var setConfirmButton = function() {
+        return(confirmButton.
+               text(confirmButton.data('confirmlabel')).
+               removeClass('btn-outline-secondary').
+               addClass('btn-outline-success'));
+    };
+    var setChangeButton = function() {
+        return(confirmButton.
+               text(confirmButton.data('changelabel')).
+               addClass('btn-outline-secondary').
+               removeClass('btn-outline-success'));
+    };
+    A1.seatmap.max = confirmButton.data('numseats');
+    A1.seatmap.allSeatsSelected = function() {
+        setConfirmButton().prop('disabled', false)
+    };
+    // if cancel seat selection, revert to previously-assigned seats
+    A1.seatmap.existingSeats = selectedSeats.val();
+    A1.seatmap.resetAfterCancel = function() {
+        selectedSeats.val(A1.seatmap.existingSeats);
+        setChangeButton().prop('disabled', false);
+    };
+    A1.seatmap.onSelect = function() {
+        selectedSeats.val(A1.seatmap.selectedSeatsAsString);
+        setChangeButton().prop('disabled', true);
+    }
     $('#seating-charts-wrapper').insertAfter(container).removeClass('d-none').slideDown();
     $.getJSON(seatmapUrl, function(json_data) {
         A1.seatmap.configureFrom(json_data);
@@ -80,7 +103,7 @@ A1.setupReservations = function() {
     // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
     $('select.showdate').change(A1.getSeatingOptionsForSubscriberReservation);
     // when a boxoffice worker hits 'Change...' to change seats on a reservation
-    $('a.change-seats').on('click',A1.getSeatingOptionsForChangingSeat);
+    $('button.change-seats').on('click',A1.getSeatingOptionsForChangingSeat);
     // updating staff comments field (form-remote)
     $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
     $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });

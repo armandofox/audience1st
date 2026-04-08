@@ -9,12 +9,14 @@
         %br
         %span.showDate= group.showdate.printable_date_with_description
       .col-2.text-center
-        = group.seats
+        = display_seats_field :seats => group.seats
         - if @gAdminDisplay && group.showdate.has_reserved_seating?
           %br
-          = link_to('Change...', '#', 
+          = button_tag('Change...', 
+          type: 'button',
           class: 'change-seats btn btn-sm btn-outline-secondary mb-1', 
-          data:  { :showdateid => group.showdate.id, :numseats => group.size })
+          data:  { :showdateid => group.showdate.id, :numseats => group.size,
+          :changelabel => 'Change...', :confirmlabel => 'Confirm New Seats'})
       .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
 
 - else
