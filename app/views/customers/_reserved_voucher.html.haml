@@ -1,6 +1,6 @@
 - if (@gAdminDisplay || group.cancelable?)
   .form-row.border-top.border-secondary.align-items-center
-    = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :autocomplete => 'off', :class => 'form-inline a1-force-fullwidth'   do
+    = form_tag '#', autocomplete: 'off', class: 'form-inline a1-force-fullwidth' do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
       .col-1.text-center.cancelnumber= menu_or_static_text 'cancelnumber', group, {:id => nil, :class => 'form-control'}
       .col-3.text-center= group.name
@@ -19,7 +19,15 @@
           = button_tag('Confirm Change',
           type: 'button',
           class: 'd-none confirm-seats btn btn-sm btn-outline-success mb-1' )
-      .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
+      .col-2.text-center
+        = submit_tag('Cancel', 
+        class: 'btn btn-danger', 
+        data: { hx_post: cancel_multiple_customer_vouchers_path(@customer),
+                hx_confirm: t('reservations.confirm_cancellation'),
+                hx_target: 'body',
+                hx_swap: 'outerHTML',
+                disable_with: 'Cancelling...' })
+
 
 - else
   .form-row.border-top.border-secondary.align-items-center

@@ -136,18 +136,22 @@ class VouchersController < ApplicationController
   end
 
   def cancel_multiple
+    response.headers['HX-Redirect'] = customer_path(@customer) #  we'll redirect no matter what
     @params = params.permit(:voucher_ids, :cancelnumber)
     vchs = Voucher.includes(:showdate).find(@params[:voucher_ids].split(","))
-    return redirect_to(customer_path(@customer), :alert => t("#{ERR}cannot_be_changed"))unless
-      vchs.all? { |v| v.can_be_changed?(current_user) }
+    unless vchs.all? { |v| v.can_be_changed?(current_user) }
+      flash[:alert] = t("#{ERR}cannot_be_changed")
+      return
+    end
     num = @params['cancelnumber'].to_i
     orig_showdate = vchs.first.showdate
     orig_seats = Voucher.seats_for(vchs) # after cancel, seat info will be unavailable
+    # cause HTMX to do a full page reload.
     if (result = Voucher.cancel_multiple!(vchs, num, current_user))
-      redirect_to customer_path(@customer), :notice => t('reservations.cancelled', :canceled_num => num)
+      flash[:notice] = t('reservations.cancelled', :canceled_num => num)
       email_confirmation(:cancel_reservation, @customer, orig_showdate, num)
     else
-      redirect_to customer_path(@customer), :alert => t('reservations.cannot_be_changed')
+      flash[:alert] = t('reservations.cannot_be_changed')
     end
   end
 
