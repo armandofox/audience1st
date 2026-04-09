@@ -45,6 +45,7 @@ Rails.application.routes.draw do
           post :transfer_multiple
           post :confirm_multiple
           post :cancel_multiple
+          post :change_seats_for_multiple
         end
       end
     end

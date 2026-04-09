@@ -82,6 +82,32 @@ class VouchersController < ApplicationController
     render :body => nil
   end
 
+  # called only as HTMX AJAX action
+  def change_seats_for_multiple
+    @params = params.permit(:voucher_ids, :seats)
+    vouchers = Voucher.find(@params[:voucher_ids].split(","))
+    seats = view_context.seats_from_params(@params)
+    Voucher.transaction do
+      vouchers.each do |v|
+        old_seat = v.seat
+        if v.update(seat: seats.pop)
+          Txn.add_audit_record(:txn_type => 'res_seat_change',
+            :comments => "#{old_seat} => #{seat}",
+            :customer_id => @customer.id,
+            :voucher_id => v.id,
+            :logged_in_id => current_user.id,
+            :showdate_id => v.showdate_id)
+        else
+          raise Voucher::ReservationError
+        end
+      end
+    rescue Voucher::ReservationError, ActiveRecord::RecordInvalid => e
+      flash[:alert] = t("#{ERR}reservation_failed", :message => errors_for_voucherlist_as_html(vouchers))
+    end
+    response.headers['HX-Redirect'] = customer_path(@customer) #  we'll redirect no matter what
+    head :ok
+  end
+
   def confirm_multiple
     @params = params.permit(:number, :showdate_id, :customer_id, :seats, :comments, :voucher_ids, :zone)
     the_showdate = Showdate.find_by(:id => params[:showdate_id])
@@ -135,6 +161,7 @@ class VouchersController < ApplicationController
     end
   end
 
+  # called only as HTMX AJAX action
   def cancel_multiple
     response.headers['HX-Redirect'] = customer_path(@customer) #  we'll redirect no matter what
     @params = params.permit(:voucher_ids, :cancelnumber)
