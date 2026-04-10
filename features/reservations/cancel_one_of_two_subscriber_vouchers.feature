@@ -1,3 +1,4 @@
+@javascript
 Feature: subscriber can make subscriber reservations
 
   As a subscriber
@@ -17,7 +18,7 @@ Scenario: Cancel/change multiple reservations for General Admission show
   And customer "Tom Foolery" has 2 cancelable subscriber reservations for May 1, 8pm
   And I am on the home page for customer "Tom Foolery"
   When I select "1" from "cancelnumber"
-  And I press "Cancel"
+  And I press "Cancel Reservations"
   Then I should see "1 of your reservations have been cancelled"
   And  customer "Tom Foolery" should have 1 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
 
@@ -29,6 +30,6 @@ Scenario: for reserved seating shows, must cancel all at once
   And I am on the home page for customer "Tom Foolery"
   Then I should not see a menu named "cancelnumber"
   And I should see "2" within ".cancelnumber"
-  When I press "Cancel"
+  When I press "Cancel Reservations"
   Then I should see "2 of your reservations have been cancelled"
   And  customer "Tom Foolery" should have 0 "Hairspray (Subscriber)" tickets for "Hairspray" on May 4, 8pm

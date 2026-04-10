@@ -24,7 +24,7 @@
                   hx_swap: 'outerHTML',
                   disable_with: 'Confirming...' })
       .col-2.text-center
-        = submit_tag('Cancel', 
+        = submit_tag("Cancel Reservations", 
         class: 'btn btn-danger', 
         data: { hx_post: cancel_multiple_customer_vouchers_path(@customer),
                 hx_confirm: t('reservations.confirm_cancellation'),
