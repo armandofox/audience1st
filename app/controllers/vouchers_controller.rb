@@ -90,7 +90,8 @@ class VouchersController < ApplicationController
     Voucher.transaction do
       vouchers.each do |v|
         old_seat = v.seat
-        if v.update(seat: seats.pop)
+        seat = seats.pop
+        if v.update(seat: seat)
           Txn.add_audit_record(:txn_type => 'res_seat_change',
             :comments => "#{old_seat} => #{seat}",
             :customer_id => @customer.id,
@@ -100,6 +101,7 @@ class VouchersController < ApplicationController
         else
           raise Voucher::ReservationError
         end
+        flash[:notice] = t("#{ERR}seats_changed")
       end
     rescue Voucher::ReservationError, ActiveRecord::RecordInvalid => e
       flash[:alert] = t("#{ERR}reservation_failed", :message => errors_for_voucherlist_as_html(vouchers))
