@@ -5,9 +5,7 @@
 //= require rails
 //= require bootstrap-4.3.1.min
 //= require moment.min
-
-//= require daterangepicker
-//= require jquery.cardswipe.min
+//= require htmx-2.0.8.min
 
 //= require a1
 //= require_tree .

@@ -29,7 +29,7 @@ module ApplicationHelper
   end
   
   def link_icon
-    content_tag(:span, '&#9903;', :class => 'd-inline-block').html_safe
+    content_tag(:span, '&#9903;'.html_safe, :class => 'd-inline-block')
   end
   
   def display_customer_actions?
