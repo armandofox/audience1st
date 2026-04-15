@@ -27,7 +27,7 @@ module DatesHelper
     end
 
     options = {
-      ranges: raw_ranges,
+      ranges: ranges,
       startDate: start_date.iso8601,
       endDate:   end_date.iso8601,
       showDropdowns: true,
@@ -38,14 +38,14 @@ module DatesHelper
       showCustomRangeLabel: true
     }
 
-    %Q{<div class="d-inline">
-         <input type="text" id="#{elt_id}" class="daterangepicker #{options[:class]}"
-                data-config="#{options.to_json}">
-       </div>
-       <div class="d-inline">
-         #{popup_help_for(:select_dates)}
-       </div>}.html_safe
-    
+    classes =
+      options[:class].blank? ? 'daterangepicker' : "daterangepicker #{options[:class]}" 
+
+    input_tag = tag(:input, :type => 'text', :name => elt_id, :id => elt_id, :class => classes, :data => {:config => options})
+
+    div1 = content_tag('div', input_tag, :class => 'd-inline')
+    div2 = content_tag('div', popup_help_for(:select_dates), :class => 'd-inline')
+    safe_join([div1, div2])
   end
 
 end

@@ -7,5 +7,11 @@
 //= require moment.min
 //= require htmx-2.0.8.min
 
+// most vendored files are jQuery plugins/extensions that should load before app-specific code
+
+//= require_directory ../../../vendor/assets/javascripts
+
+// the toplevel 'a1.js' just defines the toplevel A1 object
+
 //= require a1
 //= require_tree .

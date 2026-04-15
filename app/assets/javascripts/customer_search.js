@@ -40,5 +40,5 @@ A1.setup_autocomplete_fields = function() {
   });
 };
 
-$(A1.setup_autocomplete_fields);
+// $(A1.setup_autocomplete_fields);
 
