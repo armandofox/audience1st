@@ -2,13 +2,10 @@
 %html
   %head
     %link{:rel => "shortcut icon", :type => "image/x-icon", :href => favicon_path}
-    = bootstrap_stylesheet_link_tag
     = stylesheet_link_tag :application, :media => 'all'
     = venue_stylesheet_link_tag
 
-    = jquery_javascript_css_tags
     = javascript_include_tag :application
-    = bootstrap_javascript_tag
     = javascript_include_tag "#{STRIPE_JS_HOST}/v1/"
 
     %title= @page_title || h(action_name.humanize)
