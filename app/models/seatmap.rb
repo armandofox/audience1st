@@ -63,7 +63,6 @@ class Seatmap < ActiveRecord::Base
   public
   
   def reset_seat_type_for_house_seats!(seat_nums)
-    return unless Option.feature_enabled?('house_seats_different_color')
     # Hack: a seat's 'type' as parsed in CSV ('r'egular or 'a'ccessible) determines its
     # CSS class and color, and the seat appears in the list as 'r[zoneName-seatNum]', eg
     # 'r[Premium-A105]'.  For house seats to show properly for boxoffice, we have to *replace*

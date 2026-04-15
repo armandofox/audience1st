@@ -21,3 +21,7 @@ Then /^debug javascript$/ do
   page.driver.debug
   1
 end
+
+Then /show me the browser logs/ do
+  puts page.driver.browser.logs.get(:browser).inspect
+end

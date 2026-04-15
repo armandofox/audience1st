@@ -1,3 +1,4 @@
+@javascript
 Feature: boxoffice can change seat on existing reservation
 
   As a box office worker
@@ -16,7 +17,11 @@ Feature: boxoffice can change seat on existing reservation
 
   Scenario: successfully change multiple seats
     
-    
+    When I choose seats "Reserved-B1,Reserved-B2"
+    And I press "Confirm Change"
+    Then I should be on the home page for customer "Harvey Schmidt"
+    And I should see "Seats changed successfully."
+    And customer "Harvey Schmidt" should have seats B1,B2 for the Mar 2, 2010, 8pm performance of "Chicago"
     
   
   Scenario: cannot change to a seat that has become occupied
