@@ -1,3 +1,2 @@
-//= require_self
-//= require_tree .
-//= require jquery-ui.min
+/*= require bootstrap-4.3.1.min */
+/*= require_tree . */

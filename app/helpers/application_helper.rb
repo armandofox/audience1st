@@ -11,20 +11,8 @@ module ApplicationHelper
     end
   end
 
-  def jquery_javascript_css_tags
-    %q{
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-1.11.3.min.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" crossorigin="anonymous"></script>
-    }.html_safe
-  end
 
-  def bootstrap_stylesheet_link_tag
     tag('link', {rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity: "sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin: "anonymous"})
-  end
-
-  def bootstrap_javascript_tag
-    %q{<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>}.html_safe
   end
 
   def venue_stylesheet_link_tag
@@ -45,7 +33,7 @@ module ApplicationHelper
   end
   
   def link_icon
-    content_tag(:span, '', :class => 'd-inline-block ui-icon ui-icon-link').html_safe
+    content_tag(:span, '&#9903;', :class => 'd-inline-block').html_safe
   end
   
   def display_customer_actions?
