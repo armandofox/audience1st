@@ -13,6 +13,8 @@ A1.getSeatingOptionsForChangingSeat = function() {
     confirmButton.addClass('d-none');
     return(changeButton.removeClass('d-none'));
   };
+  // mark customer's existing seats as 'preselected' when fetching seatmap
+  seatmapUrl += '?' + new URLSearchParams({'selected': selectedSeats.val()}).toString();
   A1.seatmap.max = changeButton.data('numseats');
   A1.seatmap.allSeatsSelected = setConfirmButton;
   // if cancel seat selection, revert to previously-assigned seats
