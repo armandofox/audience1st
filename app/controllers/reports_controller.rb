@@ -73,7 +73,8 @@ class ReportsController < ApplicationController
     @customers = @report.customers
 
     if @report.errors
-      return render(:js => %Q{alert('#{ActionController::Base.helpers.j @report.errors}')})
+      msg = helpers.j(@report.errors)
+      return render(:js => %Q{alert('#{msg}')})
     end
     
     if request.xhr? && action =~ /display|download/i
@@ -103,15 +104,15 @@ class ReportsController < ApplicationController
       seg = params[:sublist]
       email_list = EmailList.new
       result = email_list.add_to_sublist(seg, @customers)
-      msg = "#{result} customers added to list '#{seg}'. #{email_list.errors}"
-      render :js => %Q{alert(#{msg})}
+      msg = helpers.j "#{result} of #{@customers.size} customers added to list '#{seg}'. #{email_list.errors}"
+      render :js => %Q{alert('#{msg}')}
     when /create/i
       name = params[:sublist_name]
       email_list = EmailList.new
       if (num=email_list.create_sublist_with_customers(name, @customers))
-        msg = ActionController::Base.helpers.escape_javascript %Q{List "#{name}" created with #{num} customers. #{email_list.errors}}
+        msg = helpers.j %Q{List "#{name}" created with #{num} of #{@customers.size} customers. #{email_list.errors}}
       else
-        msg = ActionController::Base.helpers.escape_javascript %Q{Error creating list "#{name}": #{email_list.errors}}
+        msg = helpers.j %Q{Error creating list "#{name}": #{email_list.errors}}
       end
       render :js => %Q{alert('#{msg}')}
     else

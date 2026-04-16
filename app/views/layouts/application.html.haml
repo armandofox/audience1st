@@ -11,12 +11,14 @@
     = bootstrap_javascript_tag
     = javascript_include_tag "#{STRIPE_JS_HOST}/v1/"
 
+    = %q{<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>}.html_safe
+    = csrf_meta_tags
+    
     %title= @page_title || h(action_name.humanize)
-    %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
-    %meta{:name=>:description, :content=>''}/
+    %meta{'http-equiv': 'content-type', content: 'text/html; charset=utf-8'}
+    %meta{name: "description", content: ''}
     %meta{name: "viewport", content: "width=device-width, initial-scale=1, shrink-to-fit=no"}
 
-    = csrf_meta_tags
 
   %body{:id=>"#{controller.controller_name}_#{action_name}", :class => ('maintenance' if @gMaintMode)}
     %noscript
@@ -68,3 +70,9 @@
           = link_to 'Terms of Use & Privacy Policy', s
         \&nbsp;&bull;&nbsp;
         = link_to Option.venue, Option.venue_homepage_url
+
+    :javascript
+      document.addEventListener("htmx:configRequest", (event) => {
+        event.detail.headers["X-CSRF-Token"] =
+          document.querySelector("meta[name='csrf-token']")?.content;
+      });

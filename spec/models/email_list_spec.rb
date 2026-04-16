@@ -5,7 +5,7 @@ require 'rails_helper'
 # CONDITIONS IN MAILCHIMP as describe in the befor(:each) block below (StaticSeg1 and
 # StaticSeg2 should contain the names indicated, and StaticSeg3 should not exist).
 
-describe EmailList do
+xdescribe EmailList do
 
   before(:each) do
     @l = EmailList.new('ffffffffffffffffffffffffffffffff-us1')

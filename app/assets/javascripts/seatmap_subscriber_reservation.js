@@ -1,3 +1,41 @@
+// triggered when "Change.." button is pressed to change seats on existing resv
+A1.getSeatingOptionsForChangingSeat = function() {
+  var changeButton = $(this);
+  var container = $(this).closest('.form-row'); // the enclosing element 
+  var confirmButton = container.find('.confirm-seats');
+  var selectedSeats = container.find('.seat-display');
+  var seatmapUrl = '/ajax/seatmap/' + changeButton.data('showdateid');
+  var setConfirmButton = function() {
+    changeButton.addClass('d-none')
+    confirmButton.removeClass('d-none');
+  };
+  var setChangeButton = function() {
+    confirmButton.addClass('d-none');
+    return(changeButton.removeClass('d-none'));
+  };
+  // mark customer's existing seats as 'preselected' when fetching seatmap
+  seatmapUrl += '?' + new URLSearchParams({'selected': selectedSeats.val()}).toString();
+  A1.seatmap.max = changeButton.data('numseats');
+  A1.seatmap.allSeatsSelected = setConfirmButton;
+  // if cancel seat selection, revert to previously-assigned seats
+  A1.seatmap.existingSeats = selectedSeats.val();
+  A1.seatmap.resetAfterCancel = function() {
+    selectedSeats.val(A1.seatmap.existingSeats);
+    setChangeButton().prop('disabled',false);
+  };
+  A1.seatmap.onSelect = function() {
+    selectedSeats.val(A1.seatmap.selectedSeatsAsString);
+    setChangeButton().prop('disabled', true);
+  }
+  $('#seating-charts-wrapper').insertAfter(container).removeClass('d-none').slideDown();
+  $.getJSON(seatmapUrl, function(json_data) {
+    A1.seatmap.configureFrom(json_data);
+    A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+    A1.seatmap.setupMap();
+  });
+  setChangeButton().prop('disabled', true);
+};
+
 // triggered whenever showdate dropdown menu changes on subscriber reservations screen
 A1.getSeatingOptionsForSubscriberReservation = function() {
   var container = $(this).closest('.form-row'); // the enclosing element that contains the relevant form fields
@@ -57,16 +95,19 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
       A1.seatmap.setupMap();
     });
   }
-}
+};
 
 A1.setupReservations = function() {
   if ($('body#customers_show').length > 0) { // only do these bindings on "My Tickets" page
     // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
     $('select.showdate').change(A1.getSeatingOptionsForSubscriberReservation);
+    // when a boxoffice worker hits 'Change...' to change seats on a reservation
+    $('button.change-seats').click(A1.getSeatingOptionsForChangingSeat);
+    $('body').addClass('button-bound');
     // updating staff comments field (form-remote)
     $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
     $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
   }
-}
+};
 
 $(A1.setupReservations);

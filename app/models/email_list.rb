@@ -24,7 +24,8 @@ class EmailList
   def segments
     @segments ||=
       mc.lists(default_list_id).
-      segments.retrieve.
+      segments.retrieve(:params => {:count => 1000}).
+      #                           , :fields => 'segments.id,segments.name,segments.type'}).
       body[:segments].select { |seg| seg[:type] == 'static' }
   end
 
@@ -44,6 +45,18 @@ class EmailList
     }
   end
   
+  def add_one_by_one(segment, emails)
+    count = emails.sum do |email|
+      begin
+        segment.create(:body => {:members_to_add => [email]})
+        1
+      rescue Gibbon::MailChimpError
+        0
+      end
+    end
+    count
+  end
+
   public
 
   def subscribe(cust, email=cust.email)
@@ -104,7 +117,8 @@ class EmailList
   def create_sublist(name)
     return nil if disabled
     begin
-      mc.lists(default_list_id).segments.create(:body => {:name => name, :static_segment => []})
+      @segments = nil
+      result = mc.lists(default_list_id).segments.create(:body => {:name => name, :static_segment => []})
     rescue Gibbon::MailChimpError, StandardError => e
       @errors = "List segment '#{name}' could not be created: #{e.message}"
       Rails.logger.warn @errors
@@ -124,19 +138,23 @@ class EmailList
   end
 
   def add_to_sublist(sublist,customers=[])
-    return nil if disabled
-    segs = segments
+    return 0 if disabled
+    seg_id = segment_id_from_name(sublist)
+    segment = mc.lists(default_list_id).segments(seg_id)
     begin
-      seg_id = segment_id_from_name(sublist)
       emails = customers.select { |c| c.valid_email_address? }.map { |c| c.email }
-      response = mc.lists(default_list_id).segments(seg_id).
-        create(:body => {:members_to_add => emails})
-      num_added = response.body[:total_added].to_i
-      return num_added
+      response = segment.create(:body => {:members_to_add => emails})
+      result = response.body[:total_added].to_i
+      return result
     rescue Gibbon::MailChimpError, StandardError => e
-      @errors = e.message
-      Rails.logger.info "Adding #{customers.size} customers to sublist '#{sublist}': #{e.message}"
-      return 0
+      if e.status_code == 400 && e.detail.include?("subscribed")
+        # one non-subscribed email nukes the request, so fallback to doing them one at a time
+        return add_one_by_one(segment, emails)
+      else
+        @errors = e.message
+        Rails.logger.info "Adding #{customers.size} customers to sublist '#{sublist}': #{e.message}"
+        return 0
+      end
     end
   end
 

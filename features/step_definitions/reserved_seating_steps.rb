@@ -1,3 +1,9 @@
+Given /the following seat reservations for the (.*) performance of "(.*)"/ do |datetime,show,tbl|
+  step %Q{a performance of "#{show}" on #{datetime}}
+  step %Q{that performance has reserved seating}
+  step %Q{the following seat reservations for the #{datetime} performance:}, tbl
+end
+
 Given /the "(.*)" performance has reserved seating/ do |datetime|
   @showdate = Showdate.find_by!(:thedate => Time.zone.parse(datetime))
   steps %Q{Given that performance has reserved seating}
@@ -54,7 +60,7 @@ Then /I should (not )?see the seatmap/ do |no|
   end
 end
 
-When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, name|
+When /I (?:choose|unselect) seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, name|
   if name
     within(find_import_row_for name) { find('.select-seats').click }
     steps %Q{Then I should see the seatmap}

@@ -6,9 +6,7 @@ Feature: reservation checkin for reserved seating show
 
 Background: reserved seating performance
 
-  Given a performance of "Chicago" on March 2, 2010, 8:00pm
-  And that performance has reserved seating
-  And the following seat reservations for the March 2, 2010, 8:00pm performance:
+  Given the following seat reservations for the March 2, 2010, 8:00pm performance of "Chicago":
     | first  | last    | vouchertype | seats    |
     | Harvey | Schmidt | General     | A1,B1,A2 |
     | Tom    | Jones   | General     | B2       |

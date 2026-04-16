@@ -32,6 +32,6 @@ end
 When /I cancel (\d+) "(.*)" reservations?/ do |num,selector|
   steps %Q{
     And I select "#{num}" from "cancelnumber" within "#{selector}"
-    And I press "Cancel" within "#{selector}"
+    And I press "Cancel Reservations" within "#{selector}"
   }           
 end

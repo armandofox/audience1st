@@ -92,6 +92,15 @@ module NavigationHelpers
       raise "Can't find mapping for \"#{page_name}\" in #{__FILE__}"
     end
   end
+
+  def navigate_to(page_name)
+    target = path_to(page_name)
+    if page_name =~ /checkout/  # hack: the checkout page has a 'confirm' alert as soon as loaded
+      page.accept_alert { visit target }
+    else
+      visit target
+    end
+  end
 end
 
 World(NavigationHelpers)
