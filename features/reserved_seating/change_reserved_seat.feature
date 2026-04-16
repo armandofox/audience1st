@@ -17,7 +17,8 @@ Feature: boxoffice can change seat on existing reservation
 
   Scenario: successfully change multiple seats
     
-    When I choose seats "Reserved-B1,Reserved-B2"
+    When I unselect seats "Reserved-A1,Reserved-A2"
+    And I choose seats "Reserved-B1,Reserved-B2"
     And I press "Confirm Change"
     Then I should be on the home page for customer "Harvey Schmidt"
     And I should see "Seats changed successfully."

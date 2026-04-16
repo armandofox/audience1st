@@ -60,7 +60,7 @@ Then /I should (not )?see the seatmap/ do |no|
   end
 end
 
-When /I choose seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, name|
+When /I (?:choose|unselect) seats? "([^"]+)"(?: for import customer "(.*)")?/ do |seat_list, name|
   if name
     within(find_import_row_for name) { find('.select-seats').click }
     steps %Q{Then I should see the seatmap}
