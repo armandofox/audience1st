@@ -3,7 +3,7 @@ class AddDatabaseConstraintUniqueSeat < ActiveRecord::Migration[6.1]
   def up
     add_index :items, [:showdate_id, :seat],
               unique: true,
-              where: "finalized = TRUE AND seat IS NOT NULL",
+              where: "type = 'Voucher' AND finalized = TRUE AND seat IS NOT NULL",
               name: "items_finalized_showdate_seat_unique"
   end
 

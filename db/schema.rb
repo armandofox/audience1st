@@ -10,20 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_10_08_215934) do
+ActiveRecord::Schema.define(version: 2026_05_14_172713) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
-  create_table "account_codes", force: :cascade do |t|
+  create_table "account_codes", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255, default: "", null: false
     t.string "code", limit: 255
     t.string "description", limit: 255
     t.string "donation_prompt", limit: 255
   end
 
-  create_table "customers", force: :cascade do |t|
+  create_table "customers", id: :serial, force: :cascade do |t|
     t.string "first_name", limit: 64, default: "", null: false
     t.string "last_name", limit: 64, default: "", null: false
     t.string "street", limit: 255
@@ -99,7 +99,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["label_id"], name: "public_customers_labels_label_id1_idx"
   end
 
-  create_table "items", force: :cascade do |t|
+  create_table "items", id: :serial, force: :cascade do |t|
     t.integer "vouchertype_id", default: 0, null: false
     t.integer "customer_id", default: 0, null: false
     t.integer "showdate_id"
@@ -133,6 +133,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["order_id"], name: "public_items_order_id3_idx"
     t.index ["processed_by_id"], name: "index_items_on_processed_by_id"
     t.index ["seat"], name: "index_items_on_seat"
+    t.index ["showdate_id", "seat"], name: "items_finalized_showdate_seat_unique", unique: true, where: "((finalized = true) AND (seat IS NOT NULL))"
     t.index ["showdate_id"], name: "index_items_on_showdate_id"
     t.index ["showdate_id"], name: "index_vouchers_on_showdate_id"
     t.index ["showdate_id"], name: "public_items_showdate_id1_idx"
@@ -142,11 +143,11 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["vouchertype_id"], name: "public_items_vouchertype_id5_idx"
   end
 
-  create_table "labels", force: :cascade do |t|
+  create_table "labels", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255
   end
 
-  create_table "options", force: :cascade do |t|
+  create_table "options", id: :serial, force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "advance_sales_cutoff", default: 5
@@ -239,7 +240,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.boolean "notify_theater_about_failed_recurring_donation_charge", default: true
   end
 
-  create_table "orders", force: :cascade do |t|
+  create_table "orders", id: :serial, force: :cascade do |t|
     t.string "authorization", limit: 255
     t.integer "customer_id"
     t.integer "purchasemethod"
@@ -271,7 +272,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["walkup"], name: "public_orders_walkup1_idx"
   end
 
-  create_table "recurring_donations", force: :cascade do |t|
+  create_table "recurring_donations", id: :serial, force: :cascade do |t|
     t.integer "customer_id"
     t.integer "account_code_id"
     t.integer "processed_by_id"
@@ -282,13 +283,13 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.datetime "updated_at"
   end
 
-  create_table "seating_zones", force: :cascade do |t|
+  create_table "seating_zones", id: :serial, force: :cascade do |t|
     t.string "name"
     t.string "short_name"
     t.integer "display_order", default: 0
   end
 
-  create_table "seatmaps", force: :cascade do |t|
+  create_table "seatmaps", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.text "csv"
     t.text "json", null: false
@@ -299,7 +300,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.text "zones", default: "--- {}\n"
   end
 
-  create_table "showdates", force: :cascade do |t|
+  create_table "showdates", id: :serial, force: :cascade do |t|
     t.datetime "thedate"
     t.integer "max_advance_sales", default: 0, null: false
     t.integer "show_id", default: 0, null: false
@@ -318,7 +319,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["show_id"], name: "public_showdates_show_id1_idx"
   end
 
-  create_table "shows", force: :cascade do |t|
+  create_table "shows", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255
     t.text "patron_notes"
     t.string "landing_page_url", limit: 255
@@ -333,7 +334,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.string "reminder_type", default: "Never", null: false
   end
 
-  create_table "ticket_sales_imports", force: :cascade do |t|
+  create_table "ticket_sales_imports", id: :serial, force: :cascade do |t|
     t.string "vendor"
     t.text "raw_data"
     t.integer "processed_by_id"
@@ -347,7 +348,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["processed_by_id"], name: "index_ticket_sales_imports_on_processed_by_id"
   end
 
-  create_table "txns", force: :cascade do |t|
+  create_table "txns", id: :serial, force: :cascade do |t|
     t.integer "customer_id", default: 1, null: false
     t.integer "entered_by_id", default: 1, null: false
     t.datetime "txn_date"
@@ -368,7 +369,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["voucher_id"], name: "index_txns_on_voucher_id"
   end
 
-  create_table "valid_vouchers", force: :cascade do |t|
+  create_table "valid_vouchers", id: :serial, force: :cascade do |t|
     t.integer "showdate_id"
     t.integer "vouchertype_id"
     t.string "promo_code", limit: 1023
@@ -389,7 +390,7 @@ ActiveRecord::Schema.define(version: 2025_10_08_215934) do
     t.index ["vouchertype_id"], name: "public_valid_vouchers_vouchertype_id2_idx"
   end
 
-  create_table "vouchertypes", force: :cascade do |t|
+  create_table "vouchertypes", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255
     t.float "price", default: 0.0
     t.datetime "created_at"
