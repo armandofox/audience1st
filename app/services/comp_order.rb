@@ -20,7 +20,7 @@ class CompOrder
                      :purchaser => customer,
                      :purchasemethod => Purchasemethod.get_type_by_name('none') }
     begin
-      @order = Order.create!(order_params)
+      raise Order::NotReadyError.new(), @order.errors.as_html unless (@order = Order.create(order_params))
       if leave_open?
         @order.add_open_vouchers_without_capacity_checks(@vouchertype, howmany.to_i)
         @confirmation_message = "Added #{howmany} '#{@vouchertype.name}' comps and customer can choose the show later."
