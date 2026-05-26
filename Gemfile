@@ -1,11 +1,11 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '3.1.2'
+ruby '3.1.7'
 
 # basic app components
 gem 'pg'
 gem 'ros-apartment', require: 'apartment'     # multi-tenancy: see README.md
-gem 'rails', '6.1.7.7'
+gem 'rails', '7.0'
 
 gem 'builder'
 gem 'bundler'
