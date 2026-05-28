@@ -1,4 +1,5 @@
-class Customer < ActiveRecord::Base
+module Customer::Merge
+  extend ActiveSupport::Concern
   
   # merge myself with another customer.  'params' array indicates which
   # record (self or other) to retain each field value from.  For
@@ -42,7 +43,7 @@ class Customer < ActiveRecord::Base
     finish_merge(c1)
     return Customer.save_and_update_foreign_keys!(self, c1)
   end
-        
+  
   def mergeable_with?(other)
     if other.special_customer? || self.is_admin || other.is_admin
       self.errors.add :base, I18n.translate('customers.errors.merge.admin')
@@ -57,7 +58,7 @@ class Customer < ActiveRecord::Base
     begin
       (self.updated_at > other.updated_at) ||
         (self.updated_at == other.updated_at &&
-        self.last_login > other.last_login)
+         self.last_login > other.last_login)
     rescue
       nil
     end
@@ -86,56 +87,57 @@ class Customer < ActiveRecord::Base
       end
   end
 
-  # Note: This method should only be called inside a transaction block!
-  def self.update_foreign_keys_from_to(old,new)
-    msg = []
-    [Order, Item, Txn].each do |t|
-      howmany = 0
-      t.foreign_keys_to_customer.each do |field|
-        howmany += t.where("#{field} = ?", old).update_all(field => new)
+  class_methods do
+    # Note: This method should only be called inside a transaction block!
+    def update_foreign_keys_from_to(old,new)
+      msg = []
+      [Order, Item, Txn].each do |t|
+        howmany = 0
+        t.foreign_keys_to_customer.each do |field|
+          howmany += t.where("#{field} = ?", old).update_all(field => new)
+        end
+        msg << "#{howmany} #{t}s"
       end
-      msg << "#{howmany} #{t}s"
+      msg
     end
-    msg
-  end
 
-  def self.save_and_update_foreign_keys!(c0,c1)
-    new = c0.id
-    old = c1.id
-    ok = nil
-    msg = []
-    begin
-      transaction do
-        msg = Customer.update_foreign_keys_from_to(old, new)
-        # Add/merge labels from old record to new
-        label_count = (c1.labels - c0.labels).size
-        c0.labels |= c1.labels
-        msg << "#{label_count} labels"
-        # Definitively propagate provenance (either ticket_sales_import_id, or nil)
-        # from the older record.
-        if c0.created_at > c1.created_at # c1 is older,but c0 will be result of merge
-          c0.ticket_sales_import_id = c1.ticket_sales_import_id
+    def save_and_update_foreign_keys!(c0,c1)
+      new = c0.id
+      old = c1.id
+      ok = nil
+      msg = []
+      begin
+        transaction do
+          msg = Customer.update_foreign_keys_from_to(old, new)
+          # Add/merge labels from old record to new
+          label_count = (c1.labels - c0.labels).size
+          c0.labels |= c1.labels
+          msg << "#{label_count} labels"
+          # Definitively propagate provenance (either ticket_sales_import_id, or nil)
+          # from the older record.
+          if c0.created_at > c1.created_at # c1 is older,but c0 will be result of merge
+            c0.ticket_sales_import_id = c1.ticket_sales_import_id
+          end
+          # Crypted_password and salt have to be updated separately,
+          # since crypted_password is automatically set by the before-save
+          # action to be encrypted with salt.
+          if c1.fresher_than?(c0)
+            pass = c1.crypted_password
+            salt = c1.salt
+          else
+            pass = nil
+          end
+          c1.destroy
+          c0.save!
+          if pass
+            Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
+          end
+          ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
         end
-        # Crypted_password and salt have to be updated separately,
-        # since crypted_password is automatically set by the before-save
-        # action to be encrypted with salt.
-        if c1.fresher_than?(c0)
-          pass = c1.crypted_password
-          salt = c1.salt
-        else
-          pass = nil
-        end
-        c1.destroy
-        c0.save!
-        if pass
-          Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
-        end
-        ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
+      rescue StandardError => e
+        c0.errors.add :base,"Customers NOT merged: #{e.message}"
       end
-    rescue StandardError => e
-      c0.errors.add :base,"Customers NOT merged: #{e.message}"
+      return ok
     end
-    return ok
   end
-
 end

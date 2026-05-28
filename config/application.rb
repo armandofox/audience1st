@@ -27,6 +27,11 @@ module Audience1st
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 
+    # without this, zeitwerk complains that model names aren't nested properly, but
+    # in order to make single-table inheritance work, we can't nest them that way
+    Rails.autoloaders.main.collapse(Rails.root.join("app/models/items"))
+    Rails.autoloaders.main.collapse(Rails.root.join("app/models/reports"))
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

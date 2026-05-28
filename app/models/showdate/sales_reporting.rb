@@ -1,4 +1,5 @@
-class Showdate < ActiveRecord::Base
+module Showdate::SalesReporting
+  extend ActiveSupport::Concern
 
   # for reservation list
 

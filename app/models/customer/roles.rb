@@ -1,4 +1,6 @@
-class Customer < ActiveRecord::Base
+module Customer::Roles
+  extend ActiveSupport::Concern
+  
   # Values of the role field:
   # Roles are cumulative, ie higher privilege level can do everything
   # the lower levels can do.
@@ -17,25 +19,6 @@ class Customer < ActiveRecord::Base
   def is_boxoffice_manager ; role >= PRIVS['boxoffice_manager'] ; end
   def is_admin ; role >= PRIVS['admin'] ; end
 
-  def self.roles
-    PRIVS.keys
-  end
-
-  def self.role_value(role)
-    PRIVS[role.to_s.downcase] || 0
-  end
-
-  def self.role_name(rval)
-    r = rval.to_i
-    if r > 30 then 'admin'
-    elsif r >= 30 then 'boxoffice_manager'
-    elsif r >= 20 then 'boxoffice'
-    elsif r >= 15 then 'walkup'
-    elsif r >= 10 then 'staff'
-    else 'patron'
-    end
-  end
-
   def role_name
     Customer.role_name(self.role)
   end
@@ -53,4 +36,24 @@ class Customer < ActiveRecord::Base
     self.role >= Customer.role_value(newrole)
   end
 
+  class_methods do
+    def roles
+      PRIVS.keys
+    end
+
+    def role_value(role)
+      PRIVS[role.to_s.downcase] || 0
+    end
+
+    def role_name(rval)
+      r = rval.to_i
+      if r > 30 then 'admin'
+      elsif r >= 30 then 'boxoffice_manager'
+      elsif r >= 20 then 'boxoffice'
+      elsif r >= 15 then 'walkup'
+      elsif r >= 10 then 'staff'
+      else 'patron'
+      end
+    end
+  end
 end

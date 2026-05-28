@@ -1,4 +1,5 @@
-class Showdate < ActiveRecord::Base
+module Showdate::MenuDescriptions
+  extend ActiveSupport::Concern
   
   def show_name
     show.name

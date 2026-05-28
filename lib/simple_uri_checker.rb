@@ -1,4 +1,4 @@
-class SimpleURIChecker
+class SimpleUriChecker
   require 'net/http'
   require 'uri'
 

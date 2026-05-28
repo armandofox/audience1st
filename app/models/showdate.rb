@@ -1,6 +1,9 @@
 class Showdate < ActiveRecord::Base
 
   include Comparable
+
+  include SalesReporting
+  include MenuDescriptions
   
   belongs_to :show
   belongs_to :seatmap, optional: true
@@ -46,8 +49,6 @@ class Showdate < ActiveRecord::Base
   validate :house_seats_must_exist, :if => :has_reserved_seating?
   validate :at_most_one_stream_anytime_performance
 
-  require_dependency 'showdate/sales_reporting'
-  require_dependency 'showdate/menu_descriptions'
 
   # round off all showdates to the nearest minute
   before_save :truncate_showdate_to_nearest_minute

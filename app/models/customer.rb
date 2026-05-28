@@ -1,12 +1,12 @@
 class Customer < ActiveRecord::Base
 
-  require_dependency 'customer/roles'
-  require_dependency 'customer/search'
-  require_dependency 'customer/special_customers'
-  require_dependency 'customer/secret_question'
-  require_dependency 'customer/scopes'
-  require_dependency 'customer/birthday'
-  require_dependency 'customer/merge'
+  include Roles
+  include Search
+  include SpecialCustomers
+  include SecretQuestion
+  include Scopes
+  include Birthday
+  include Merge
 
   include Authentication
   include Authentication::ByPassword

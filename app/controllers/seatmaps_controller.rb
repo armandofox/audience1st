@@ -102,7 +102,7 @@ class SeatmapsController < ApplicationController
 
   def check_image
     unless @seatmap.image_url.blank?
-      u = SimpleURIChecker.new(@seatmap.image_url)
+      u = SimpleUriChecker.new(@seatmap.image_url)
       flash[:alert] = "Warning: #{u.errors.as_html}" unless u.check(:allowed_content_types => ['image/png', 'image/jpeg', 'image/svg'])
     end
   end
