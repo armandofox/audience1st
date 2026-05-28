@@ -1,56 +1,78 @@
-Rails.application.configure do
+require "active_support/core_ext/integer/time"
 
-  config.hosts << "a1-staging.lvh.me"
-  
-  # Settings specified here will take precedence over those in config/environment.rb
-  
-  # In the development environment your application's code is reloaded on
-  # every request.  This slows down response time but is perfect for development
-  # since you don't have to restart the webserver when you make code changes.
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # In the development environment your application's code is reloaded any time
+  # it changes. This slows down response time but is perfect for development
+  # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
   # Do not eager load code on boot.
-  #config.eager_load = false
+  config.eager_load = false
 
-  # Log error messages when you accidentally call methods on nil.
-  config.whiny_nils = true
+  # Show full error reports.
+  config.consider_all_requests_local = true
 
-  # Show full error reports and disable caching
-  config.consider_all_requests_local       = true
-  config.action_controller.perform_caching = false
-  config.caceh_store = :null_store
+  # Enable server timing
+  config.server_timing = true
+
+  # Enable/disable caching. By default caching is disabled.
+  # Run rails dev:cache to toggle caching.
+  if Rails.root.join("tmp/caching-dev.txt").exist?
+    config.action_controller.perform_caching = true
+    config.action_controller.enable_fragment_cache_logging = true
+
+    config.cache_store = :memory_store
+    config.public_file_server.headers = {
+      "Cache-Control" => "public, max-age=#{2.days.to_i}"
+    }
+  else
+    config.action_controller.perform_caching = false
+
+    config.cache_store = :null_store
+  end
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  # config.active_storage.service = :local
 
   config.action_mailer.delivery_method = :file
   config.action_mailer.raise_delivery_errors = true
   config.active_job.queue_adapter = :inline
-
-  # store uploaded files on local filesystem - see config/storage.yml
-  config.active_storage.service = :local
-
-  config.log_level = :info
+  config.action_mailer.perform_caching = false
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
-  # Debug mode disables concatenation and preprocessing of assets.
-  # This option may cause significant delays in view rendering with a large
-  # number of complex assets.
-  config.assets.enabled = true
+  # Raise exceptions for disallowed deprecations.
+  config.active_support.disallowed_deprecation = :raise
 
-  config.public_file_server.enabled   = true
-  config.public_file_server.headers = {'Cache-Control' => 'public, max-age=3600'}
+  # Tell Active Support which deprecation messages to disallow.
+  config.active_support.disallowed_deprecation_warnings = []
 
-  config.assets.debug = true
-  config.assets.compile = true
-  config.assets.digest = false
+  # Raise an error on page load if there are pending migrations.
+  config.active_record.migration_error = :page_load
 
-  # Adds additional error checking when serving assets at runtime.
-  # Checks for improperly declared sprockets dependencies.
-  # Raises helpful error messages.
-  config.assets.raise_runtime_errors = true
+  # Highlight code that triggered database queries in logs.
+  config.active_record.verbose_query_logs = true
+
+  # Suppress logger output for asset requests.
+  config.assets.quiet = true
+
+  # serve static files from a separate server if running in (eg) a docker container
+  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present? || true
+
 
   # Stripe payments: disable SSL verification for local testing
   require 'stripe'
   Stripe.verify_ssl_certs = false
 
+  # Raises error for missing translations.
+  # config.i18n.raise_on_missing_translations = true
+
+  # Annotate rendered view with file names.
+  # config.action_view.annotate_rendered_view_with_filenames = true
+
+  # Uncomment if you wish to allow Action Cable access from any origin.
+  # config.action_cable.disable_request_forgery_protection = true
 end

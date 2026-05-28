@@ -5,7 +5,9 @@ ruby '3.1.7'
 # basic app components
 gem 'pg'
 gem 'ros-apartment', require: 'apartment'     # multi-tenancy: see README.md
-gem 'rails', '7.0'
+gem 'rails', '7.0.1'
+
+gem 'concurrent-ruby', '1.3.4'  #  remove when updating to Rails 7.1+
 
 gem 'builder'
 gem 'bundler'
@@ -43,7 +45,6 @@ group :test do
   gem 'chronic'
   gem 'launchy'
   gem 'rack-test'
-#  gem 'concurrent-ruby', '1.2.3'
   gem 'database_cleaner-active_record'
   gem 'email_spec'
   gem 'faker'
