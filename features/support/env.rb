@@ -48,7 +48,7 @@ path_to_chrome_for_testing = ENV['CHROME_FOR_TESTING_PATH'] ||
 if (path_to_chromedriver.blank? || path_to_chrome_for_testing.blank?)
   abort "Cannot find Chromedriver and/or ChromeForTesting binaries. Check wiki for instructions."
 else
-  STDERR.puts "Using %x(#{path_to_chromedriver} --version)\n      %x(#{path_to_chrome_for_testing} --version)"
+  STDERR.puts "Using #{`'#{path_to_chromedriver}' --version`}  and #{`'#{path_to_chrome_for_testing}' --version`}"
 end
 
 Capybara.register_driver :selenium_chrome_headless do |app|
