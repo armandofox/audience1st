@@ -30,11 +30,14 @@ require 'email_spec/cucumber'
 Capybara.default_selector = :css
 Capybara.server = :webrick
 # must have compatible versions of chromedriver and chrome-for-testing (headless) installed:
-#  Download a specific Chrome for Testing version:
-#  npx @puppeteer/browsers install chrome@124.0.6367.91
-#  Download a specific ChromeDriver version:
-#  npx @puppeteer/browsers install chromedriver@124.0.6367.91
-#  (Note: these 'installs' just put stuff in the $cwd. brew install may be better)
+#  To determine latest stable version of Chrome For Testing and then install it and chromedriver:
+#    export CHROME_VER=`curl https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE`
+#    cd $RAILS_ROOT/tmp
+#    npx @puppeteer/browsers install chrome@$CHROME_VER
+#    npx @puppeteer/browsers install chromedriver@$CHROME_VER
+# Then make sure .github/workflows/ci.yml action for chromedriver matches.
+# To see which version we have installed locally:
+#    `find $RAILS_ROOT/tmp -name chromedriver -type f` --version
 
 path_to_chromedriver =       ENV['CHROMEDRIVER_PATH'] ||
                              `find ~+/tmp -type f -name 'chromedriver'`.chomp
@@ -44,6 +47,8 @@ path_to_chrome_for_testing = ENV['CHROME_FOR_TESTING_PATH'] ||
 
 if (path_to_chromedriver.blank? || path_to_chrome_for_testing.blank?)
   abort "Cannot find Chromedriver and/or ChromeForTesting binaries. Check wiki for instructions."
+else
+  STDERR.puts "Using %x(#{path_to_chromedriver} --version)\n      %x(#{path_to_chrome_for_testing} --version)"
 end
 
 Capybara.register_driver :selenium_chrome_headless do |app|
