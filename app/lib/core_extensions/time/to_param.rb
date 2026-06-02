@@ -29,13 +29,18 @@ module CoreExtensions
           t = t.change(:sec => param[:second].to_i) if param.has_key?(:second)
           t
         end
-        # Extract two dates from jquery-ui-datepicker formatted params field
-        def range_from_params(json)
-          return ::Time.current,::Time.current if json.blank?
-          obj = JSON(json)
-          min = ::Time.zone.parse(obj['start'].to_s).at_beginning_of_day
-          max = ::Time.zone.parse(obj['end'].to_s).at_end_of_day
-          min,max = max,min if min > max
+        # Extract date range from datepicker params field: two time strings separated
+        # by ' - ' (but see dates_helper.rb if this changes!)
+        # One or both may be blank
+        def range_from_params(field)
+          if field.blank? ||
+              (field =~ /(.*) - (.*)/).nil? # value of DatesHelper::DATE_RANGE_FORMAT[:separator]
+            min = max =  ::Time.current
+          else
+            min = ::Time.zone.parse($1).at_beginning_of_day
+            max = ::Time.zone.parse($2).at_end_of_day
+            min,max = max,min if min > max
+          end
           return min, max
         end
         # Convert 2 Time objects into a JSON date range for jquery-ui-datepicker

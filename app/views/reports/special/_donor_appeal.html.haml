@@ -1,7 +1,12 @@
-%p
-  Donors who have made at least one donation of $
-  = text_field_tag 'donation_amount', '1.00', :size => 5
-  or more
-  %br
-  during the period
-  = select_date_with_shortcuts 'special_report_dates'
+.form-row
+  %label.col-md-4.col-form-label.text-right Donors who have made at least one donation of
+  .col-md-2.input-group
+    .input-group-prepend
+      %span.input-group-text $
+    = number_field_tag 'donation_amount', '1.00', :class => 'form-control'
+  .col-md-2 or more
+.form-row
+  .col-md-4.text-right
+    %label.col-form-label during the period
+    = popup_help_for 'select_dates'
+  .col-md-4= select_date_with_shortcuts 'special_report_dates'

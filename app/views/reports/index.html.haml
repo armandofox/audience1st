@@ -41,6 +41,7 @@
         .col-md-4
           = radio_button_tag 'txn_report_by', 'date', true, :class => 'form-check-input'
           %label.form-check-label{:for => 'txn_report_by_date'} By date (3 month max window)
+          = popup_help_for 'select_dates'
         .col-md-8
           = select_date_with_shortcuts 'txn_report_dates', :from => @from, :to => @to
       .form-row.py-2

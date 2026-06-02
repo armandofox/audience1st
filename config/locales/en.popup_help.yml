@@ -424,8 +424,8 @@ en:
 
     select_dates: >
 
-      To select custom dates, click on the menu dropdown, select the
-      starting date, then select the ending date, then click OK.
+      To select a range of dates, click on the dates field, select the
+      starting date and then the ending date, or use one of the shortcuts.
 
     # Box office
 

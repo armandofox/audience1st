@@ -21,6 +21,7 @@
   .col-md-5
     = check_box_tag 'use_date', 1, @params[:use_date] 
     %label.col-form-label Date is in the range:
+    = popup_help_for 'select_dates'
   .col-md-5= select_date_with_shortcuts 'dates', :from => @params[:from], :to => @params[:to], :enables => '#use_date', :class => 'form-control'
 
 .form-row

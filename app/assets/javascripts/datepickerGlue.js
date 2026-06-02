@@ -5,25 +5,26 @@ A1.parseAndConvertDatesAndOptions = function(element) {
     options.startDate = moment(options.startDate);
     options.endDate = moment(options.endDate);
     for (prop in options.ranges) {
-        options.ranges[prop] = moment(options.ranges[prop]);
+        // each range is a 2-element array of start and end date - convert to moment format
+        options.ranges[prop][0] = moment(options.ranges[prop][0]);
+        options.ranges[prop][1] = moment(options.ranges[prop][1]);
     }
     return(options);
 }
 
-A1.setupDatepicker = function() {
-    var element = $('.daterangepicker');
-    if (element.length < 1) { return; }
+A1.setupDatepicker = function(element) {
+    // expects a jquery-wrapped element selector
+    if (element.length < 1) {
+        alert("No date picker found");
+        return;
+    }
     element = element.first();
     // grab the element's data-config and use it for datepicker options.
     var options = A1.parseAndConvertDatesAndOptions(element[0]);
     // enable the datepicker on the input field
     // and put the selected date range in the same input field
 
-    element.daterangepicker(
-        options, 
-        function(start, end, label) {
-            alert('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-        });
+    element.daterangepicker(options)
 };
-
-$(A1.setupDatepicker);
+// We don't call setupDatepicker since it is actually called each time
+//   a daterangepicker field is created by DatesHelper#select_date_with_shortcuts

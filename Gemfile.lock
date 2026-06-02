@@ -216,11 +216,14 @@ GEM
       net-protocol
     newrelic_rpm (9.21.0)
     nio4r (2.7.4)
+    nokogiri (1.15.7-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.15.7-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.15.7-x86_64-linux)
       racc (~> 1.4)
     parallel (1.27.0)
+    pg (1.6.2-arm64-darwin)
     pg (1.6.2-x86_64-darwin)
     pg (1.6.2-x86_64-linux)
     platform-api (3.8.0)
@@ -349,6 +352,7 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
+    sqlite3 (1.7.3-arm64-darwin)
     sqlite3 (1.7.3-x86_64-darwin)
     sqlite3 (1.7.3-x86_64-linux)
     sslrequirement (1.2.0)
@@ -382,6 +386,7 @@ GEM
     zeitwerk (2.6.18)
 
 PLATFORMS
+  arm64-darwin-25
   x86_64-darwin-19
   x86_64-linux
 
@@ -441,7 +446,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 3.1.2p20
+   ruby 3.1.7p261
 
 BUNDLED WITH
    2.3.25

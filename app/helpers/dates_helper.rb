@@ -1,5 +1,12 @@
 module DatesHelper
 
+  DATE_RANGE_FORMAT = {
+    separator: ' - ',      # used in both displaying and parsing dates
+    parse: /(.*) - (.*)/, # this actually is only used in to_param.rb range_from_params
+    display: 'ddd, MMM D, YYYY'
+  }
+  
+
   def date_range(from,to, fmt=:compact)
     "#{from.to_formatted_s(fmt)}-#{to.to_formatted_s(fmt)}"
   end
@@ -22,30 +29,35 @@ module DatesHelper
       'Last season': [(t-1.year).at_beginning_of_season.iso8601, (t-1.year).at_end_of_season.iso8601],
       'All time': [Time.parse('2007-01-01').iso8601, now]
     }
-    if @show.try(:opening_date)
+    if @show.try(:opening_date) && @show.try(:closing_date)
       ranges['This production'] = [@show.opening_date.iso8601, @show.closing_date.iso8601]
     end
 
     options = {
       ranges: ranges,
+      locale: {
+        format: DATE_RANGE_FORMAT[:display],
+        separator: DATE_RANGE_FORMAT[:separator]
+      },
+      autoUpdateInput: true,
       startDate: start_date.iso8601,
       endDate:   end_date.iso8601,
       showDropdowns: true,
       minYear: 2007,
       maxYear: t.year + 5,
       autoApply: true,
+      alwaysShowCalendars: true,
       linkedCalendars: true,
       showCustomRangeLabel: true
     }
 
-    classes =
-      options[:class].blank? ? 'daterangepicker' : "daterangepicker #{options[:class]}" 
+    classes = 'a1-daterangepicker form-control a1-passive-text-input text-left d-inline'
+    classes += " {options[:class].to_s}" if options[:class]
 
-    input_tag = tag(:input, :type => 'text', :name => elt_id, :id => elt_id, :class => classes, :data => {:config => options})
-
-    div1 = content_tag('div', input_tag, :class => 'd-inline')
-    div2 = content_tag('div', popup_help_for(:select_dates), :class => 'd-inline')
-    safe_join([div1, div2])
+    input_tag = tag(:input, :type => 'text', :name => elt_id, :id => elt_id, :readonly => 'readonly',
+      :class => classes, :data => {:config => options})
+    js_tag = javascript_tag("A1.setupDatepicker($('##{elt_id}'))");
+    return safe_join([input_tag, js_tag])
   end
 
 end

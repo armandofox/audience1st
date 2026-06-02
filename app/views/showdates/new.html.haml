@@ -74,7 +74,8 @@
   .Tt.Tl
     .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
     .form-row
-      %label.col-2.text-right.col-form-label Every
+      .col-md-2.text-right
+        %label.col-form-label Every
       .col-10
         - %w(Mon Tue Wed Thu Fri Sat Sun).each_with_index do |day,i|
           - idx = (i+1) % 7
@@ -85,8 +86,10 @@
         = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :minute_step => 15, :class => 'form-control')
 
     .form-row.py-2
-      %label.col-form-label.text-right.col-2{:for => 'start'} Date Range
-      .col-4= select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date, :class => 'form-control'
+      .col-md-2.text-right
+        %label.col-form-label{:for => 'start'} Date Range
+        = popup_help_for(:select_dates)
+      .col-md-4= select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date
 
   .Ts.d-none
     .form-row.py-2
