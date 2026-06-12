@@ -316,8 +316,12 @@ class CustomersController < ApplicationController
 
   # AJAX helpers
   # auto-completion for customer search - params[:term] is what user typed
+  # return an html partial of several <option value="Cust Name" data-value="#{id}">
   def auto_complete_for_customer
-    render :json => {} and return if (terms_string = params[:term].to_s).length < 2
+    render :html => '' and return if (terms_string = params[:term].to_s).length < 2
+    ##
+    ## extract all of this to a class method in models/customer/search.rb
+    ##
     terms = terms_string.split( /\s+/ )
     max_matches = 60
     exact_name_matches = Customer.exact_name_matches(terms).limit(max_matches/3)
@@ -325,17 +329,16 @@ class CustomersController < ApplicationController
     other_term_matches = Customer.other_term_matches(terms).limit(max_matches/3) - exact_name_matches - partial_name_matches
 
     if (exact_name_matches.size + partial_name_matches.size + other_term_matches.size) == 0
-      render :json => [{'label' => '(no matches)', 'value' => nil}] and return
+      render :html => %Q{<option value="(no matches)" data-cid="" data-url="#{customers_path}">}.html_safe
+      return
     end
-    show_all_matches = [{
-        'label' => "List all matching '#{terms_string}'",
-        'value' => customers_path(:customers_filter => terms_string)}]
+    show_all_matches = %Q{<option value="List all matching '#{terms_string}'" data-url="#{customers_path(:customers_filter => terms_string)}">}.html_safe
     result =
-      exact_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
-      partial_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
-      other_term_matches.map { |c| {'label' => "#{c.full_name} (#{c.field_matching_terms(terms)})", 'value' => customer_path(c)} } +
-      show_all_matches
-    render :json => result.uniq
+      exact_name_matches.map   { |c| %Q{<option value="#{c.full_name}" data-cid="#{c.id}" data-url="#{customer_path(c).html_safe}">}.html_safe } +
+      partial_name_matches.map { |c| %Q{<option value="#{c.full_name}" data-cid="#{c.id}" data-url="#{customer_path(c).html_safe}">}.html_safe } +
+      other_term_matches.map   { |c| %Q{<option value="#{c.full_name} (#{c.field_matching_terms terms})" data-url="#{customer_path(c)}">}.html_safe } +
+      [show_all_matches]
+    render :html => result.uniq.join("\n").html_safe
   end
 
   private

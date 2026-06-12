@@ -1,4 +1,33 @@
-A1.autocomplete_selector = '._autocomplete';
+A1.setupSearchBox = function(textFieldId, datalistId, cidFieldId, ajaxUrl, autoSubmit) {
+    const datalist = $('#' + datalistId);
+    const textField = $('#' + textFieldId);
+    const cidField = $('#' + cidFieldId);
+    textField.on('input', function() {
+        const val = $(this).val().trim();
+        if (val.length < 3) { return; }
+        /* if something selected from datalist, populate cidFieldId from data-cid attribute */
+        const match = $('#' + datalistId + ' option').filter(function() {
+            return $(this).val() === val;
+        });
+        if (match.length) {
+            if (false && autoSubmit) {
+                window.location.assign(match.attr('data-url'));
+            } else {
+                cidField.val(match.attr('data-cid') || '');
+            }
+        } 
+        /* no selection from menu: refresh completion list via ajax */
+        $.ajax({url: ajaxUrl,
+                data: { term: val },
+                success: function(resp) { datalist.html(resp); }
+               });
+    });
+}
+
+A1.load_customer_page = function(datalistId) {
+    const match = $(datalistId + ' option[value="' + $(this).val() + '"]');
+    window.location.assign(match.attr('data-url'));
+}
 
 A1.select_search_result = function(customer,textField,idField) {
   // User has selected a customer using autocomplete.

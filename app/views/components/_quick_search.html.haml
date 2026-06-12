@@ -1,8 +1,12 @@
 .admin.px-1
   = form_tag(customers_path,{:method =>:get, :id => 'search_field'}) do
     Customer Search:
-    = text_field_tag 'customers_filter', @customers_filter, :size => 32, :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id'
-    = hidden_field_tag 'id'
+    = customer_search_box 'customers_filter', 'id', autosubmit: true, html_options: {size: 32}
+    -# = text_field_tag 'customers_filter', @customers_filter, :size => 32, :autocomplete => 'off', :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id', :list => 'customers-list'
+    -#= tag.datalist(:id => 'customers-list') do
+      -#= tag.option(value: 'Armando Fox', 'data-value': 133)
+      -#= tag.option(value: 'Reginald Albrecht', 'data-value': 34)
+    -#= hidden_field_tag 'id'
     = link_to 'List All', customers_path, :class => 'btn btn-sm btn-outline-secondary'
     = link_to 'List Dups', list_duplicate_customers_path, :class => 'btn btn-sm btn-outline-secondary'
     = link_to 'Add New...', admin_new_customers_path, :class => 'btn btn-sm btn-outline-primary'
