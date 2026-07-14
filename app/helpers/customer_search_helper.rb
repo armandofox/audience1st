@@ -12,8 +12,8 @@ module CustomerSearchHelper
     tags = []
     tags << text_field_tag(text_field_id, placeholder, html_options)
     tags << hidden_field_tag(result_field_id)
-    tags << javascript_tag(%Q{
-A1.setupSearchBox('#{text_field_id}', '#{result_field_id}', '#{customer_autocomplete_path}', #{autosubmit});})
+    #tags << javascript_tag(%Q{A1.setupSearchBox('#{text_field_id}', '#{result_field_id}', '#{customer_autocomplete_path}', #{autosubmit});})
+    tags.join('').html_safe
   end
 
 end

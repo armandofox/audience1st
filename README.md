@@ -1,6 +1,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/maintainability)](https://codeclimate.com/github/armandofox/audience1st/maintainability)
 ![Build Status](https://github.com/armandofox/audience1st/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/armandofox/audience1st/graph/badge.svg?token=z1QZ33cB0M)](https://codecov.io/gh/armandofox/audience1st)
+[![Better Stack Badge](https://uptime.betterstack.com/status-badges/v1/monitor/2gc51.svg)](https://uptime.betterstack.com/?utm_source=status_badge)
 
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from:
 [Abhinav Dhulipala](https://github.com/abhinavDhulipala),
