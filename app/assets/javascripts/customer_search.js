@@ -1,6 +1,6 @@
 A1.autocompleteOn = function(textFieldSelector,idFieldSelector,autoRedirect = false) {
     textFieldSelector.
-        addClass('._autocomplete'). // so tests can find it
+        addClass('_autocomplete'). // so tests can find it
         autocomplete({
         minChars: 3,
         serviceUrl: '/ajax/customer_autocomplete',
