@@ -55,6 +55,17 @@ en:
 
     # Customers and customer lists
 
+    customer_search_multi: >
+
+      Start typing any part of a customer's name, email, address, etc. to list matches.
+      You can select a specific match from the list, or press Return or Enter to list
+      all customers matching your phrase.
+
+    customer_search_unique: >
+
+      Start typing any part of a customer's name, email, address, etc. to list matches.
+      You must select one specific match from the list.
+
     customer_labels: >
 
       You can 'tag' customers with labels of your choice, such as Volunteer,

@@ -315,7 +315,6 @@ class CustomersController < ApplicationController
 
   # AJAX helpers
   # auto-completion for customer search - params[:query] is what user typed
-  # return an html partial of several <option value="Cust Name" data-value="#{id}">
   def autocomplete
     terms_string = params[:query].to_s
     ##
@@ -323,16 +322,14 @@ class CustomersController < ApplicationController
     ##
     terms = terms_string.split( /\s+/ )
     max_matches = 60
-    exact_name_matches = Customer.exact_name_matches(terms).limit(max_matches/3)
-    partial_name_matches = Customer.partial_name_matches(terms).limit(max_matches/3) - exact_name_matches
-    other_term_matches = Customer.other_term_matches(terms).limit(max_matches/3) - exact_name_matches - partial_name_matches
+    exact_name_matches = Customer.exact_name_matches(terms).limit(max_matches)
+    partial_name_matches = Customer.partial_name_matches(terms).limit(max_matches) - exact_name_matches
+    other_term_matches = Customer.other_term_matches(terms).limit(max_matches) - exact_name_matches - partial_name_matches
 
-    if (exact_name_matches.size + partial_name_matches.size + other_term_matches.size) == 0
-      render :json => {'suggestions': [{value: '(no matches)', data: 0, url: ''}]}
-      return
-    end
-    result =
-      exact_name_matches.map   { |c| { 'value': c.full_name,
+    render :json => {'suggestions': []} and return if (exact_name_matches.size + partial_name_matches.size + other_term_matches.size) == 0
+
+    result = 
+      (exact_name_matches.map   { |c| { 'value': c.full_name,
                                        'data': c.id,
                                        'url': customer_path(c) }} +
       partial_name_matches.map { |c| { 'value': c.full_name,
@@ -340,10 +337,8 @@ class CustomersController < ApplicationController
                                        'url': customer_path(c) }} +
       other_term_matches.map   { |c| { 'value': "#{c.full_name} (#{c.field_matching_terms terms})",
                                        'data': c.id,
-                                       'url': customer_path(c) }} +
-      [{ 'value': "List all matching '#{terms_string}'",
-         'data': 0,
-         'url': customers_path(:customers_filter => terms_string) }]
+                                       'url': customer_path(c) }}
+      ).take(max_matches)
     render :json => {'suggestions': result}
   end
 

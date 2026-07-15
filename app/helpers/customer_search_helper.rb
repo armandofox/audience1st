@@ -12,8 +12,7 @@ module CustomerSearchHelper
     html_options[:class] ||= ''
     html_options[:class] += '_autocomplete'
 
-    (text_field_tag(text_field_id, '', html_options) +
-      hidden_field_tag(result_field_id) + 
+    (text_field_tag(text_field_id, placeholder, html_options) +
       javascript_tag("A1.autocompleteOn('#{text_field_id}', '#{result_field_id}', autoRedirect=#{!!autosubmit})")).
       html_safe
   end

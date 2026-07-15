@@ -3,20 +3,12 @@
     = check_box_tag 'use_cid', 1, @params[:use_cid]
     %label.col-form-label Only for customer (type first or last name):
   .col-md-5#donor_autocomplete
-    :javascript
-      $('#use_cid').change(function() { 
-        if (! $(this).is(':checked')) { 
-          $('#show_vouchers').prop('checked',false);
-          $('#show_vouchers').prop('disabled',true);
-        } else {
-          $('#show_vouchers').prop('disabled',false);
-          $('#cid').val('');
-        };
-      });
-      $('#donor_name').focus(function() { $('#use_cid').prop('checked',true); })
-    = text_field_tag 'donor_name', @full_name, :class => '_autocomplete form-control', 'data-resultfield' => 'cid'
+    = text_field_tag 'donor_name', @full_name, :class => 'form-control', 'data-autocomplete-id' => 'cid'
     = hidden_field_tag 'cid', @params[:cid]
-
+    :javascript
+      $('#cid').change(function() { $('#use_cid').prop('checked',true); })
+      $('#use_cid').change(function() { if (!$(this).is(':checked')) { $('#donor_name').val('') }});
+      
 .form-row
   .col-md-5
     = check_box_tag 'use_date', 1, @params[:use_date] 

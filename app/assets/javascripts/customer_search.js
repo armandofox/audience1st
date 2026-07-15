@@ -1,23 +1,30 @@
-A1.autocompleteOn = function(textFieldId,idFieldId,autoRedirect = false) {
-    var textFieldSelector = $('#' + textFieldId);
-    var idFieldSelector = $('#' + idFieldId);
-    textFieldSelector.
-        addClass('_autocomplete'). // so tests can find it
-        autocomplete({
-        minChars: 3,
-        serviceUrl: '/ajax/customer_autocomplete',
-        onSelect: function(suggestion) {
-            /* if data is zero, it means there was no match, so ignore */
-            if (suggestion.data == 0 && suggestion.url == '') {
-                textFieldSelector.val('');
-                idFieldSelector.val('');
-            } else {
-                textFieldSelector.val(suggestion.value);
-                idFieldSelector.val(suggestion.data);
-                if (autoRedirect && suggestion.url != '') {
+/* Find all text fields that have a 'data-autocompleteResult' attribute and enable
+   them as autocomplete fields. The ID of the chosen element is populated into the field
+   whose ID is given by data-autocompleteResult.  If data-autocompleteRedirect is true,
+   choosing a value goes straight to its associated URL. */
+
+A1.setupAutocomplete = function() {
+    $('input[type="text"][data-autocomplete-id]').each(function() {
+        var textField = $(this);
+        var idField = $('#' + textField.data('autocomplete-id'));
+        var autoSubmit = textField.data('autocomplete-autosubmit');
+        var allowMulti = textField.data('autocomplete-allowmulti');
+        textField.attr('autocomplete', 'off');
+        textField.autocomplete({
+            minChars: 3,
+            serviceUrl: '/ajax/customer_autocomplete',
+            params: { 'allow_multi': allowMulti },
+            showNoSuggestionNotice: true,
+            noSuggestionNotice: '(no matches)',
+            onSelect: function(suggestion) {
+                textField.val(suggestion.value).trigger('change');
+                idField.val(suggestion.data).trigger('change');
+                if (autoSubmit && suggestion.url != '') {
                     window.location.assign(suggestion.url);
                 }
             }
-        }
+        });
     });
-};
+}
+            
+$(A1.setupAutocomplete);
