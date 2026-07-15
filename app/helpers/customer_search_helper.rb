@@ -9,11 +9,13 @@ module CustomerSearchHelper
   #  - html_options are applied to the text field
   def customer_search_box(text_field_id, result_field_id, placeholder: '', autosubmit: false, html_options: {})
     html_options[:autocomplete] = 'off'
-    tags = []
-    tags << text_field_tag(text_field_id, placeholder, html_options)
-    tags << hidden_field_tag(result_field_id)
-    #tags << javascript_tag(%Q{A1.setupSearchBox('#{text_field_id}', '#{result_field_id}', '#{customer_autocomplete_path}', #{autosubmit});})
-    tags.join('').html_safe
+    html_options[:class] ||= ''
+    html_options[:class] += '_autocomplete'
+
+    (text_field_tag(text_field_id, '', html_options) +
+      hidden_field_tag(result_field_id) + 
+      javascript_tag("A1.autocompleteOn('#{text_field_id}', '#{result_field_id}', autoRedirect=#{!!autosubmit})")).
+      html_safe
   end
 
 end

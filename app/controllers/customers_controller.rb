@@ -3,7 +3,7 @@ require 'will_paginate/array'
 class CustomersController < ApplicationController
 
   # Actions requiring no login, customer login, and staff login respectively
-  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create reset_token autocomplete)
+  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create reset_token)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(admin_new create search merge finalize_merge index list_duplicate)
 
@@ -314,10 +314,10 @@ class CustomersController < ApplicationController
   end
 
   # AJAX helpers
-  # auto-completion for customer search - params[:term] is what user typed
+  # auto-completion for customer search - params[:query] is what user typed
   # return an html partial of several <option value="Cust Name" data-value="#{id}">
   def autocomplete
-    terms_string = params[:q].to_s
+    terms_string = params[:query].to_s
     ##
     ## extract all of this to a class method in models/customer/search.rb
     ##
@@ -328,26 +328,22 @@ class CustomersController < ApplicationController
     other_term_matches = Customer.other_term_matches(terms).limit(max_matches/3) - exact_name_matches - partial_name_matches
 
     if (exact_name_matches.size + partial_name_matches.size + other_term_matches.size) == 0
-      render :json => {'suggestions': [name: '(no matches)', value: 0, url: '']}
+      render :json => {'suggestions': [{value: '(no matches)', data: 0, url: ''}]}
       return
     end
-    show_all_matches = 
     result =
-    exact_name_matches.map   { |c| {
-        'value': c.full_name,
-        'data': c.id,
-        'url': customer_path(c) }} +
-    partial_name_matches.map { |c| {
-        'value': c.full_name,
-        'data': c.id,
-        'url': customer_path(c) }} +
-    other_term_matches.map   { |c| {
-        'value': "#{c.full_name} (#{c.field_matching_terms terms})",
-        'data': c.id,
-        'url': customer_path(c) }} +
+      exact_name_matches.map   { |c| { 'value': c.full_name,
+                                       'data': c.id,
+                                       'url': customer_path(c) }} +
+      partial_name_matches.map { |c| { 'value': c.full_name,
+                                       'data': c.id,
+                                       'url': customer_path(c) }} +
+      other_term_matches.map   { |c| { 'value': "#{c.full_name} (#{c.field_matching_terms terms})",
+                                       'data': c.id,
+                                       'url': customer_path(c) }} +
       [{ 'value': "List all matching '#{terms_string}'",
-        'data': 0,
-        'url': customers_path(:customers_filter => terms_string) }]
+         'data': 0,
+         'url': customers_path(:customers_filter => terms_string) }]
     render :json => {'suggestions': result}
   end
 
