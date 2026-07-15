@@ -32,8 +32,8 @@ class CheckinsController < ApplicationController
 
   def show
     @total,@vouchers = @showdate.grouped_vouchers
-    if params[:cid]
-      @customer = Customer.where(:id => Customer.id_from_route(params[:cid])).
+    if params[:walkup_cid]
+      @customer = Customer.where(:id => params[:walkup_cid]).
         includes(:vouchers => {:vouchertype => :valid_vouchers}).
         first
       # which open vouchers are valid for this performance, and how many redemptions remaining?

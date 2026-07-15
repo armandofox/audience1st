@@ -329,15 +329,9 @@ class CustomersController < ApplicationController
     render :json => {'suggestions': []} and return if (exact_name_matches.size + partial_name_matches.size + other_term_matches.size) == 0
 
     result = 
-      (exact_name_matches.map   { |c| { 'value': c.full_name,
-                                       'data': c.id,
-                                       'url': customer_path(c) }} +
-      partial_name_matches.map { |c| { 'value': c.full_name,
-                                       'data': c.id,
-                                       'url': customer_path(c) }} +
-      other_term_matches.map   { |c| { 'value': "#{c.full_name} (#{c.field_matching_terms terms})",
-                                       'data': c.id,
-                                       'url': customer_path(c) }}
+      (exact_name_matches.map   { |c| { 'value': c.full_name, 'data': c.id }} +
+       partial_name_matches.map { |c| { 'value': c.full_name, 'data': c.id }} +
+       other_term_matches.map   { |c| { 'value': "#{c.full_name} (#{c.field_matching_terms terms})", 'data': c.id }}
       ).take(max_matches)
     render :json => {'suggestions': result}
   end

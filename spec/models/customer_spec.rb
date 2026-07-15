@@ -2,9 +2,6 @@
 require 'rails_helper'
 
 describe Customer do
-  it 'gets ID from route' do
-    expect(Customer.id_from_route("/customers/3334")).to eq("3334")
-  end
   describe "labels" do
     before(:each) do
       @c = create(:customer)

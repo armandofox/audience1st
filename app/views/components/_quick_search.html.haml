@@ -2,8 +2,10 @@
   = form_tag(customers_path,{:method =>:get, :id => 'search_field'}) do
     Customer Search:
     = popup_help_for 'customer_search_multi'
-    = text_field_tag 'customers_filter', '', {size: 32, 'data-autocomplete-id': 'id', 'data-autocomplete-autosubmit': true, 'data-autocomplete-allowmulti': true}
+    = text_field_tag 'customers_filter', '', {size: 32, 'data-autocomplete-id': 'id'}
     = hidden_field_tag 'id'
+    :javascript
+      $('#id').change(function() { window.location.assign('/customers/' + $('#id').val()); })
     = link_to 'List All', customers_path, :class => 'btn btn-sm btn-outline-secondary'
     = link_to 'List Dups', list_duplicate_customers_path, :class => 'btn btn-sm btn-outline-secondary'
     = link_to 'Add New...', admin_new_customers_path, :class => 'btn btn-sm btn-outline-primary'

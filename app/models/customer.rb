@@ -229,10 +229,6 @@ class Customer < ActiveRecord::Base
 
   public
 
-  def self.id_from_route(route)
-    (Rails.application.routes.recognize_path(route))[:id]
-  end
-
   # message that will appear in flash[:notice] once only, at login
   def login_message
     msg = ["Welcome, #{full_name}"]

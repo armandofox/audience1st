@@ -123,7 +123,7 @@ class VouchersController < ApplicationController
     vouchers = @params[:vouchers]
     return redirect_to(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you did not select any vouchers.') unless vouchers
-    cid = Customer.id_from_route(@params[:cid]) # extract id from URL matching customer_path(params[:cid])
+    cid = @params[:transfer_to_cid]
     new_customer = Customer.find_by_id(cid)
     return redirect_to(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you must select valid customer to transfer to.') unless new_customer.kind_of? Customer

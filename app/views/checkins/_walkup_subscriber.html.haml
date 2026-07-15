@@ -1,12 +1,10 @@
 %fieldset#walkup_subscriber_search
   %legend Check-in Subscriber Without Advance Reservation  
   Customer name:
-  = text_field_tag 'customer', @customer.try(:full_name), :size => 20, :class => '_autocomplete'
+  = text_field_tag 'customer', @customer.try(:full_name), {:size => 20, 'data-autocomplete-id' => 'walkup_cid'}
+  = hidden_field_tag 'walkup_cid'
   :javascript
-    $('#customer').on('autocompleteselect', function(evt,selection) { 
-      var newUrl = A1.replaceUrlParam(window.location.href, 'cid', selection.item.value);
-      window.location.assign(newUrl);
-    })
+    $('#walkup_cid').change(function() { window.location.assign(window.location.href + '?walkup_cid=' + $('#walkup_cid').val()) })
 
   - if @customer
     - if @customer_vouchers.empty?

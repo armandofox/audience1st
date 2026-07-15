@@ -7,21 +7,15 @@ A1.setupAutocomplete = function() {
     $('input[type="text"][data-autocomplete-id]').each(function() {
         var textField = $(this);
         var idField = $('#' + textField.data('autocomplete-id'));
-        var autoSubmit = textField.data('autocomplete-autosubmit');
-        var allowMulti = textField.data('autocomplete-allowmulti');
         textField.attr('autocomplete', 'off');
         textField.autocomplete({
             minChars: 3,
             serviceUrl: '/ajax/customer_autocomplete',
-            params: { 'allow_multi': allowMulti },
             showNoSuggestionNotice: true,
             noSuggestionNotice: '(no matches)',
             onSelect: function(suggestion) {
                 textField.val(suggestion.value).trigger('change');
                 idField.val(suggestion.data).trigger('change');
-                if (autoSubmit && suggestion.url != '') {
-                    window.location.assign(suggestion.url);
-                }
             }
         });
     });
