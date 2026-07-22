@@ -136,11 +136,11 @@ end
 
 Then /^there should be refund items for that order with amounts:(.*)/ do |list|
   amounts = list.strip.split(/\s*,\s*/).map(&:to_f).sort.map { |x| -x }
-  order_item_ids = @order.items.where('type != "RefundedItem"').map(&:id)
+  order_item_ids = @order.items.where.not(type: 'RefundedItem').pluck(:id)
   refunds = RefundedItem.where(:order_id => @order.id, :bundle_id => order_item_ids).order(:amount)
   expect(amounts.count).to eq(refunds.count)
 end
 
 Then /^there should be no refund items for that order/ do
-  expect(@order.items.where('type = "RefundedItem"').count).to eq(0)
+  expect(@order.items.where(type: 'RefundedItem').count).to eq(0)
 end

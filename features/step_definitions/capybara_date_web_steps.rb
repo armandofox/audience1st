@@ -63,7 +63,22 @@ end
 
 When /^I select "(.*) to (.*)" as the "(.*)" date range$/ do |start,endr, selector|
   # relies on the formatting of the target field used as the datepicker; doesn't need JS
-  fill_in selector, :with => date_range_to_json(start,endr), :visible => false
+  # see DatesHelper for the format
+  f = DatesHelper::DATE_RANGE_FORMAT
+  range = [
+    Time.zone.parse(start).strftime(f[:strftime]),
+    Time.zone.parse(endr).strftime(f[:strftime])
+  ].join(f[:separator])
+  # ugh: because Daterangepicker makes use of a 'readonly' input element, we must
+  # use different techniques to forcibly fill in the field depending on the test driver
+  element = find(:field, selector)
+  if Capybara.current_driver == :rack_test
+    # fill_in won't work on a readonly field
+    element.native['value'] = range
+  else
+    page.execute_script("arguments.removeAttribute('readonly');", element)
+    element.set(value)
+  end
 end
 
 Then /^"(.*) to (.*)" should be selected as the "(.*)" date range$/ do |from,to,selector|

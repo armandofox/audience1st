@@ -3,7 +3,9 @@ module DatesHelper
   DATE_RANGE_FORMAT = {
     separator: ' - ',      # used in both displaying and parsing dates
     parse: /(.*) - (.*)/, # this actually is only used in to_param.rb range_from_params
-    display: 'ddd, MMM D, YYYY'
+    display:  'ddd, MMM D, YYYY',
+    # for tests that fill in a date range directly, this string matches what the picker produces
+    strftime: '%a, %b %-d, %Y'
   }
   
 

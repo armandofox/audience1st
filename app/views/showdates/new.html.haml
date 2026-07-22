@@ -99,7 +99,7 @@
       .col-md-6
         = select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 45), :time_separator => ':', :prefix => 'stream_until', :minute_step => 15, :start_year => Time.current.year
 
-  = submit_tag 'Save & Back to List of Shows', :class => 'btn btn-success' 
+  = submit_tag 'Save & Back to List of Shows', :class => 'btn btn-success'
   = submit_tag 'Save & Add More Dates for This Show', :class => 'btn btn-success'
   = link_to "Don't Save", edit_show_path(@show), :class => 'btn btn-secondary'
 

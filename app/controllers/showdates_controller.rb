@@ -13,6 +13,7 @@ class ShowdatesController < ApplicationController
   public
   
   def create
+    byebug
     warnings = []
     cutoff = params[:advance_sales_cutoff].to_i.minutes
     # determine date list from EITHER the date range, or for stream-anytime, single date
@@ -23,7 +24,6 @@ class ShowdatesController < ApplicationController
     else
       all_dates = [ Time.from_hash(params[:stream_until]) ]
     end
-
     existing_dates, new_dates = all_dates.partition { |date| Showdate.find_by(:thedate => date) }
 
     if ! existing_dates.empty?
