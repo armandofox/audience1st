@@ -34,7 +34,7 @@ Scenario: mark some orders as fulfilled
   When I visit the unfulfilled orders page
   Then I should see "2 unfulfilled orders (1 unique addresses)"
   And I should see "Patrick Tracy"
-  But I should not see the following: "Joe Mallon, Star Valdez"
+  But I should not see any of the following: "Joe Mallon, Star Valdez"
 
 Scenario: export unfulfilled orders as spreadsheet
 

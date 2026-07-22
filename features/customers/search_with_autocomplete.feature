@@ -36,13 +36,16 @@ Scenario:search with other information
 
 Scenario: search with no result
   When I search for customers matching "No matching result"
-  Then the search results dropdown should include: (no matches)
+  Then I should not see any autocomplete choices
 
 Scenario: list all in autocomplete
-  Given the following customers exist: Armando Fox, Foxy Armando
+  Given the following customers exist: Armando Fox, Foxy Armando, Bilbo Baggins
   When I search for customers matching "Fox"
-  And I select autocomplete choice to show all matches
-  Then I should be on the list of customers page
+  And I list all matches
+  Then I should see /^Customers matching "Fox"$/
+  And I should see "Armando Fox"
+  And I should see "Foxy Armando"
+  But I should not see "Bilbo Baggins"
 
 Scenario: duplicates are not listed in dropdown
   Given customer "Armando Fox" exists with email "fox@gmail.com"

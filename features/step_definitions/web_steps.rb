@@ -132,7 +132,7 @@ Then /^(?:|I )should not see \/([^\/]*)\/(?: within "([^\"]*)")?$/ do |regexp, s
 end
 
 # Created test
-Then /^(?:|I )should (not )?see the following: "([^\"]*)"$/ do |no,textlist|
+Then /^(?:|I )should (not )?see (?:any|all) of the following: "([^\"]*)"$/ do |no,textlist|
   textlist.split(/\s*,\s*/).each do |text|
     step "I should #{no}see \"#{text}\""
   end
